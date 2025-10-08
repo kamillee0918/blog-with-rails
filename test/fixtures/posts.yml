@@ -1,0 +1,40 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+published_post:
+  title: "Test Published Post"
+  slug: "test-published-post"
+  content: "This is a published post content for testing."
+  excerpt: "This is a published post excerpt."
+  category: "AI"
+  author_name: "Test Author"
+  author_avatar: "test_avatar.png"
+  published_at: <%= 1.day.ago %>
+  featured: true
+  featured_image: "test_image.png"
+  image_caption: "Test Image Caption"
+
+draft_post:
+  title: "Test Draft Post"
+  slug: "test-draft-post"
+  content: "This is a draft post content for testing."
+  excerpt: "This is a draft post excerpt."
+  category: "CS"
+  author_name: "Test Author"
+  author_avatar: "test_avatar.png"
+  published_at: <%= 1.day.from_now %>
+  featured: false
+  featured_image: "test_image_2.png"
+  image_caption: "Test Image Caption 2"
+
+unpublished_post:
+  title: "Test Unpublished Post"
+  slug: "test-unpublished-post"
+  content: "This is an unpublished post content for testing."
+  excerpt: "This is an unpublished post excerpt."
+  category: "Web"
+  author_name: "Test Author"
+  author_avatar: "test_avatar.png"
+  published_at: nil
+  featured: false
+  featured_image: nil
+  image_caption: nil
