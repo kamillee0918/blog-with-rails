@@ -10,20 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_08_083825) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_08_192500) do
   create_table "posts", force: :cascade do |t|
-    t.string "title"
-    t.string "slug"
+    t.string "title", null: false
+    t.string "slug", null: false
     t.text "content"
     t.text "excerpt"
     t.string "category"
     t.string "author_name"
     t.string "author_avatar"
     t.datetime "published_at"
-    t.boolean "featured"
+    t.boolean "featured", default: false
     t.string "featured_image"
     t.string "image_caption"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["category"], name: "index_posts_on_category"
+    t.index ["featured"], name: "index_posts_on_featured"
+    t.index ["published_at"], name: "index_posts_on_published_at"
+    t.index ["slug"], name: "index_posts_on_slug", unique: true
   end
 end
