@@ -56,6 +56,8 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+  # A better pre-commit hook for git.
+  gem "pre-commit"
 end
 
 group :test do

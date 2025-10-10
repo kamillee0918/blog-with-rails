@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -e
+
+echo "🔍 Running code quality checks..."
+
+echo "1️⃣  RuboCop (Style & Lint)..."
+if ! bundle exec rubocop --autocorrect; then
+  echo "❌ RuboCop failed. Please fix the issues above."
+  exit 1
+fi
+
+echo "2️⃣  Rails Tests..."
+if ! bin/rails test; then
+  echo "❌ Tests failed. Please fix the failing tests."
+  exit 1
+fi
+
+echo "3️⃣  System Tests..."
+if ! bin/rails test:system; then
+  echo "❌ System tests failed. Please fix the failing tests."
+  exit 1
+fi
+
+echo "✅ All checks passed! Ready to commit."
