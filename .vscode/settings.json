@@ -1,0 +1,10 @@
+{
+  "ruby.rubocop.onSave": true,
+  "ruby.format": "rubocop",
+  "editor.formatOnSave": true,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "emmet.includeLanguages": {
+    "erb": "html"
+  }
+}
