@@ -9,6 +9,7 @@ class Post < ApplicationRecord
   scope :published, -> { where.not(published_at: nil).where("published_at <= ?", Time.current) }
   scope :featured, -> { where(featured: true) }
   scope :by_category, ->(category) { where(category: category) }
+  scope :by_author_slug, ->(author_slug) { where("LOWER(author_name) LIKE ?", "#{author_slug.downcase}%") }
   scope :recent, -> { order(published_at: :desc) }
 
   # Instance methods
@@ -16,7 +17,23 @@ class Post < ApplicationRecord
     published_at.present? && published_at <= Time.current
   end
 
+  def reading_time
+    return 1 if content.blank?
+
+    # Estimate reading time based on word count (average 200 words per minute)
+    word_count = content.split.size
+    (word_count / 200.0).ceil
+  end
+
   def to_param
     slug
+  end
+
+  def path
+    "/#{slug}"
+  end
+
+  def author_slug
+    author_name&.split&.first&.downcase
   end
 end

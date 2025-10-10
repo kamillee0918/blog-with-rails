@@ -1,0 +1,13 @@
+<main class="gh-main">
+  <section class="gh-container is-grid gh-outer">
+    <div class="gh-container-inner gh-inner">
+      <main class="gh-main">
+        <div class="gh-feed">
+          <% @posts.each do |post| %>
+            <%= render "shared/post_card", post: post %>
+          <% end %>
+        </div>
+      </main>
+    </div>
+  </section>
+</main>

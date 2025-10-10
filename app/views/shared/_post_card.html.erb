@@ -1,0 +1,51 @@
+<% 
+# Parameters:
+# - post: Post object
+# - position: 'center', 'side', 'latest' (default: 'center')
+position ||= 'center'
+css_classes = case position
+              when 'latest'
+                'gh-feed'
+              end
+
+# center와 side는 wrapper div 없이 article만, latest는 wrapper div 필요
+needs_wrapper = position == 'latest'
+%>
+
+<% if needs_wrapper %>
+  <div class="<%= css_classes %>">
+    <article class="gh-card post<%= ' tag-' + post.category.downcase if post.category %>">
+      <%= link_to post.path, class: "gh-card-link", data: { turbo: true } do %>
+        <figure class="gh-card-image">
+          <%= post_image_tag(post) %>
+        </figure>
+        <div class="gh-card-wrapper">
+          <p class="gh-card-tag"><%= post.category %></p>
+          <h3 class="gh-card-title is-title"><%= post.title %></h3>
+          <p class="gh-card-excerpt is-body"><%= post.excerpt %></p>
+          <footer class="gh-card-meta">
+            <span class="gh-card-author">By <%= post.author_name %></span>
+            <time class="gh-card-date" datetime="<%= post.published_at&.strftime("%Y-%m-%d") %>"><%= post.published_at&.strftime("%d %b %Y") %></time>
+          </footer>
+        </div>
+      <% end %>
+    </article>
+  </div>
+<% else %>
+  <article class="gh-card post<%= ' featured' if post.featured %><%= ' tag-' + post.category.downcase if post.category && !post.featured %>">
+    <%= link_to post.path, class: "gh-card-link", data: { turbo: true } do %>
+      <figure class="gh-card-image">
+        <%= post_image_tag(post) %>
+      </figure>
+      <div class="gh-card-wrapper">
+        <p class="gh-card-tag"><%= post.category %></p>
+        <h3 class="gh-card-title is-title"><%= post.title %></h3>
+        <p class="gh-card-excerpt is-body"><%= post.excerpt %></p>
+        <footer class="gh-card-meta">
+          <span class="gh-card-author">By <%= post.author_name %></span>
+          <time class="gh-card-date" datetime="<%= post.published_at&.strftime("%Y-%m-%d") %>"><%= post.published_at&.strftime("%d %b %Y") %></time>
+        </footer>
+      </div>
+    <% end %>
+  </article>
+<% end %>

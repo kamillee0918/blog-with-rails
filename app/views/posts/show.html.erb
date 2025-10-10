@@ -1,0 +1,63 @@
+<% content_for :title, @post.title %>
+<% content_for :description, @post.excerpt %>
+<% content_for :keywords, [@post.category, @post.author_name].join(', ') %>
+<% if @post.featured_image.present? %>
+  <% content_for :og_image, asset_url(@post.featured_image) %>
+<% end %>
+
+<main class="gh-main">
+  <article class="gh-article post tag-<%= @post.category.downcase %>">
+    <header class="gh-article-header gh-canvas">
+      <%= link_to @post.category, category_path(@post.category.downcase), class: "gh-article-tag", data: { turbo: true } %>
+      <h1 class="gh-article-title is-title"><%= @post.title %></h1>
+      <div class="gh-article-meta">
+        <div class="gh-article-author-image">
+          <%= link_to author_path(@post.author_slug), data: { turbo: true } do %>
+            <%= image_tag @post.author_avatar, class: "author-profile-image", alt: @post.author_name %>
+          <% end %>
+        </div>
+        <div class="gh-article-meta-wrapper">
+          <h4 class="gh-article-author-name">
+            <%= link_to @post.author_name, author_path(@post.author_slug), data: { turbo: true } %>
+          </h4>
+          <div class="gh-article-meta-content">
+            <time class="gh-article-meta-date" datetime="<%= @post.published_at&.iso8601 %>"><%= @post.published_at&.strftime("%d %b %Y") %></time>
+            <span class="gh-article-meta-length">
+              <span class="bull">—</span> <%= @post.reading_time %> min read
+            </span>
+          </div>
+        </div>
+      </div>
+      <figure class="gh-article-image">
+        <% if @post.featured_image.present? %>
+          <div class="post-featured-image">
+            <%= responsive_image_tag(
+              @post.featured_image,
+              alt_text: @post.image_caption || @post.title,
+              sizes: '(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px'
+            ) %>
+            <% if @post.image_caption.present? %>
+              <figcaption>
+                <span style="white-space: pre-wrap;"><%= @post.image_caption %></span>
+              </figcaption>
+            <% end %>
+          </div>
+        <% end %>
+      </figure>
+    </header>
+    <!-- Dynamic content rendering with fallback -->
+    <% content_partial = "posts/content/#{@post.slug}" %>
+    <% if lookup_context.exists?(content_partial, [], true) %>
+      <%= render content_partial %>
+    <% else %>
+      <!-- Fallback: Display basic content if no specific template exists -->
+      <section class="gh-content gh-canvas is-body">
+        <% if @post.excerpt.present? %>
+          <p class="post-excerpt"><%= @post.excerpt %></p>
+        <% end %>
+        <%= simple_format(@post.content) %>
+      </section>
+    <% end %>
+  </article>
+  <!-- TODO: Comment Sections -->
+</main>
