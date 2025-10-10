@@ -16,6 +16,9 @@ module Blog
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w[assets tasks])
 
+    # Enable compression for better performance
+    config.middleware.use Rack::Deflater
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
