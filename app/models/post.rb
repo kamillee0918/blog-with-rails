@@ -11,6 +11,15 @@ class Post < ApplicationRecord
   scope :by_category, ->(category) { where(category: category) }
   scope :by_author_slug, ->(author_slug) { where("LOWER(author_name) LIKE ?", "#{author_slug.downcase}%") }
   scope :recent, -> { order(published_at: :desc) }
+  scope :search, ->(query) {
+    return all if query.blank?
+
+    sanitized_query = "%#{sanitize_sql_like(query.to_s)}%"
+    where(
+      "LOWER(title) LIKE ? OR LOWER(content) LIKE ? OR LOWER(category) LIKE ? OR LOWER(excerpt) LIKE ?",
+      sanitized_query.downcase, sanitized_query.downcase, sanitized_query.downcase, sanitized_query.downcase
+    )
+  }
 
   # Instance methods
   def published?
