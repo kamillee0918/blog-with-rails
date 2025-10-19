@@ -1,20 +1,36 @@
-<div class="page-header">
-  <h1><%= @page_title %></h1>
-  <p>Posts by author: <strong><%= @author_name %></strong></p>
-</div>
-
-<section class="posts-listing">
-  <% if @posts.any? %>
-    <div class="posts-grid">
-      <% @posts.each do |post| %>
-        <%= render "shared/post_card", post: post %>
-      <% end %>
+<main class="gh-main gh-outer">
+  <section class="gh-archive gh-inner">
+    <div class="gh-archive-inner">
+      <div class="gh-archive-wrapper">
+        <h1 class="gh-article-title is-title">
+          <%= link_to @author_name, author_path(@author_slug), class: "gh-author-social-link", target: "_blank", rel: "noopener", data: { turbo: true } %>
+        </h1>
+        <p class="gh-article-excerpt"><%= @author_bio %></p>
+        <footer class="gh-author-meta">
+          <div class="gh-author-social">
+            <%= link_to @author_social_url, class: "gh-author-social-link", target: "_blank", rel: "noopener", data: { turbo: true } do %>
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <g>
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+                </g>
+              </svg>
+            <% end %>
+          </div>
+          <div class="gh-author-location">Japan</div>
+        </footer>
+      </div>
+      <%= image_tag @author_avatar, class: "gh-article-image", alt: @author_name %>
     </div>
-  <% else %>
-    <div class="empty-state">
-      <p>No posts found by this author.</p>
-      <%= link_to "Back to Home", root_path, data: { turbo: true } %>
-      <%= link_to "All Posts", posts_path, data: { turbo: true } %>
+  </section>
+  <section class="gh-container is-grid gh-outer">
+    <div class="gh-container-inner gh-inner">
+      <main class="gh-main">
+        <div class="gh-feed">
+          <% @posts.each do |post| %>
+            <%= render "shared/post_card", post: post %>
+          <% end %>
+        </div>
+      </main>
     </div>
-  <% end %>
-</section>
+  </section>
+</main>
