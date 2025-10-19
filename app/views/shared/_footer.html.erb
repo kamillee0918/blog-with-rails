@@ -4,10 +4,6 @@
       <%= link_to "Kamil Lee의 개발 일기", root_path, class: "gh-footer-logo is-title", data: { turbo: true } %>
       <nav class="gh-footer-menu">
         <ul class="nav">
-          <li class="nav-sign-up nav-current">
-            <!-- TODO: 아래의 회원가입 모달을 별도의 컴포넌트로 분리 -->
-            <%= link_to "Sign up", "#/signup", data: { turbo: true } %>
-          </li>
           <% if @categories&.any? %>
             <% @categories.each do |category| %>
               <li class="<%= 'nav-' + category.downcase %>">
@@ -18,29 +14,28 @@
         </ul>
       </nav>
       <div class="gh-footer-copyright">
-        Powered by <%= link_to "Ruby on Rails", "https://rubyonrails.org/", target: "_blank", data: { turbo: true } %>
+        Powered by <a href="https://rubyonrails.org/" target="_blank" rel="noopener">Ruby on Rails</a>
       </div>
     </div>
     <section class="gh-footer-signup">
-      <h2 class="gh-footer-signup-header is-title">
+      <%= content_tag :h2, class: "gh-footer-signup-header is-title" do -%>
         Discover what happens behind the code with me.
-      </h2>
-      <p class="gh-footer-signup-subhead is-body">
+      <% end -%>
+      <%= content_tag :p, class: "gh-footer-signup-subhead is-body" do -%>
         Updates on my projects, stories, and tips
-      </p>
-      <!-- TODO: 아래의 form을 보다 효율적인 방식으로 변경 및 분리 -->
-      <form class="gh-form">
-        <input id="footer-email" class="gh-form-input" name="email" type="email" placeholder="kamillee0918@example.com" required="">
-        <button class="gh-button" type="submit" aria-label="Subscribe">
-          <span>
-            <span>Subscribe</span>
-            <!-- TODO: 위의 Subscribe 버튼이 클릭되면 첫 번째로, 아래의 svg 애니메이션이 실행되어야 함 -->
+      <% end -%>
+      <!-- Newsletter(Members) 구독 폼 -->
+      <form class="gh-form" data-controller="members" data-members-target="form" data-action="submit->members#subscribe">
+        <input id="footer-email" class="gh-form-input" name="email" type="email" placeholder="kamillee0918@example.com" data-members-target="input" required>
+        <button class="gh-button" type="submit" aria-label="Subscribe" data-members-target="button">
+          <%= content_tag :span, "Subscribe", data: { members_target: "textSpan" } do %>
+            <%= content_tag :span, "Subscribe" %>
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
               <path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"></path>
             </svg>
-          </span>
-          <!-- TODO: 위의 Subscribe 버튼이 클릭되면 두 번째로, 아래의 svg 애니메이션이 실행되어야 함 -->
-          <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+          <% end %>
+          <!-- Spinner(Loading) 애니메이션 -->
+          <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24" data-members-target="spinner">
             <g stroke-linecap="round" stroke-width="2" fill="currentColor" stroke="none" stroke-linejoin="round" class="nc-icon-wrapper">
               <g class="nc-loop-dots-4-24-icon-o">
                 <circle cx="4" cy="12" r="3"></circle>
@@ -57,7 +52,8 @@
               </style>
             </g>
           </svg>
-          <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+          <!-- Checkmark 애니메이션 -->
+          <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" data-members-target="checkmark">
             <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"></path>
             <style>
               .checkmark {
@@ -80,7 +76,7 @@
             </style>
           </svg>
         </button>
-        <p class="data-members-error"></p>
+        <%= tag "p", data: { members_error: "", members_target: "error" } %>
       </form>
     </section>
   </div>

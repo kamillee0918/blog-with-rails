@@ -1,22 +1,19 @@
 <!-- 현재 비활성화된 링크들 (검색 모달, 로그인 모달, 회원가입 모달 | Phase 3, 4에서 구현 예정) -->
-<header id="gh-navigation" class="gh-navigation is-left-logo gh-outer is-dropdown-loaded">
+<header id="gh-navigation" class="gh-navigation is-left-logo gh-outer is-dropdown-loaded" data-controller="burger">
   <div class="gh-navigation-inner gh-inner">
     <div class="gh-navigation-brand">
       <%= link_to "Kamil Lee의 개발 일기", root_path, class: "gh-navigation-logo is-title", data: { turbo: true } %>
-      <!-- TODO: 검색 버튼(모바일 페이지 한정 표시) -->
-      <!-- TODO: 아래의 검색 모달을 별도의 컴포넌트로 분리 -->
-      <%= button_tag class: "gh-search gh-icon-button", data: { turbo: true } do %>
+      <!-- 검색 버튼(모바일 페이지 한정 표시) -->
+      <%= button_tag class: "gh-search gh-icon-button", onclick: "window.dispatchEvent(new CustomEvent('search:open', { bubbles: true }))" do %>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20">
           <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
         </svg>
       <% end %>
       <!-- 햄버거 버튼(모바일 페이지 한정 표시) -->
-      <%= button_tag class: "gh-burger gh-icon-button" do %>
-        <!-- 아래의 svg는 미리 표시되어야 함 -->
+      <%= button_tag class: "gh-burger gh-icon-button", data: { action: "click->burger#toggleMenu" } do %>
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
           <path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path>
         </svg>
-        <!-- 해당 버튼(햄버거 버튼)이 클릭되면 위의 svg가 비표시되는 동시에, 아래의 svg가 표시되어야 함 -->
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
           <path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path>
         </svg>
@@ -33,18 +30,17 @@
       </ul>
     </nav>
     <div class="gh-navigation-actions">
-      <!-- TODO: 아래의 검색 모달을 별도의 컴포넌트로 분리 -->
-      <%= button_tag class: "gh-search gh-icon-button", data: { turbo: true } do %>
+      <!-- 검색 버튼(데스크톱) -->
+      <%= button_tag class: "gh-search gh-icon-button", onclick: "window.dispatchEvent(new CustomEvent('search:open', { bubbles: true }))" do %>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20">
           <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
         </svg>
       <% end %>
-      <div class="gh-navigation-members">
-        <!-- TODO: 아래의 로그인 모달을 별도의 컴포넌트로 분리 -->
-        <%= link_to "Sign in", "#/signin", class: "gh-portal-close", data: { turbo: true } %>
-        <!-- TODO: 아래의 회원가입 모달을 별도의 컴포넌트로 분리 -->
-        <%= link_to "Subscribe", "#/signup", class: "gh-button gh-portal-close", data: { turbo: true } %>
-      </div>
+      <!-- 로그인/회원가입 버튼(데스크톱/모바일) -->
+      <%= content_tag :div, class: "gh-navigation-members" do %>
+        <%= link_to "Sign in", "#/signin", class: "gh-portal-close", onclick: "event.preventDefault(); window.dispatchEvent(new CustomEvent('authorization:open', { detail: { portal: 'signin' }, bubbles: true }))", data: { portal: "signin" } %>
+        <%= link_to "Subscribe", "#/signup", class: "gh-button gh-portal-close", onclick: "event.preventDefault(); window.dispatchEvent(new CustomEvent('authorization:open', { detail: { portal: 'signup' }, bubbles: true }))", data: { portal: "signup" } %>
+      <% end %>
     </div>
   </div>
 </header>
