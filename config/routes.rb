@@ -12,7 +12,10 @@ Rails.application.routes.draw do
   # Image serving routes (static files in public/ are served automatically)
   # get "assets/images/size/:size/format/:format/*path", to: "images#show", as: "responsive_image"
 
-  # Future routes (Phase 3, 4)
+  # Phase 3 routes
+  get "authorization", to: "authorization#index", as: "authorization"
+
+  # Future routes (Phase 4)
   # get "about", to: "pages#about"
   # get "projects", to: "pages#projects"
 
