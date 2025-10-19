@@ -41,6 +41,7 @@ Rails.application.configure do
   # number of complex assets.
   # Disable for better performance in development
   config.assets.debug = false
+  config.assets.compile = true
 
   config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
 
