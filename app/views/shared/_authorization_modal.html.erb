@@ -1,0 +1,94 @@
+<div id="authorization-root" style="display: none; z-index: 3999999; position: fixed; left: 0; top: 0; width: 100%; height: 100%; overflow: hidden;" data-controller="authorization" data-action="authorization:open@window->authorization#open keydown@window->authorization#handleKeyboard">
+  <!-- 모달 오버레이 -->
+  <div class="gh-portal-popup-background" data-authorization-target="overlay" data-action="click->authorization#close"></div>
+  <!-- 모달 컨텐츠 -->
+  <div class="gh-portal-popup-wrapper signin" data-authorization-target="wrapper" data-action="click->authorization#close">
+    <div class="gh-portal-popup-container signin" data-authorization-target="container" tabindex="-1" data-action="click->authorization#stopPropagation">
+      <!-- 닫기 아이콘 -->
+      <div class="gh-portal-closeicon-container" data-action="click->authorization#close">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="gh-portal-closeicon" alt="Close" data-testid="close-popup">
+          <defs>
+            <style>
+              .a {
+                fill: none;
+                stroke: currentColor;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                stroke-width: 1.2px !important;
+              }
+            </style>
+          </defs>
+          <path class="a" d="M.75 23.249l22.5-22.5M23.25 23.249L.75.749"></path>
+        </svg>
+      </div>
+      <!-- 인증(회원가입 / 로그인) 폼 -->
+      <div class="gh-portal-logged-out-form-container">
+        <!-- 회원가입 폼 (기본 숨김) -->
+        <form class="gh-portal-content signup" data-authorization-target="signupForm" data-action="submit->authorization#handleSignup" style="display: none;">
+          <header class="gh-portal-signup-header">
+            <img class="gh-portal-authorization-logo" src="<%= asset_url('brand.png') %>" alt="Kamil Lee의 개발 일기">
+            <h1 class="gh-portal-main-title">Kamil Lee의 개발 일기</h1>
+          </header>
+          <section class="gh-portal-signup">
+            <div class="gh-portal-section">
+              <!-- 닉네임 입력 필드 -->
+              <section class="gh-portal-input-section">
+                <div class="gh-portal-input-labelcontainer">
+                  <label for="signup-input-nickname" class="gh-portal-input-label">Nickname</label>
+                </div>
+                <input id="signup-input-nickname" class="gh-portal-input" type="text" name="nickname" placeholder="Kamil Lee" tabindex="1" autocomplete="off" autocorrect="off" autocapitalize="none" aria-label="Nickname" data-authorization-target="signupNickname" data-test-input="input-nickname" required>
+              </section>
+              <!-- 이메일 입력 필드 -->
+              <section class="gh-portal-input-section">
+                <div class="gh-portal-input-labelcontainer">
+                  <label for="signup-input-email" class="gh-portal-input-label">Email</label>
+                </div>
+                <input id="signup-input-email" class="gh-portal-input" type="email" name="email" placeholder="kamillee0918@example.com" tabindex="2" autocomplete="off" autocorrect="off" autocapitalize="none" aria-label="Email" data-authorization-target="signupEmail" data-test-input="input-email" required>
+              </section>
+            </div>
+            <!-- Submit 버튼 -->
+            <footer class="gh-portal-signin-footer">
+              <button class="gh-portal-btn gh-portal-btn-main gh-portal-btn-primary" type="submit" style="color: rgb(255, 255, 255); background-color: var(--brand-color); opacity: 1; pointer-events: auto; width: 100%;" data-test-button="signup" data-authorization-target="signupButton">Sign Up</button>
+              <!-- 로그인 모달 전환 버튼 -->
+              <div class="gh-portal-signup-message">
+                <div>Already a member?</div>
+                <button class="gh-portal-btn gh-portal-btn-link color-[var(--brand-color)]" type="button" style="color: var(--brand-color);" data-test-button="signin-switch" data-action="click->authorization#switchToSignin">
+                  <span>Sign in</span>
+                </button>
+              </div>
+            </footer>
+          </section>
+        </form>
+        <!-- 로그인 폼 (기본 표시) -->
+        <form class="gh-portal-content signin" data-authorization-target="signinForm" data-action="submit->authorization#handleSignin">
+          <header class="gh-portal-signin-header">
+            <img class="gh-portal-authorization-logo" src="<%= asset_url('brand.png') %>" alt="Kamil Lee의 개발 일기">
+            <h1 class="gh-portal-main-title">Sign in</h1>
+          </header>
+          <section class="gh-portal-signup">
+            <!-- 이메일 입력 필드 -->
+            <div class="gh-portal-section">
+              <section class="gh-portal-input-section">
+                <div class="gh-portal-input-labelcontainer">
+                  <label for="signin-input-email" class="gh-portal-input-label">Email</label>
+                </div>
+                <input id="signin-input-email" class="gh-portal-input" type="email" name="email" placeholder="kamillee0918@example.com" autocomplete="off" autocorrect="off" autocapitalize="none" aria-label="Email" data-test-input="input-email" data-authorization-target="signinEmail" required>
+              </section>
+            </div>
+            <!-- Submit 버튼 -->
+            <footer class="gh-portal-signin-footer">
+              <button class="gh-portal-btn gh-portal-btn-main gh-portal-btn-primary" type="submit" style="color: rgb(255, 255, 255); background-color: var(--brand-color); opacity: 1; pointer-events: auto; width: 100%;" data-test-button="signin" data-authorization-target="signinButton">Continue</button>
+              <!-- 회원가입 모달 전환 버튼 -->
+              <div class="gh-portal-signup-message">
+                <div>Don't have an account?</div>
+                <button class="gh-portal-btn gh-portal-btn-link color-[var(--brand-color)]" type="button" style="color: var(--brand-color);" data-test-button="signup-switch" data-action="click->authorization#switchToSignup">
+                  <span>Sign up</span>
+                </button>
+              </div>
+            </footer>
+          </section>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
