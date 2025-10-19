@@ -4,6 +4,10 @@ class AuthoritiesController < ApplicationController
   def show
     @author_slug = params[:name].downcase
     @posts = Post.published.by_author_slug(@author_slug).recent
+    @author_avatar = @posts.first&.author_avatar
+    @author_url = @posts.first&.author_url
+    @author_bio = @posts.first&.author_bio
+    @author_social_url = @posts.first&.author_social_url
 
     # Get full author name from the first post (for display)
     @author_name = @posts.first&.author_name || @author_slug.capitalize

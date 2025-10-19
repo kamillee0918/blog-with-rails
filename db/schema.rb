@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_08_192500) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_16_042627) do
   create_table "posts", force: :cascade do |t|
     t.string "title", null: false
     t.string "slug", null: false
@@ -25,6 +25,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_08_192500) do
     t.string "image_caption"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "author_url"
+    t.text "author_bio"
+    t.string "author_social_url"
     t.index ["category"], name: "index_posts_on_category"
     t.index ["featured"], name: "index_posts_on_featured"
     t.index ["published_at"], name: "index_posts_on_published_at"

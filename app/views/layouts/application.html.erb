@@ -2,19 +2,19 @@
 <html>
   <head>
     <title><%= content_for?(:title) ? yield(:title) : "Kamil Lee의 개발 일기" %></title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    
+
     <!-- Turbo 캐싱 최적화 -->
     <meta name="turbo-cache-control" content="max-age=300">
-    <%# <meta name="turbo-cache-control" content="no-preview">
-    <meta name="turbo-prefetch" content="false"> %>
+    <meta name="turbo-cache-control" content="no-preview">
+    <meta name="turbo-prefetch" content="false">
 
     <%= yield :head %>
-    
+
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
     <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
@@ -37,18 +37,20 @@
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
-    
+
     <!-- External CSS (loaded after app CSS to ensure proper override) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/themes/prism-tomorrow.min.css" crossorigin="anonymous">
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="<%= 
+  <body class="<%=
     if request.path == '/posts'
       'paged'
     elsif request.path.start_with?('/category/')
       tag_class = "tag-#{params[:name].gsub(' ', '-')}"
       "tag-template #{tag_class}".strip
+    elsif request.path.start_with?('/author/')
+      "author-template"
     elsif @post.present? && params[:action] == 'show'
       category_class = @post.category.present? ? "tag-#{@post.category.downcase.gsub(' ', '-')}" : ''
       "post-template #{category_class}".strip
@@ -60,9 +62,18 @@
       <%= render "shared/header" %>
 
       <%= yield %>
-      
+
       <%= render "shared/footer" %>
     </div>
+
+    <!-- Search Modal (Phase 3) -->
+    <%= render "shared/search_modal" %>
+
+    <!-- Authorization Modal (Phase 3) -->
+    <%= render "shared/authorization_modal" %>
+
+    <!-- Subscribe Modal (Phase 3) -->
+    <%= render "shared/subscribe_modal" %>
 
     <!-- External JavaScript Libraries (loaded at end of body for performance) -->
     <!-- MathJax v4 Configuration -->
@@ -75,11 +86,11 @@
       };
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
-       
+
     <!-- PrismJS for code syntax highlighting -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js" crossorigin="anonymous"></script>
-    
+
     <!-- PrismJS Turbo 호환성 스크립트 -->
     <script>
       function initializePrism() {
@@ -92,7 +103,7 @@
           console.log('🎨 PrismJS highlighted:', document.querySelectorAll('pre code').length, 'code blocks');
         }
       }
-      
+
       function initializeMathJax() {
         if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
           MathJax.typesetPromise().then(() => {
@@ -100,7 +111,7 @@
           }).catch(err => console.error('MathJax error:', err));
         }
       }
-      
+
       // Turbo 이벤트 리스너
       document.addEventListener('turbo:load', function() {
         setTimeout(() => {
@@ -108,14 +119,14 @@
           initializeMathJax();
         }, 50); // 짧은 지연으로 DOM 안정화 대기
       });
-      
+
       document.addEventListener('turbo:render', function() {
         setTimeout(() => {
           initializePrism();
           initializeMathJax();
         }, 50);
       });
-      
+
       // 초기 로드에서도 실행
       document.addEventListener('DOMContentLoaded', function() {
         initializePrism();

@@ -33,7 +33,7 @@
 }
 
 .kg-audio-thumbnail.placeholder {
-  background: var(--ghost-accent-color)
+  background: var(--brand-color)
 }
 
 .kg-audio-thumbnail.placeholder svg {
@@ -486,7 +486,7 @@
 }
 
 .kg-button-card a.kg-btn-accent {
-  background-color: var(--ghost-accent-color);
+  background-color: var(--brand-color);
   color: #fff
 }
 
@@ -535,7 +535,7 @@
 }
 
 .kg-callout-card-accent {
-  background: var(--ghost-accent-color);
+  background: var(--brand-color);
   color: #fff
 }
 
@@ -860,7 +860,7 @@ p.kg-collection-card-post-excerpt {
 }
 
 .kg-cta-link-accent .kg-cta-sponsor-label a {
-  color: var(--ghost-accent-color)
+  color: var(--brand-color)
 }
 
 .kg-cta-content {
@@ -983,7 +983,7 @@ a.kg-cta-button {
 .kg-file-card-icon svg,
 .kg-header-card h2.kg-header-card-header a,
 .kg-header-card h3.kg-header-card-subheader a {
-  color: var(--ghost-accent-color)
+  color: var(--brand-color)
 }
 
 a.kg-cta-button {
@@ -1007,7 +1007,7 @@ a.kg-cta-button:hover {
 }
 
 a.kg-cta-button.kg-style-accent {
-  background-color: var(--ghost-accent-color)
+  background-color: var(--brand-color)
 }
 
 .kg-cta-immersive.kg-cta-has-img a.kg-cta-button {
@@ -1248,7 +1248,7 @@ a.kg-cta-button.kg-style-accent {
 
 .kg-header-card.kg-style-accent,
 .kg-header-card.kg-style-accent.kg-v2 {
-  background-color: var(--ghost-accent-color)
+  background-color: var(--brand-color)
 }
 
 .kg-header-card.kg-style-image {
@@ -1398,7 +1398,7 @@ a.kg-cta-button.kg-style-accent {
 }
 
 .kg-header-card.kg-style-light a.kg-header-card-button {
-  background: var(--ghost-accent-color);
+  background: var(--brand-color);
   color: #fff
 }
 
@@ -1610,7 +1610,7 @@ a.kg-cta-button.kg-style-accent {
 }
 
 .kg-header-card.kg-v2 .kg-header-card-button.kg-style-accent {
-  background-color: var(--ghost-accent-color)
+  background-color: var(--brand-color)
 }
 
 .kg-header-card.kg-v2 h2+.kg-header-card-button,
@@ -1902,7 +1902,7 @@ a.kg-cta-button.kg-style-accent {
 }
 
 .kg-product-card a.kg-product-card-btn-accent {
-  background-color: var(--ghost-accent-color);
+  background-color: var(--brand-color);
   color: #fff
 }
 
@@ -1916,7 +1916,7 @@ a.kg-cta-button.kg-style-accent {
 }
 
 .kg-signup-card.kg-style-accent {
-  background-color: var(--ghost-accent-color)
+  background-color: var(--brand-color)
 }
 
 .kg-layout-split .kg-signup-card-content {
@@ -2112,7 +2112,7 @@ a.kg-cta-button.kg-style-accent {
 }
 
 .kg-signup-card-button.kg-style-accent {
-  background-color: var(--ghost-accent-color)
+  background-color: var(--brand-color)
 }
 
 .kg-signup-card h2+.kg-signup-card-button,

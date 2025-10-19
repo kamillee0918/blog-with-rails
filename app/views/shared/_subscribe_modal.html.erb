@@ -1,0 +1,17 @@
+<div id="subscribe-root" style="z-index: 3999998; position: fixed; bottom: 0px; right: 0px; height: 98px; transition: opacity 0.3s; overflow: hidden; cursor: pointer;" onclick="window.dispatchEvent(new CustomEvent('authorization:open', { detail: { portal: 'signup' }, bubbles: true }))" data-portal="signup">
+  <%= content_tag :div, class: "gh-portal-triggerbtn-wrapper" do %>
+    <%= content_tag :div, class: "gh-portal-triggerbtn-container with-label" do %>
+      <svg id="Regular" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width: 26px; height: 26px; color: rgb(255, 255, 255);">
+        <defs>
+          <style>
+            .cls-1{fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.8px;}
+          </style>
+        </defs>
+        <circle class="cls-1" cx="12" cy="9.75" r="5.25"></circle>
+        <path class="cls-1" d="M18.913,20.876a9.746,9.746,0,0,0-13.826,0"></path>
+        <circle class="cls-1" cx="12" cy="12" r="11.25"></circle>
+      </svg>
+      <%= content_tag :span, "Subscribe", class: "gh-portal-triggerbtn-label" %>
+    <% end %>
+  <% end %>
+</div>
