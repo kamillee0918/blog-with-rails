@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   # get "assets/images/size/:size/format/:format/*path", to: "images#show", as: "responsive_image"
 
   # Phase 3 routes
+  get "search", to: "search#index", as: "search"
   get "authorization", to: "authorization#index", as: "authorization"
 
   # Future routes (Phase 4)

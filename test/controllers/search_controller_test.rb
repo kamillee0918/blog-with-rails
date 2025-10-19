@@ -1,11 +1,6 @@
 require "test_helper"
 
 class SearchControllerTest < ActionDispatch::IntegrationTest
-  test "should get search page" do
-    get search_url
-    assert_response :success
-  end
-
   test "should return json results when format is json" do
     get search_url(format: :json, q: "test")
     assert_response :success

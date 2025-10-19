@@ -7,7 +7,7 @@ class AuthoritiesController < ApplicationController
     @author_avatar = @posts.first&.author_avatar
     @author_url = @posts.first&.author_url
     @author_bio = @posts.first&.author_bio
-    @author_social_url = @posts.first&.author_social_url
+    @author_social_url = safe_url(@posts.first&.author_social_url)
 
     # Get full author name from the first post (for display)
     @author_name = @posts.first&.author_name || @author_slug.capitalize
@@ -21,5 +21,12 @@ class AuthoritiesController < ApplicationController
 
   def set_categories
     @categories = Post.published.distinct.pluck(:category).compact.sort
+  end
+
+  def safe_url(url)
+    return nil if url.blank?
+    return url if url.start_with?("http://", "https://")
+
+    nil
   end
 end
