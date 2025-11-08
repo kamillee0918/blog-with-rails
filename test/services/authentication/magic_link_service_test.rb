@@ -37,7 +37,7 @@ module Authentication
       assert MagicLinkService.valid?(@user)
     end
 
-    test "valid? returns false for expired magic link in development" do
+    test "valid? returns false for expired magic link in test" do
       @user.update!(magic_link_sent_at: 2.minutes.ago)
 
       assert_not MagicLinkService.valid?(@user)

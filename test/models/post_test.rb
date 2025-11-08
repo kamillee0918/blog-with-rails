@@ -104,4 +104,98 @@ class PostTest < ActiveSupport::TestCase
 
     assert_equal results_lower.pluck(:id).sort, results_upper.pluck(:id).sort
   end
+
+  # Newsletter Notification Tests
+  test "should send newsletter notification to subscribers when Kamil Lee publishes a post" do
+    # Clear any existing jobs
+    clear_enqueued_jobs
+
+    # Create a verified subscriber
+    subscriber = User.create!(
+      email: "subscriber-#{Time.current.to_i}@example.com",
+      nickname: "Subscriber",
+      verified: true,
+      enable_newsletter_notifications: true
+    )
+
+    # Count subscribers to verify
+    subscriber_count = User.newsletter_subscribers.count
+
+    assert_enqueued_jobs subscriber_count, only: ActionMailer::MailDeliveryJob do
+      Post.create!(
+        title: "New Post",
+        slug: "new-post-#{Time.current.to_i}",
+        content: "Content",
+        category: "AI",
+        author_name: "Kamil Lee",
+        published_at: Time.current
+      )
+    end
+  end
+
+  test "should not send newsletter notification for draft posts" do
+    clear_enqueued_jobs
+
+    subscriber = User.create!(
+      email: "subscriber-draft-#{Time.current.to_i}@example.com",
+      nickname: "Subscriber Draft",
+      verified: true,
+      enable_newsletter_notifications: true
+    )
+
+    assert_no_enqueued_jobs(only: ActionMailer::MailDeliveryJob) do
+      Post.create!(
+        title: "Draft Post",
+        slug: "draft-post-#{Time.current.to_i}",
+        content: "Content",
+        category: "AI",
+        author_name: "Kamil Lee",
+        published_at: nil
+      )
+    end
+  end
+
+  test "should not send newsletter notification for posts by other authors" do
+    clear_enqueued_jobs
+
+    subscriber = User.create!(
+      email: "subscriber-other-#{Time.current.to_i}@example.com",
+      nickname: "Subscriber Other",
+      verified: true,
+      enable_newsletter_notifications: true
+    )
+
+    assert_no_enqueued_jobs(only: ActionMailer::MailDeliveryJob) do
+      Post.create!(
+        title: "Other Author Post",
+        slug: "other-author-post-#{Time.current.to_i}",
+        content: "Content",
+        category: "AI",
+        author_name: "Other Author",
+        published_at: Time.current
+      )
+    end
+  end
+
+  test "should not send newsletter notification to unverified subscribers" do
+    clear_enqueued_jobs
+
+    unverified = User.create!(
+      email: "unverified-#{Time.current.to_i}@example.com",
+      nickname: "Unverified",
+      verified: false,
+      enable_newsletter_notifications: true
+    )
+
+    assert_no_enqueued_jobs(only: ActionMailer::MailDeliveryJob) do
+      Post.create!(
+        title: "New Post",
+        slug: "new-post-unverified-#{Time.current.to_i}",
+        content: "Content",
+        category: "AI",
+        author_name: "Kamil Lee",
+        published_at: Time.current
+      )
+    end
+  end
 end

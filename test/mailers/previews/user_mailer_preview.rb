@@ -34,7 +34,7 @@ class UserMailerPreview < ActionMailer::Preview
       nickname: "Test User",
       magic_link_token: "sample_magic_link_token_123456"
     )
-    
+
     UserMailer.magic_link_with_otp(user, "123456")
   end
 end

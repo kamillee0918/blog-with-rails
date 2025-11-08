@@ -148,4 +148,77 @@ class UserTest < ActiveSupport::TestCase
       @user.destroy
     end
   end
+
+  # Newsletter Tests
+  test "enable_newsletter_notifications should default to false" do
+    assert_equal false, @user.enable_newsletter_notifications
+  end
+
+  test "newsletter_subscribers scope should return only users with notifications enabled" do
+    @user.save!
+    @user.update!(enable_newsletter_notifications: true, verified: true)
+
+    other_user = User.create!(
+      email: "other@example.com",
+      nickname: "Other User",
+      enable_newsletter_notifications: false,
+      verified: true
+    )
+
+    subscribers = User.newsletter_subscribers
+    assert_includes subscribers, @user
+    assert_not_includes subscribers, other_user
+  end
+
+  test "newsletter_subscribers scope should exclude unverified users" do
+    @user.save!
+    @user.update!(enable_newsletter_notifications: true, verified: false)
+
+    subscribers = User.newsletter_subscribers
+    assert_not_includes subscribers, @user
+  end
+
+  test "newsletter_subscribers scope should exclude soft-deleted users" do
+    @user.save!
+    @user.update!(
+      enable_newsletter_notifications: true,
+      verified: true,
+      deleted_at: Time.current
+    )
+
+    subscribers = User.newsletter_subscribers
+    assert_not_includes subscribers, @user
+  end
+
+  # Soft Delete Tests
+  test "deleted_at should be nil by default" do
+    assert_nil @user.deleted_at
+  end
+
+  test "soft_delete should set deleted_at timestamp" do
+    @user.save!
+    @user.soft_delete
+
+    @user.reload
+    assert_not_nil @user.deleted_at
+  end
+
+  test "restore should clear deleted_at timestamp" do
+    @user.save!
+    @user.update!(deleted_at: Time.current)
+
+    @user.restore
+    @user.reload
+    assert_nil @user.deleted_at
+  end
+
+  test "deleted? should return true when deleted_at is set" do
+    @user.deleted_at = Time.current
+    assert @user.deleted?
+  end
+
+  test "deleted? should return false when deleted_at is nil" do
+    @user.deleted_at = nil
+    assert_not @user.deleted?
+  end
 end

@@ -6,12 +6,11 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index" do
-    # Magic Link 인증 방식에서는 통합 테스트로 세션 인증 테스트가 어려움
-    skip "Integration test with Magic Link authentication requires different approach"
+    # Magic Link 인증으로 로그인
+    sign_in_as @user
 
-    # sign_in_as @user
-    # get sessions_url
-    # assert_response :success
+    get sessions_url
+    assert_response :success
   end
 
   test "should get new" do
@@ -39,25 +38,34 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should verify OTP and create session" do
-    # OTP 설정
-    @user.update!(
-      email_otp_code: "123456",
-      email_otp_expires_at: 5.minutes.from_now
-    )
+    # 1. Magic link 요청 (OTP 포함)
+    post signin_url, params: { email: @user.email }, as: :json
+    assert_response :ok
 
-    # 세션에 pending_user_id 설정 (통합 테스트에서는 직접 설정 불가하므로 스킵)
-    skip "Session-based OTP verification requires request-level session manipulation"
+    # 2. OTP가 생성되었는지 확인
+    @user.reload
+    assert_not_nil @user.email_otp_code
+    assert_not_nil @user.email_otp_expires_at
 
-    # post members_api_verify_otp_url, params: { otp_code: "123456" }, as: :json
-    # assert_response :ok
+    # 3. OTP로 로그인
+    post members_api_verify_otp_url, params: { otp_code: @user.email_otp_code }, as: :json
+    assert_response :ok
+
+    # 4. 세션이 생성되었는지 확인
+    json_response = JSON.parse(response.body)
+    assert json_response["success"]
   end
 
   test "should sign out with JSON" do
-    # Magic Link 인증 방식에서는 통합 테스트로 세션 삭제 테스트가 어려움
-    skip "Integration test with Magic Link authentication requires different approach"
+    # Magic Link 인증으로 로그인
+    sign_in_as @user
 
-    # sign_in_as @user
-    # delete signin_url, as: :json
-    # assert_response :ok
+    # 로그아웃
+    delete signin_url, as: :json
+    assert_response :ok
+
+    # 로그아웃 후 인증 확인
+    json_response = JSON.parse(response.body)
+    assert json_response["success"]
   end
 end
