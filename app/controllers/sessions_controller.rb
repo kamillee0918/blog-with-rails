@@ -1,4 +1,3 @@
-# 로그인 관련 컨트롤러
 class SessionsController < ApplicationController
   before_action :authenticate, only: %i[ index ]
   before_action :set_session, only: :destroy, if: -> { params[:id].present? }

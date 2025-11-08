@@ -19,38 +19,38 @@ module Members
       end
 
       # PUT /members/api/member
-      # 사용자 정보 업데이트 (닉네임 또는 뉴스레터 구독 설정)
+      # 사용자 정보 업데이트 (닉네임, 이메일, 뉴스레터 구독 설정)
       def update
         user = Current.user
+        user_params = params[:user] || {}
 
-        # Newsletter 구독 설정 변경
-        if params.key?(:enable_newsletter_notifications)
-          if user.update(enable_newsletter_notifications: params[:enable_newsletter_notifications])
-            render json: {
-              enable_newsletter_notifications: user.enable_newsletter_notifications
-            }
-          else
-            render json: {
-              errors: user.errors.full_messages
-            }, status: :unprocessable_entity
-          end
-        # 닉네임 업데이트
-        elsif params.key?(:name)
-          if user.update(nickname: params[:name])
-            render json: {
-              id: user.id,
-              email: user.email,
-              name: user.nickname,
-              verified: user.verified
-            }
-          else
-            render json: {
-              errors: user.errors.full_messages
-            }, status: :unprocessable_entity
-          end
-        else
+        # 업데이트할 속성 추출
+        update_attrs = {}
+        update_attrs[:enable_newsletter_notifications] = user_params[:enable_newsletter_notifications] if user_params.key?(:enable_newsletter_notifications)
+        update_attrs[:nickname] = user_params[:nickname] if user_params[:nickname].present?
+        update_attrs[:email] = user_params[:email] if user_params[:email].present?
+
+        if update_attrs.empty?
           render json: {
             errors: [ "No valid parameters provided" ]
+          }, status: :unprocessable_entity
+          return
+        end
+
+        # 이메일 변경 시 verified를 false로 설정
+        update_attrs[:verified] = false if update_attrs[:email].present?
+
+        if user.update(update_attrs)
+          render json: {
+            id: user.id,
+            email: user.email,
+            name: user.nickname,
+            verified: user.verified,
+            enable_newsletter_notifications: user.enable_newsletter_notifications
+          }
+        else
+          render json: {
+            errors: user.errors.full_messages
           }, status: :unprocessable_entity
         end
       end
@@ -131,7 +131,9 @@ module Members
 
       def authenticate_user!
         unless Current.user
-          head :no_content
+          render json: {
+            errors: [ "Authentication required" ]
+          }, status: :unauthorized
         end
       end
 
@@ -142,10 +144,10 @@ module Members
           token = generate_verification_token(user)
           verification_url = identity_email_verification_url(sid: token, host: request.host_with_port)
 
-          Rails.logger.info "=" * 80
+          Rails.logger.info "=" * 81
           Rails.logger.info "Email Verification Link:"
           Rails.logger.info verification_url
-          Rails.logger.info "=" * 80
+          Rails.logger.info "=" * 81
         end
       end
 

@@ -47,9 +47,17 @@ module Authentication
       return false if user.nil?
       return false if user.magic_link_sent_at.nil?
 
-      # Magic Link는 15분간 유효 (프로덕션)
-      # 개발 환경: 10초 (테스트용)
-      expiry_time = Rails.env.production? ? 15.minutes.ago : 10.seconds.ago
+      # Magic Link 유효 기간:
+      # - Production: 15분
+      # - Test: 1분 (테스트 안정성)
+      # - Development: 30초 (빠른 테스트용)
+      expiry_time = if Rails.env.production?
+                      15.minutes.ago
+      elsif Rails.env.test?
+                      1.minutes.ago
+      else
+                      30.seconds.ago
+      end
       user.magic_link_sent_at > expiry_time
     end
 

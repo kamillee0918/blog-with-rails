@@ -1,5 +1,3 @@
-# 회원가입 관련 컨트롤러
-# Magic Link 인증 후에만 회원가입 완료
 class RegistrationsController < ApplicationController
   def new
     @user = User.new
