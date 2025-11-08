@@ -19,6 +19,12 @@ module Blog
     # Enable compression for better performance
     config.middleware.use Rack::Deflater
 
+    # Enable rate limiting
+    config.middleware.use Rack::Attack
+
+    # Use SQL format for schema dump (required for SQLite FTS5 virtual tables)
+    config.active_record.schema_format = :sql
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
