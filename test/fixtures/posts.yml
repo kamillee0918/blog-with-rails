@@ -12,6 +12,7 @@ published_post:
   featured: true
   featured_image: "test_image.png"
   image_caption: "Test Image Caption"
+  user: john_doe
 
 draft_post:
   title: "Test Draft Post"
@@ -25,6 +26,7 @@ draft_post:
   featured: false
   featured_image: "test_image_2.png"
   image_caption: "Test Image Caption 2"
+  user: john_doe
 
 unpublished_post:
   title: "Test Unpublished Post"
@@ -38,3 +40,4 @@ unpublished_post:
   featured: false
   featured_image: nil
   image_caption: nil
+  user: john_doe
