@@ -65,7 +65,6 @@ export default class extends Controller {
     this.formTarget.classList.toggle("success")
   }
 
-  // TODO: 이메일 양식(정규식 등) 체크 및 form 태그에 error 토글
   showError() {
     this.formTarget.classList.remove("loading")
     this.formTarget.classList.toggle("error")

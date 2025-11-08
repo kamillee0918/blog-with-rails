@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+verified_user_session:
+  user: verified_user
+  user_agent: "Test Browser"
+  ip_address: "127.0.0.1"
+
+lazaro_nixon_session:
+  user: lazaro_nixon
+  user_agent: "Test Browser"
+  ip_address: "127.0.0.1"
