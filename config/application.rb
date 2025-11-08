@@ -22,8 +22,8 @@ module Blog
     # Enable rate limiting
     config.middleware.use Rack::Attack
 
-    # Use SQL format for schema dump (required for SQLite FTS5 virtual tables)
-    config.active_record.schema_format = :sql
+    # Use Ruby format for schema dump (default, PostgreSQL-ready)
+    config.active_record.schema_format = :ruby
 
     # Configuration for the application, engines, and railties goes here.
     #

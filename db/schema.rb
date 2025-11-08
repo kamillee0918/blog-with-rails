@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_01_152500) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_08_050716) do
   create_table "posts", force: :cascade do |t|
     t.string "title", null: false
     t.string "slug", null: false
@@ -56,12 +56,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_01_152500) do
     t.datetime "magic_link_sent_at"
     t.string "email_otp_code"
     t.datetime "email_otp_expires_at"
+    t.boolean "enable_newsletter_notifications", default: false, null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["magic_link_token"], name: "index_users_on_magic_link_token", unique: true
   end
 
   add_foreign_key "posts", "users"
   add_foreign_key "sessions", "users"
-
-  # Virtual tables defined in this database.
-  # Note that virtual tables may not work with other database engines. Be careful if changing database.
+end
