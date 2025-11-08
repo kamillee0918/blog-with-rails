@@ -5,7 +5,7 @@
     <% if @center_post %>
       <%= render "shared/post_card", post: @center_post, position: 'center' %>
     <% end %>
-    
+
     <!-- Left side posts (2~4번째 포스트) -->
     <% if @left_posts.present? %>
       <div class="gh-header-left">
@@ -14,7 +14,7 @@
         <% end %>
       </div>
     <% end %>
-    
+
     <!-- Right side posts (5~7번째 포스트) -->
     <% if @right_posts.present? %>
       <div class="gh-header-right">

@@ -1,0 +1,9 @@
+<div id="account-root" style="display: none; z-index: 3999999; position: fixed; left: 0; top: 0; width: 100%; height: 100%; overflow: hidden;" data-controller="account" data-action="account:open@window->account#open keydown@window->account#handleGlobalKeyboard">
+  <!-- 모달 오버레이 -->
+  <div class="gh-portal-popup-background" data-account-target="overlay" data-action="click->account#close"></div>
+  <!-- 모달 컨텐츠 -->
+  <div class="gh-portal-popup-wrapper" data-account-target="wrapper" data-action="click->account#close">
+    <div class="gh-portal-popup-container" tabindex="-1" data-account-target="container" data-action="click->account#stopPropagation">
+      <!-- 이 자리에 모든 모달(회원정보 홈 / 회원정보 수정 / 회원구독 설정) 동적으로 표시 -->
+    </div>
+  </div>
