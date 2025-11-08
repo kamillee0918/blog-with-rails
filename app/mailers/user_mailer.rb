@@ -23,7 +23,7 @@ class UserMailer < ApplicationMailer
     # 배포 환경에서는 실제 이메일 발송
     mail(
       to: user.email,
-      subject: "새로운 포스트: #{post.title}"
+      subject: "📮 새 포스트 알림: #{post.title}"
     )
   end
 

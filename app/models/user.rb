@@ -27,12 +27,20 @@ class User < ApplicationRecord
     update!(deleted_at: Time.current)
   end
 
+  def soft_delete
+    update(deleted_at: Time.current)
+  end
+
   def deleted?
     deleted_at.present?
   end
 
   def restore!
     update!(deleted_at: nil)
+  end
+
+  def restore
+    update(deleted_at: nil)
   end
 
   # 6자리 OTP 생성
