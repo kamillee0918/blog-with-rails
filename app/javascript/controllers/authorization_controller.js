@@ -1,4 +1,4 @@
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from "@hotwired/stimulus";
 
 // Connects to data-controller="authorization"
 export default class extends Controller {
@@ -6,51 +6,91 @@ export default class extends Controller {
     "wrapper",
     "container",
     "overlay",
-    "signupForm",
-    "signinForm",
+    "input",
+    "form",
+    "formContainer",
+    "header",
+    "signinEmail",
+    "signinEmailLabel",
+    "signinButton",
     "signupNickname",
     "signupEmail",
-    "signinEmail",
+    "signupNicknameLabel",
+    "signupEmailLabel",
     "signupButton",
-    "signinButton"
-  ]
+    "submitButton",
+    "otpInput",
+    "nicknameError",
+    "signinEmailError",
+    "signupEmailError",
+    "submitResult",
+    "submitResultText",
+    "isSignup",
+    "otp",
+    "otpContainer",
+    "otpError",
+    "closeIcon",
+    "brandLogo",
+  ];
 
   connect() {
-    console.log("🔐 Authorization controller connected")
+    console.log("🔐 Authorization controller connected");
     console.log("📍 Targets:", {
       wrapper: this.hasWrapperTarget,
       container: this.hasContainerTarget,
       overlay: this.hasOverlayTarget,
-      signupForm: this.hasSignupFormTarget,
-      signinForm: this.hasSigninFormTarget,
-    })
+      input: this.hasInputTarget,
+      form: this.hasFormTarget,
+      header: this.hasHeaderTarget,
+      signupButton: this.hasSignupButtonTarget,
+      signinButton: this.hasSigninButtonTarget,
+      signinEmailLabel: this.hasSigninEmailLabelTarget,
+      submitButton: this.hasSubmitButtonTarget,
+      otpInput: this.hasOtpInputTarget,
+      submitResult: this.hasSubmitResultTarget,
+      submitResultText: this.hasSubmitResultTextTarget,
+      isSignup: this.hasIsSignupTarget,
+      otp: this.hasOtpTarget,
+      otpContainer: this.hasOtpContainerTarget,
+      otpError: this.hasOtpErrorTarget,
+      brandLogo: this.hasBrandLogoTarget,
+    });
 
     // #authorization-root 요소 참조 저장
-    this.rootElement = document.getElementById("authorization-root")
+    this.rootElement = document.getElementById("authorization-root");
 
     // 초기 상태: 로그인 폼 표시
-    this.currentMode = "signin"
+    this.currentMode = "signin";
+
+    // Submit 진행 중 플래그 (요청 중에는 모달이 닫히지 않도록)
+    this.isSubmitting = false;
+
+    // OTP 에러 상태 플래그
+    this.hasOtpError = false;
+
+    // 쿠키 활성화 상태 체크
+    this.checkCookiesEnabled();
   }
 
   disconnect() {
-    console.log("🔓 Authorization controller disconnected")
+    console.log("🔓 Authorization controller disconnected");
 
     // 모달 CSS 제거
-    this.unloadModalCSS()
+    this.unloadModalCSS();
   }
 
   // 모달 전용 CSS 로드
   loadModalCSS() {
     // 이미 로드되어 있는지 확인
     if (document.getElementById("authorization-modal-css")) {
-      console.log("✅ Authorization Modal CSS already loaded")
-      return
+      console.log("✅ Authorization Modal CSS already loaded");
+      return;
     }
 
-    console.log("📦 Loading authorization modal CSS...")
+    console.log("📦 Loading authorization modal CSS...");
 
-    const style = document.createElement("style")
-    style.id = "authorization-modal-css"
+    const style = document.createElement("style");
+    style.id = "authorization-modal-css";
     style.textContent = `
       /* Globals
       /* ----------------------------------------------------- */
@@ -996,7 +1036,7 @@ export default class extends Controller {
         font-size: 1.4rem;
         letter-spacing: 0.2px;
         line-height: 1.4em;
-        padding: 8px;
+        padding: 5px;
       }
 
       .gh-portal-publication-title {
@@ -1539,7 +1579,7 @@ export default class extends Controller {
       }
 
       .gh-portal-input-labelcontainer p {
-        color: var(--yellow);
+        color: var(--red);
         font-size: 1.3rem;
         letter-spacing: 0.35px;
         line-height: 1.6em;
@@ -3810,6 +3850,52 @@ export default class extends Controller {
         font-weight: 400;
       }
 
+      /* OTP */
+      .gh-portal-otp {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+
+      .gh-portal-otp-container {
+        border: 1px solid var(--grey12);
+        border-radius: 8px;
+        width: 100%;
+        transition: border-color 0.25s ease;
+      }
+
+      .gh-portal-otp-container.focused {
+        border-color: var(--grey8);
+      }
+
+      .gh-portal-otp-container.error {
+        border-color: var(--red);
+        box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.1);
+      }
+
+      .gh-portal-otp .gh-portal-input {
+        margin: 0 auto;
+        font-size: 2rem !important;
+        font-weight: 300;
+        border: none;
+        /*text-align: center;*/
+        padding-left: 2ch;
+        padding-right: 1ch;
+        letter-spacing: 1ch;
+        font-family: Consolas, Liberation Mono, Menlo, Courier, monospace;
+        width: 15ch;
+      }
+
+      .gh-portal-otp-error {
+        margin-top: 8px;
+        color: var(--red);
+        font-size: 1.3rem;
+        letter-spacing: 0.35px;
+        line-height: 1.6em;
+        margin-bottom: 0;
+      }
+
       /* index.min */
       .ld-ext-right,
       .ld-ext-left,
@@ -4025,238 +4111,1418 @@ export default class extends Controller {
       .ld-over-inverse {
         isolation: isolate
       }
-    `
+    `;
 
     // CSS 로드 완료 이벤트
     style.onload = () => {
-      console.log("✅ Authorization Modal CSS loaded successfully")
-    }
+      console.log("✅ Authorization Modal CSS loaded successfully");
+    };
 
     style.onerror = () => {
-      console.error("❌ Failed to load authorization modal CSS")
-    }
+      console.error("❌ Failed to load authorization modal CSS");
+    };
 
-    document.head.appendChild(style)
+    document.head.appendChild(style);
   }
 
   // 모달 CSS 제거
   unloadModalCSS() {
-    const link = document.getElementById("authorization-modal-css")
+    const link = document.getElementById("authorization-modal-css");
     if (link) {
-      console.log("🗑️ Unloading Authorization modal CSS...")
-      link.remove()
-      console.log("✅ Authorization Modal CSS unloaded")
-    }
-  }
-
-  // 키보드 단축키 처리 (Escape)
-  handleKeyboard(event) {
-    // 모달이 열려있지 않으면 무시
-    if (!this.isOpen()) return
-
-    // Escape: 모달 닫기
-    if (event.key === "Escape") {
-      event.preventDefault()
-      this.close()
+      console.log("🗑️ Unloading Authorization modal CSS...");
+      link.remove();
+      console.log("✅ Authorization Modal CSS unloaded");
     }
   }
 
   // 인증 모달 열기 (이벤트에서 모드 결정)
   open(event) {
-    event.preventDefault()
+    event.preventDefault();
 
-    console.log("🚀 Opening authorization modal")
+    console.log("🚀 Opening authorization modal");
 
     // 모달 CSS 로드 (열 때마다)
-    this.loadModalCSS()
+    this.loadModalCSS();
 
     // CustomEvent의 detail 또는 data-portal 속성에서 모드 결정
-    const mode = event.detail?.portal || event.currentTarget?.dataset?.portal || "signin" // 기본값: signin
-    console.log("📋 Mode:", mode)
+    // const mode = event.detail?.portal || event.currentTarget?.dataset?.portal || "signin"; // 기본값: signin
+    const mode = event.detail?.mode || event.currentTarget?.dataset?.mode || "signin"; // 기본값: signin
+    console.log("📋 Mode:", mode);
 
     // Body 스크롤 방지
-    document.body.style.overflow = "hidden"
+    document.body.style.overflow = "hidden";
 
     // #authorization-root 표시
     if (this.rootElement) {
-      this.rootElement.style.display = "block"
+      this.rootElement.style.display = "block";
     }
 
     // 짧은 지연 후 폼 전환 (DOM이 렌더링된 후 Target이 초기화될 시간을 줌)
     setTimeout(() => {
       // 요청된 모드로 전환
       if (mode === "signup") {
-        this.switchToSignup()
+        this.switchToSignup();
       } else {
-        this.switchToSignin()
+        this.switchToSignin();
       }
 
       // 입력창 포커스
       setTimeout(() => {
         if (this.currentMode === "signin" && this.hasSigninEmailTarget) {
-          this.signinEmailTarget.focus()
+          this.signinEmailTarget.focus();
         } else if (this.currentMode === "signup" && this.hasSignupNicknameTarget) {
-          this.signupNicknameTarget.focus()
+          this.signupNicknameTarget.focus();
         }
-      }, 50)
+      }, 50);
 
-      console.log("✅ Authorization Modal opened in mode:", mode)
-    }, 50)
+      console.log("✅ Authorization Modal opened in mode:", mode);
+    }, 50);
   }
 
   // 인증 모달 닫기
   close() {
-    console.log("🔒 Closing authorization modal")
+    // Submit 진행 중에는 모달을 닫지 않음
+    if (this.isSubmitting) {
+      console.log("⏸️ Submit in progress, modal cannot be closed");
+      return;
+    }
+
+    console.log("🔒 Closing authorization modal");
 
     // Body 스타일 복원
-    document.body.style.overflow = ""
+    document.body.style.overflow = "";
 
     // #authorization-root 숨김
     if (this.rootElement) {
-      this.rootElement.style.display = "none"
+      this.rootElement.style.display = "none";
     }
 
     // 입력 필드 초기화
-    this.clearFields()
+    this.clearFields();
+
+    // 메시지 초기화
+    this.clearMessages();
+
+    // cookie banner 숨기기
+    this.hideCookieBanner();
 
     // 모드를 기본값(signin)으로 초기화
-    this.currentMode = "signin"
-    console.log("🔄 Mode reset to:", this.currentMode)
+    this.currentMode = "signin";
+    console.log("🔄 Mode reset to:", this.currentMode);
 
     // 모달 CSS 제거 (닫을 때마다)
-    this.unloadModalCSS()
+    this.unloadModalCSS();
   }
 
-  // 이벤트 전파 중단 (흰색 박스 클릭 시)
+  // 강제로 모달 닫기 (인증 진행 중에도 닫기 버튼 클릭 시)
+  // forceClose() {
+  //   console.log("🔓 Force closing authorization modal (user requested)")
+
+  //   // Submit 상태 초기화
+  //   this.isSubmitting = false
+
+  //   // Body 스타일 복원
+  //   document.body.style.overflow = ""
+
+  //   // #authorization-root 숨김
+  //   if (this.rootElement) {
+  //     this.rootElement.style.display = "none"
+  //   }
+
+  //   // 입력 필드 초기화
+  //   this.clearFields()
+
+  //   // 메시지 초기화
+  //   this.clearMessages()
+
+  //   // notification 숨기기
+  //   if (this.hasNotificationTarget) {
+  //     this.notificationTarget.innerHTML = ''
+  //   }
+
+  //   // OTP 에러 메시지 초기화
+  //   if (this.hasOtpErrorTarget) {
+  //     this.otpErrorTarget.innerHTML = ''
+  //   }
+
+  //   // Submit 결과 화면 숨기기
+  //   if (this.hasSubmitResultTarget) {
+  //     this.submitResultTarget.style.display = 'none'
+  //   }
+
+  //   // 로그인/회원가입 폼 다시 표시
+  //   if (this.hasSigninFormTarget) {
+  //     this.signinFormTarget.style.display = 'block'
+  //   }
+
+  //   // wrapper와 container 클래스 초기화
+  //   if (this.hasWrapperTarget) {
+  //     this.wrapperTarget.classList.remove('magiclink')
+  //     this.wrapperTarget.classList.add('signin')
+  //   }
+  //   if (this.hasContainerTarget) {
+  //     this.containerTarget.classList.remove('magiclink')
+  //     this.containerTarget.classList.add('signin')
+  //   }
+
+  //   // 모드를 기본값(signin)으로 초기화
+  //   this.currentMode = "signin"
+  //   console.log("🔄 Mode reset to:", this.currentMode)
+
+  //   // 모달 CSS 제거
+  //   this.unloadModalCSS()
+  // }
+
+  // 이벤트 전파 중단 (모달 컨테이너 내부 클릭 시)
+  // 모달 안쪽을 클릭해도 모달이 닫히지 않도록 함
   stopPropagation(event) {
-    event.stopPropagation()
+    event.stopPropagation();
+  }
+
+  // Submit 시작 (모달 닫기 비활성화)
+  startSubmit() {
+    this.isSubmitting = true;
+    console.log("🔒 Submit started - modal closing disabled");
+  }
+
+  // Submit 종료 (모달 닫기 활성화)
+  endSubmit() {
+    this.isSubmitting = false;
+    console.log("🔓 Submit ended - modal closing enabled");
+  }
+
+  // focus 상태 확인
+  startFocused() {
+    this.isFocused = true;
+    console.log("✅ Focused");
+  }
+
+  // focus 상태 해제
+  endFocused() {
+    this.isFocused = false;
+    console.log("❌ Unfocused");
   }
 
   // 모달 열림 상태 확인
   isOpen() {
     if (this.rootElement) {
-      return this.rootElement.style.display !== "none"
+      return this.rootElement.style.display !== "none";
     }
-    return false
+    return false;
   }
 
   // 회원가입 폼으로 전환
   switchToSignup() {
-    console.log("📝 Switching to signup form")
-    console.log("🔍 Target status:", {
-      hasSignupForm: this.hasSignupFormTarget,
-      hasSigninForm: this.hasSigninFormTarget
-    })
+    console.log("📝 Switching to signup form");
 
-    if (this.hasSignupFormTarget && this.hasSigninFormTarget) {
-      // Form display 변경
-      this.signupFormTarget.style.display = "block"
-      this.signinFormTarget.style.display = "none"
-      this.currentMode = "signup"
+    // 회원가입 폼 동적 생성
+    this.showSignupForm();
 
-      // wrapper와 container, content의 클래스 변경 (signin → signup)
-      if (this.hasWrapperTarget) {
-        this.wrapperTarget.classList.remove("signin")
-        this.wrapperTarget.classList.add("signup")
+    // 모드 설정
+    this.currentMode = "signup";
+
+    // 쿠키 활성화 상태 체크
+    this.checkCookiesEnabled();
+
+    // 포커스 설정
+    setTimeout(() => {
+      if (this.hasSignupNicknameTarget) {
+        this.signupNicknameTarget.focus();
       }
-      if (this.hasContainerTarget) {
-        this.containerTarget.classList.remove("signin")
-        this.containerTarget.classList.add("signup")
-      }
+    }, 100);
 
-      // 포커스 설정
-      setTimeout(() => {
-        if (this.hasSignupNicknameTarget) {
-          this.signupNicknameTarget.focus()
-        }
-      }, 100)
-
-      console.log("✅ Switched to signup mode")
-    } else {
-      console.error("❌ Cannot switch to signup: Targets not found")
-    }
+    console.log("✅ Switched to signup mode");
   }
 
   // 로그인 폼으로 전환
   switchToSignin() {
-    console.log("🔑 Switching to signin form")
-    console.log("🔍 Target status:", {
-      hasSignupForm: this.hasSignupFormTarget,
-      hasSigninForm: this.hasSigninFormTarget
-    })
+    console.log("🔑 Switching to signin form");
 
-    if (this.hasSignupFormTarget && this.hasSigninFormTarget) {
-      // Form display 변경
-      this.signupFormTarget.style.display = "none"
-      this.signinFormTarget.style.display = "block"
-      this.currentMode = "signin"
+    // 로그인 폼 동적 생성
+    this.showSigninForm();
 
-      // wrapper와 container, content의 클래스 변경 (signup → signin)
+    // 모드 설정
+    this.currentMode = "signin";
+
+    // 쿠키 활성화 상태 체크
+    this.checkCookiesEnabled();
+
+    // 포커스 설정
+    setTimeout(() => {
+      if (this.hasSigninEmailTarget) {
+        this.signinEmailTarget.focus();
+      }
+    }, 100);
+
+    console.log("✅ Switched to signin mode");
+  }
+
+  // 로그인 폼 표시
+  showSigninForm() {
+    if (!this.hasFormTarget || !this.hasHeaderTarget) return;
+
+    try {
+      const formElement = this.formTarget;
+
+      // form 클래스 초기화 후 signin 추가
+      formElement.className = "gh-portal-content signin";
+
+      // form의 data-action 속성 설정
+      formElement.setAttribute("data-action", "submit->authorization#handleSignin");
+
+      // wrapper와 container 클래스 변경
       if (this.hasWrapperTarget) {
-        this.wrapperTarget.classList.remove("signup")
-        this.wrapperTarget.classList.add("signin")
+        this.wrapperTarget.className = "gh-portal-popup-wrapper signin";
       }
       if (this.hasContainerTarget) {
-        this.containerTarget.classList.remove("signin")
-        this.containerTarget.classList.add("signin")
+        this.containerTarget.className = "gh-portal-popup-container signin";
       }
 
-      // 포커스 설정
-      setTimeout(() => {
-        if (this.hasSigninEmailTarget) {
-          this.signinEmailTarget.focus()
-        }
-      }, 100)
+      // header 클래스 변경
+      this.headerTarget.className = "gh-portal-signin-header";
 
-      console.log("✅ Switched to signin mode")
-    } else {
-      console.error("❌ Cannot switch to signin: Targets not found")
+      // 기존 h1 제거
+      const existingElement = this.headerTarget.querySelector(".gh-portal-main-title");
+      if (existingElement) {
+        existingElement.remove();
+      }
+
+      // h1 태그 생성
+      const newElement = document.createElement("h1");
+      newElement.className = "gh-portal-main-title";
+      newElement.textContent = "Sign in";
+
+      // header에 h1 태그 추가
+      this.headerTarget.appendChild(newElement);
+
+      // 기존 section 제거 (header 제외)
+      const existingSection = formElement.querySelector("section.gh-portal-signup");
+      if (existingSection) {
+        existingSection.remove();
+      }
+
+      // 새로운 section 태그 생성
+      const sessionElement = document.createElement("section");
+      sessionElement.className = "gh-portal-signup";
+
+      // session 태그에 innerHTML 추가
+      sessionElement.innerHTML = `
+        <div class="gh-portal-section">
+          <!-- 이메일 입력 필드 -->
+          <section class="gh-portal-input-section">
+            <div class="gh-portal-input-labelcontainer">
+              <label class="gh-portal-input-label" data-authorization-target="signinEmailLabel">Email</label>
+            </div>
+            <input id="signin-input-email" class="gh-portal-input" data-authorization-target="input signinEmail" type="text" name="email" placeholder="kamillee0918@example.com" autocomplete="off" autocorrect="off" autocapitalize="none" aria-label="Email">
+          </section>
+        </div>
+        <!-- Submit 버튼 -->
+        <footer class="gh-portal-signin-footer">
+          <button class="gh-portal-btn gh-portal-btn-main gh-portal-btn-primary" data-authorization-target="signinButton" type="submit" style="color: rgb(255, 255, 255); background-color: var(--brand-color); opacity: 1; pointer-events: auto; width: 100%;">Continue</button>
+          <div class="gh-portal-signup-message">
+            <div>Don't have an account?</div>
+            <!-- 회원가입 모달 전환 버튼 -->
+            <button class="gh-portal-btn gh-portal-btn-link color-[var(--brand-color)]" data-action="click->authorization#switchToSignup" type="button" style="color: var(--brand-color);">
+              <span>Sign up</span>
+            </button>
+          </div>
+        </footer>
+      `;
+
+      // header 다음에 session 추가
+      formElement.appendChild(sessionElement);
+
+      console.log("✅ Signin form created");
+    } catch (error) {
+      console.error("❌ Failed to create signin form:", error);
+    }
+  }
+
+  // 회원가입 폼 표시
+  showSignupForm() {
+    if (!this.hasFormTarget || !this.hasHeaderTarget) return;
+
+    try {
+      const formElement = this.formTarget;
+
+      // form 클래스 초기화 후 signup 추가
+      formElement.className = "gh-portal-content signup";
+
+      // form의 data-action 속성 설정
+      formElement.setAttribute("data-action", "submit->authorization#handleSignup");
+
+      // wrapper와 container 클래스 변경
+      if (this.hasWrapperTarget) {
+        this.wrapperTarget.className = "gh-portal-popup-wrapper signup";
+      }
+      if (this.hasContainerTarget) {
+        this.containerTarget.className = "gh-portal-popup-container signup";
+      }
+
+      // header 클래스 변경
+      this.headerTarget.className = "gh-portal-signup-header";
+
+      // 기존 h1 제거
+      const existingElement = this.headerTarget.querySelector(".gh-portal-main-title");
+      if (existingElement) {
+        existingElement.remove();
+      }
+
+      // h1 태그 생성
+      const newElement = document.createElement("h1");
+      newElement.className = "gh-portal-main-title";
+      newElement.textContent = "Kamil Lee의 개발 일기";
+
+      // header에 h1 태그 추가
+      this.headerTarget.appendChild(newElement);
+
+      // 기존 section 제거 (header 제외)
+      const existingSection = formElement.querySelector("section.gh-portal-signup");
+      if (existingSection) {
+        existingSection.remove();
+      }
+
+      // 새로운 section 태그 생성
+      const sessionElement = document.createElement("section");
+      sessionElement.className = "gh-portal-signup";
+
+      // session 태그에 innerHTML 추가
+      sessionElement.innerHTML = `
+        <div class="gh-portal-section">
+          <!-- 닉네임 입력 필드 -->
+          <section class="gh-portal-input-section">
+            <div class="gh-portal-input-labelcontainer">
+              <label class="gh-portal-input-label" data-authorization-target="signupNicknameLabel">Nickname</label>
+            </div>
+            <input id="signup-input-nickname" class="gh-portal-input" type="text" name="nickname" placeholder="Kamil Lee" tabindex="1" autocomplete="off" autocorrect="off" autocapitalize="none" aria-label="Nickname" data-authorization-target="input signupNickname">
+          </section>
+          <!-- 이메일 입력 필드 -->
+          <section class="gh-portal-input-section">
+            <div class="gh-portal-input-labelcontainer">
+              <label class="gh-portal-input-label" data-authorization-target="signupEmailLabel">Email</label>
+            </div>
+            <input id="signup-input-email" class="gh-portal-input" type="text" name="email" placeholder="kamillee0918@example.com" tabindex="2" autocomplete="off" autocorrect="off" autocapitalize="none" aria-label="Email" data-authorization-target="input signupEmail">
+          </section>
+        </div>
+        <footer class="gh-portal-signin-footer">
+          <!-- Submit 버튼 -->
+          <button class="gh-portal-btn gh-portal-btn-main gh-portal-btn-primary" data-authorization-target="signupButton" type="submit" style="color: rgb(255, 255, 255); background-color: var(--brand-color); opacity: 1; pointer-events: auto; width: 100%;">Sign Up</button>
+          <div class="gh-portal-signup-message">
+            <div>Already a member?</div>
+            <!-- 로그인 모달 전환 버튼 -->
+            <button class="gh-portal-btn gh-portal-btn-link color-[var(--brand-color)]" type="button" style="color: var(--brand-color);" data-action="click->authorization#switchToSignin">
+              <span>Sign in</span>
+            </button>
+          </div>
+        </footer>
+      `;
+
+      // header 다음에 session 추가
+      formElement.appendChild(sessionElement);
+
+      console.log("✅ Signup form created");
+    } catch (error) {
+      console.error("❌ Failed to create signup form:", error);
+    }
+  }
+
+  // Magic Link 인증 폼 표시 (type에 따라 로그인/회원가입 구분)
+  // type: 'signin' - OTP 입력 폼 표시 (로그인)
+  // type: 'signup' - 이메일 확인 안내만 표시 (회원가입)
+  showAuthorizationForm(type, email = null) {
+    if (!this.hasContainerTarget) return;
+
+    // wrapper와 container 클래스 변경
+    if (this.hasWrapperTarget) {
+      this.wrapperTarget.className = "gh-portal-popup-wrapper magiclink";
+    }
+    this.containerTarget.className = "gh-portal-popup-container magiclink";
+
+    try {
+      if (type === "signin") {
+        // 로그인 시나리오: OTP 입력 폼 표시
+        const emailMessage = `An email has been sent to ${email}. Click the link inside or enter your code below.`;
+
+        this.containerTarget.innerHTML = `
+          <div class="gh-portal-content">
+            <!-- 닫기 아이콘 -->
+            <div class="gh-portal-closeicon-container" data-action="click->authorization#close">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="gh-portal-closeicon" alt="Close">
+                <defs>
+                  <style>.a{fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.2px!important;}</style>
+                </defs>
+                <path class="a" d="M.75 23.249l22.5-22.5M23.25 23.249L.75.749"></path>
+              </svg>
+            </div>
+            <!-- 이메일 확인 안내 -->
+            <section class="gh-portal-inbox-notification">
+              <header class="gh-portal-header" data-authorization-target="header">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="gh-portal-icon gh-portal-icon-envelope">
+                  <defs>
+                    <style>.a{fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:1px;}</style>
+                  </defs>
+                  <rect class="a" x="0.75" y="4.5" width="22.5" height="15" rx="1.5" ry="1.5"></rect>
+                  <line class="a" x1="15.687" y1="9.975" x2="19.5" y2="13.5"></line>
+                  <line class="a" x1="8.313" y1="9.975" x2="4.5" y2="13.5"></line>
+                  <path class="a" d="M22.88,5.014l-9.513,6.56a2.406,2.406,0,0,1-2.734,0L1.12,5.014"></path>
+                </svg>
+                <h2 class="gh-portal-main-title">Now check your email!</h2>
+              </header>
+              <p class="gh-portal-text-center">${emailMessage}</p>
+            </section>
+            <!-- OTP 입력 폼 -->
+            <form data-action="submit->authorization#handleOtp">
+              <section class="gh-portal-section gh-portal-otp">
+                <div class="gh-portal-otp-container false undefined" data-authorization-target="otpContainer">
+                  <input id="input-otc" class="gh-portal-input undefined" data-authorization-target="input otpInput" data-action="input->authorization#handleOtpInput focus->authorization#handleOtpFocus blur->authorization#handleOtpBlur" placeholder="––––––" name="otc" type="text" inputmode="numeric" maxlength="6" pattern="[0-9]*" autocomplete="one-time-code" autocorrect="off" autocapitalize="none" aria-label="Code">
+                </div>
+                <div data-authorization-target="otpError"></div>
+              </section>
+              <footer class="gh-portal-signin-footer">
+                <button class="gh-portal-btn gh-portal-btn-main gh-portal-btn-primary" data-authorization-target="submitButton" type="submit" style="color: rgb(255, 255, 255); background-color: var(--brand-color); opacity: 1; pointer-events: auto; width: 100%;">Continue</button>
+              </footer>
+            </form>
+          </div>
+        `;
+
+        console.log("✅ Signin authorization form created (with OTP input)");
+      } else if (type === "signup") {
+        // 회원가입 시나리오: 이메일 확인 안내만 표시
+        const message =
+          "To complete signup, click the confirmation link in your inbox. If it doesn't arrive within 3 minutes, check your spam folder!";
+
+        this.containerTarget.innerHTML = `
+          <div class="gh-portal-content">
+            <!-- 닫기 아이콘 -->
+            <div class="gh-portal-closeicon-container" data-action="click->authorization#close">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="gh-portal-closeicon" alt="Close">
+                <defs>
+                  <style>.a{fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.2px!important;}</style>
+                </defs>
+                <path class="a" d="M.75 23.249l22.5-22.5M23.25 23.249L.75.749"></path>
+              </svg>
+            </div>
+            <!-- 이메일 확인 안내 -->
+            <section class="gh-portal-inbox-notification">
+              <header class="gh-portal-header" data-authorization-target="header">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="gh-portal-icon gh-portal-icon-envelope">
+                  <defs>
+                    <style>.a{fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:1px;}</style>
+                  </defs>
+                  <rect class="a" x="0.75" y="4.5" width="22.5" height="15" rx="1.5" ry="1.5"></rect>
+                  <line class="a" x1="15.687" y1="9.975" x2="19.5" y2="13.5"></line>
+                  <line class="a" x1="8.313" y1="9.975" x2="4.5" y2="13.5"></line>
+                  <path class="a" d="M22.88,5.014l-9.513,6.56a2.406,2.406,0,0,1-2.734,0L1.12,5.014"></path>
+                </svg>
+                <h2 class="gh-portal-main-title">Now check your email!</h2>
+              </header>
+              <p class="gh-portal-text-center">${message}</p>
+            </section>
+            <button class="gh-portal-btn gh-portal-btn-main gh-portal-btn-primary" data-action="click->authorization#close" style="color: rgb(255, 255, 255); background-color: var(--brand-color); opacity: 1; pointer-events: auto; width: 100%;">Close</button>
+          </div>
+        `;
+
+        console.log("✅ Signup authorization form created (email confirmation only)");
+      } else {
+        console.error("❌ Invalid type for showAuthorizationForm:", type);
+      }
+    } catch (error) {
+      console.error("❌ Failed to create authorization form:", error);
     }
   }
 
   // 회원가입 폼 제출 처리
-  handleSignup(event) {
-    event.preventDefault()
+  async handleSignup(event) {
+    event.preventDefault();
 
-    const nickname = this.signupNicknameTarget.value.trim()
-    const email = this.signupEmailTarget.value.trim()
+    // 쿠키 활성화 상태 체크
+    const cookiesEnabled = this.checkCookiesEnabled();
+    if (!cookiesEnabled) {
+      console.warn("⚠️ Cannot signup: Cookies are disabled");
+      return;
+    }
 
-    console.log("📝 Signup attempt:", { nickname, email })
+    // 메시지 초기화
+    this.clearMessages();
 
-    // TODO: 실제 회원가입 API 호출 (Phase 4에서 구현)
-    // 현재는 콘솔 로그만 출력
-    alert(`회원가입 요청:\nNickname: ${nickname}\nEmail: ${email}\n\n(실제 구현은 Phase 4에서 진행됩니다)`)
+    const nickname = this.signupNicknameTarget.value.trim();
+    const email = this.signupEmailTarget.value.trim();
 
-    // 성공 시 모달 닫기
-    // this.close()
+    console.log("📧 Email:", email);
+    console.log("👤 Nickname:", nickname);
+
+    // 클라이언트 검증 - 두 필드 모두 비어있는 경우 먼저 체크
+    if (!nickname && !email) {
+      // label 태그의 부모 노드에 에러 메시지용 p 태그 동적 추가
+      this.addTargetElement("signupNicknameLabel", "nicknameError", "p");
+      this.addTargetElement("signupEmailLabel", "signupEmailError", "p");
+      this.showMessage("nicknameError", "Enter your nickname");
+      this.showMessage("signupEmailError", "Enter your email address");
+      return;
+    }
+
+    // 개별 필드 검증
+    if (!nickname) {
+      this.addTargetElement("signupNicknameLabel", "nicknameError", "p");
+      this.showMessage("nicknameError", "Enter your nickname");
+      return;
+    }
+
+    if (!email) {
+      this.addTargetElement("signupEmailLabel", "signupEmailError", "p");
+      this.showMessage("signupEmailError", "Enter your email address");
+      return;
+    }
+
+    console.log("📝 Signup attempt:", { nickname, email });
+
+    // 버튼 비활성화 및 Submit 시작 (모달 닫기 방지)
+    this.setGlobalButtonContent(this.signupButtonTarget, true, false);
+    this.startSubmit();
+
+    try {
+      // Step 1: IntegrityToken 획득
+      console.log("🔐 Step 1: Getting integrity token...");
+      const tokenResponse = await fetch("/members/api/integrity-token", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": this.getGlobalCSRFToken(),
+        },
+      });
+
+      if (!tokenResponse.ok) {
+        throw new Error("Failed to get integrity token");
+      }
+
+      const tokenData = await tokenResponse.json();
+      const integrityToken = tokenData.integrityToken;
+      console.log("✅ Integrity token obtained:", integrityToken);
+
+      // Step 2: Magic Link 요청 (회원가입은 Magic Link만 발송, OTP 없음)
+      console.log("📧 Step 2: Sending magic link for signup...");
+      const response = await fetch("/members/api/send-magic-link", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": this.getGlobalCSRFToken(),
+        },
+        body: JSON.stringify({
+          nickname: nickname,
+          email: email,
+          emailType: "signup",
+          integrityToken: integrityToken,
+          autoRedirect: true,
+        }),
+      });
+
+      const data = await response.json();
+
+      // 회원가입 성공 시
+      if (response.ok || response.status === 201) {
+        console.log("✅ Signup magic link sent successfully:", data);
+
+        // 회원가입 성공 - 이메일 확인 안내 모달 표시
+        this.showAuthorizationForm("signup", email);
+
+        // Submit 종료
+        this.endSubmit();
+
+        // 로그인 실패 시 (유효하지 않은 이메일을 입력한 경우)
+      } else if (response.status === 400) {
+        console.error("❌ Signup failed (400):", data);
+
+        // 에러 notification 표시
+        this.showGlobalNotification(data.errors[0].message, data.errors[0].type, false);
+
+        // 버튼 텍스트 변경 (Continue -> Retry)
+        this.setGlobalButtonContent(this.signupButtonTarget, false, true);
+
+        // Submit 종료 (에러 발생 시 닫기 활성화)
+        this.endSubmit();
+
+        // 다른 오류가 발생한 경우
+      } else {
+        console.error("❌ Signup failed:", data);
+
+        // 에러 notification 표시
+        this.showGlobalNotification("Error occurred while signing up. Please try again.", "error", false);
+
+        // 버튼 텍스트 변경 (Continue -> Retry)
+        this.setGlobalButtonContent(this.signupButtonTarget, false, true);
+
+        // Submit 종료 (에러 발생 시 닫기 활성화)
+        this.endSubmit();
+      }
+    } catch (error) {
+      console.error("❌ Network error:", error);
+      this.showGlobalNotification("네트워크 오류가 발생했습니다. 다시 시도해주세요.", "error", false);
+
+      // Submit 종료 (네트워크 에러 시 닫기 활성화)
+      this.endSubmit();
+    }
   }
+  // async handleSignup(event) {
+  //   event.preventDefault()
+
+  //   // 쿠키 활성화 상태 체크
+  //   const cookiesEnabled = this.checkCookiesEnabled()
+  //   if (!cookiesEnabled) {
+  //     console.warn('⚠️ Cannot signup: Cookies are disabled')
+  //     return
+  //   }
+
+  //   // 메시지 초기화
+  //   this.clearMessages()
+
+  //   const nickname = this.signupNicknameTarget.value.trim()
+  //   const email = this.signupEmailTarget.value.trim()
+
+  //   console.log('📧 Email:', email);
+  //   console.log('👤 Nickname:', nickname);
+
+  //   // 클라이언트 검증 - 두 필드 모두 비어있는 경우 먼저 체크
+  //   if (!nickname && !email) {
+  //     // label 태그의 부모 노드에 에러 메시지용 p 태그 동적 추가
+  //     this.addTargetElement('signupNicknameLabel', 'nicknameError', 'p')
+  //     this.addTargetElement('signupEmailLabel', 'signupEmailError', 'p')
+  //     this.showMessage('nicknameError', 'Enter your nickname')
+  //     this.showMessage('signupEmailError', 'Enter your email address')
+  //     return
+  //   }
+
+  //   // 개별 필드 검증
+  //   if (!nickname) {
+  //     this.addTargetElement('signupNicknameLabel', 'nicknameError', 'p')
+  //     this.showMessage('nicknameError', 'Enter your nickname')
+  //     return
+  //   }
+
+  //   if (!email) {
+  //     this.addTargetElement('signupEmailLabel', 'signupEmailError', 'p')
+  //     this.showMessage('signupEmailError', 'Enter your email address')
+  //     return
+  //   }
+
+  //   // 이메일 검증
+  //   if (!this.isGlobalValidEmail(email)) {
+  //     this.addTargetElement('signupEmailLabel', 'signupEmailError', 'p')
+  //     this.showMessage('signupEmailError', 'Invalid email address')
+  //     return
+  //   }
+
+  //   console.log("📝 Signup attempt:", { nickname, email })
+
+  //   // 버튼 비활성화 및 Submit 시작 (모달 닫기 방지)
+  //   this.setGlobalButtonContent(this.signupButtonTarget, true, false)
+  //   this.startSubmit()
+
+  //   try {
+  //     // 회원가입 API 호출
+  //     const response = await fetch('/signup', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'X-CSRF-Token': this.getGlobalCSRFToken()
+  //       },
+  //       body: JSON.stringify({
+  //         user: {
+  //           nickname: nickname,
+  //           email: email
+  //         }
+  //       })
+  //     })
+
+  //     const data = await response.json()
+
+  //     if (response.ok) {
+  //       console.log("✅ Signup successful:", data)
+
+  //       // 회원가입 성공 시, 인증 모달(showAuthorizationForm) 표시
+  //       this.showAuthorizationForm(email)
+
+  //       // Submit 종료 (인증 모달 표시 시 닫기 활성화)
+  //       // this.endSubmit()
+  //     } else {
+  //       console.error("❌ Signup failed:", data)
+
+  //       // 에러 notification 표시
+  //       this.showGlobalNotification("Failed to sign up, please try again", "BadRequestError", false)
+
+  //       // 서버 에러 메시지 표시
+  //       if (data.errors && data.errors.length > 0) {
+  //         // 각 에러를 필드별로 표시
+  //         data.errors.forEach(error => {
+  //           if (error.toLowerCase().includes('nickname')) {
+  //             this.showMessage('nicknameError', error)
+  //           } else if (error.toLowerCase().includes('email')) {
+  //             this.showMessage('signupEmailError', error)
+  //           }
+  //         })
+  //       }
+
+  //       // Submit 종료 (에러 발생 시 닫기 활성화)
+  //       this.endSubmit()
+  //     }
+  //   } catch (error) {
+  //     console.error("❌ Network error:", error)
+  //     this.showGlobalNotification('네트워크 오류가 발생했습니다. 다시 시도해주세요.', "error", false)
+
+  //     // Submit 종료 (네트워크 에러 시 닫기 활성화)
+  //     this.endSubmit()
+  //   }
+  // }
 
   // 로그인 폼 제출 처리
-  handleSignin(event) {
-    event.preventDefault()
+  async handleSignin(event) {
+    event.preventDefault();
 
-    const email = this.signinEmailTarget.value.trim()
+    // 쿠키 활성화 상태 체크
+    const cookiesEnabled = this.checkCookiesEnabled();
+    if (!cookiesEnabled) {
+      console.warn("⚠️ Cannot signin: Cookies are disabled");
+      return;
+    }
 
-    console.log("🔑 Signin attempt:", { email })
+    // 메시지 초기화
+    this.clearMessages();
 
-    // TODO: 실제 로그인 API 호출 (Phase 4에서 구현)
-    // 현재는 콘솔 로그만 출력
-    alert(`로그인 요청:\nEmail: ${email}\n\n(실제 구현은 Phase 4에서 진행됩니다)`)
+    const email = this.signinEmailTarget.value.trim();
 
-    // 성공 시 모달 닫기
-    // this.close()
+    console.log("📧 Email:", email);
+
+    // 클라이언트 검증 - 필드가 비어있는 경우 체크
+    if (!email) {
+      // label 태그의 부모 노드에 에러 메시지용 p 태그 동적 추가
+      this.addTargetElement("signinEmailLabel", "signinEmailError", "p");
+      this.showMessage("signinEmailError", "Enter your email address");
+      return;
+    }
+
+    if (!this.isGlobalValidEmail(email)) {
+      this.addTargetElement("signinEmailLabel", "signinEmailError", "p");
+      this.showMessage("signinEmailError", "Invalid email address");
+      return;
+    }
+
+    console.log("📝 Signin attempt:", email);
+
+    // 버튼 비활성화 및 Submit 시작 (모달 닫기 방지)
+    this.setGlobalButtonContent(this.signinButtonTarget, true, false);
+    this.startSubmit();
+
+    try {
+      // Step 1: IntegrityToken 획득
+      console.log("🔐 Step 1: Getting integrity token...");
+      const tokenResponse = await fetch("/members/api/integrity-token", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": this.getGlobalCSRFToken(),
+        },
+      });
+
+      if (!tokenResponse.ok) {
+        throw new Error("Failed to get integrity token");
+      }
+
+      const tokenData = await tokenResponse.json();
+      const integrityToken = tokenData.integrityToken;
+      console.log("✅ Integrity token obtained:", integrityToken);
+
+      // Step 2: Magic Link 요청
+      console.log("📧 Step 2: Sending magic link...");
+      const response = await fetch("/members/api/send-magic-link", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": this.getGlobalCSRFToken(),
+        },
+        body: JSON.stringify({
+          email: email,
+          emailType: "signin",
+          integrityToken: integrityToken,
+          autoRedirect: true,
+          includeOTC: true,
+        }),
+      });
+
+      const data = await response.json();
+
+      // 로그인 성공 시
+      if (response.ok || response.status === 201) {
+        console.log("✅ Magic link sent successfully:", data);
+
+        // 로그인 성공 시, 인증 모달(OTP 입력 폼) 표시
+        this.showAuthorizationForm("signin", email);
+
+        // 로그인 실패 시 (사용자를 찾을 수 없는 경우)
+      } else if (response.status === 400) {
+        console.error("❌ Signin failed (400):", data);
+
+        // 에러 notification 표시
+        this.showGlobalNotification(data.errors[0].message, data.errors[0].type, false);
+
+        // 버튼 텍스트 변경 (Continue -> Retry)
+        this.setGlobalButtonContent(this.signinButtonTarget, false, true);
+
+        // Submit 종료 (에러 발생 시 닫기 활성화)
+        this.endSubmit();
+
+        // 다른 오류가 발생한 경우
+      } else {
+        console.error("❌ Signin failed (401):", data);
+
+        // 에러 notification 표시
+        this.showGlobalNotification("Error occurred while signing in. Please try again.", "error", false);
+
+        // 버튼 텍스트 변경 (Continue -> Retry)
+        this.setGlobalButtonContent(this.signinButtonTarget, false, true);
+
+        // Submit 종료 (에러 발생 시 닫기 활성화)
+        this.endSubmit();
+      }
+    } catch (error) {
+      console.error("❌ Network error:", error);
+      this.showGlobalNotification("네트워크 오류가 발생했습니다. 다시 시도해주세요.", "error", false);
+
+      // 버튼 텍스트 변경 (Continue -> Retry)
+      this.setGlobalButtonContent(this.signinButtonTarget, false, true);
+
+      // Submit 종료 (네트워크 에러 시 닫기 활성화)
+      this.endSubmit();
+    }
+  }
+
+  // OTP 폼 제출 처리
+  async handleOtp(event) {
+    event.preventDefault();
+
+    // 회원가입 시에는 OTP 입력 없이 Continue 버튼으로 모달 닫기
+    if (this.hasIsSignupTarget && this.isSignupTarget.style.display === "none") {
+      // 회원가입 시에는 Submit 종료 (모달 닫기 활성화)
+      this.endSubmit();
+
+      console.log("✅ Signup completed - closing modal");
+      this.close();
+      return;
+    }
+
+    const otpCode = this.otpInputTarget.value.trim();
+
+    console.log("🔐 OTP Code:", otpCode);
+
+    // 클라이언트 검증
+    if (!otpCode) {
+      if (this.hasOtpErrorTarget) {
+        this.showOtpError("Enter your verification code");
+      }
+      return;
+    }
+
+    if (otpCode.length !== 6 || !/^\d{6}$/.test(otpCode)) {
+      if (this.hasOtpErrorTarget) {
+        this.otpContainerTarget.classList.add("error");
+        this.showOtpError("Code must be 6 digits");
+      }
+      return;
+    }
+
+    console.log("📝 OTP verification attempt:", otpCode);
+
+    // 버튼 비활성화
+    this.setGlobalButtonContent(this.submitButtonTarget, true, false);
+
+    try {
+      // Step 1: IntegrityToken 획득
+      console.log("🔐 Step 1: Getting integrity token...");
+      const tokenResponse = await fetch("/members/api/integrity-token", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": this.getGlobalCSRFToken(),
+        },
+      });
+
+      if (!tokenResponse.ok) {
+        throw new Error("Failed to get integrity token");
+      }
+
+      const tokenData = await tokenResponse.json();
+      const integrityToken = tokenData.integrityToken;
+      console.log("✅ Integrity token obtained:", integrityToken);
+
+      // Step 2: OTP 검증 API 호출
+      console.log("🔐 Step 2: Verifying OTP...");
+      const response = await fetch("/members/api/verify-otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": this.getGlobalCSRFToken(),
+        },
+        body: JSON.stringify({
+          integrityToken: integrityToken,
+          otp_code: otpCode,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        console.log("✅ OTP verification successful:", data);
+        console.log("🔍 Checking redirect_url:", data.redirect_url);
+
+        // 사용자 닉네임 추출
+        const userNickname = data.user?.nickname || "User";
+        console.log("👤 User nickname:", userNickname);
+
+        // Submit 종료
+        this.endSubmit();
+
+        // 모달 닫기
+        this.close();
+
+        // 메뉴(Burger) 닫기
+        this.closeGlobalMenu();
+
+        // 서버에서 제공한 redirect_url로 리디렉트
+        if (data.redirect_url) {
+          console.log("🔄 Redirecting to:", data.redirect_url);
+          // 로그인 성공 시 전체 페이지 reload (Turbo 캐싱 문제 방지)
+          window.location.href = data.redirect_url;
+        } else {
+          console.log("⚠️ No redirect_url provided, using fallback");
+          // fallback: 직접 notification 표시
+          this.showGlobalNotification("You've successfully signed in.", "success", userNickname);
+        }
+      } else {
+        console.error("❌ OTP verification failed:", data);
+
+        // 에러 메시지 표시
+        if (this.hasOtpErrorTarget) {
+          this.showOtpError(data.error || "Failed to verify code, please try again");
+        }
+
+        // OTP container에 error 클래스 추가
+        if (this.hasOtpContainerTarget) {
+          this.otpContainerTarget.classList.add("error");
+        }
+
+        // 버튼 텍스트 변경 (Continue -> Retry)
+        this.setGlobalButtonContent(this.submitButtonTarget, false, true);
+
+        // Submit 종료
+        this.endSubmit();
+      }
+    } catch (error) {
+      console.error("❌ Network error:", error);
+
+      if (this.hasOtpErrorTarget) {
+        this.showOtpError(error);
+      }
+
+      // 버튼 텍스트 변경 (Continue -> Retry)
+      this.setGlobalButtonContent(this.submitButtonTarget, false, true);
+
+      // Submit 종료
+      this.endSubmit();
+    } finally {
+      // 버튼 복원
+      this.setGlobalButtonContent(this.submitButtonTarget, false, false);
+    }
   }
 
   // 입력 필드 초기화
   clearFields() {
     if (this.hasSignupNicknameTarget) {
-      this.signupNicknameTarget.value = ""
+      this.signupNicknameTarget.value = "";
     }
     if (this.hasSignupEmailTarget) {
-      this.signupEmailTarget.value = ""
+      this.signupEmailTarget.value = "";
     }
     if (this.hasSigninEmailTarget) {
-      this.signinEmailTarget.value = ""
+      this.signinEmailTarget.value = "";
     }
+    if (this.hasOtpInputTarget) {
+      this.otpInputTarget.value = "";
+    }
+  }
+
+  // OTP input 입력 처리
+  handleOtpInput(event) {
+    // OTP Code는 숫자만 입력 가능
+    const input = event.target;
+    const value = input.value.replace(/[^0-9]/g, "");
+    input.value = value;
+
+    const hasValue = value.trim().length > 0;
+
+    // input 클래스 변경 (entry/undefined)
+    input.classList.remove("entry", "undefined");
+    if (hasValue) {
+      input.classList.add("entry", "undefined");
+    } else {
+      input.classList.add("undefined");
+    }
+  }
+
+  // OTP input focus 처리
+  handleOtpFocus() {
+    if (!this.hasOtpContainerTarget) return;
+
+    // container 클래스 변경: focused 추가, false 제거
+    this.otpContainerTarget.classList.replace("false", "focused");
+
+    // error 상태는 유지
+    console.log("✅ OTP input focused");
+  }
+
+  // OTP input blur 처리
+  handleOtpBlur() {
+    if (!this.hasOtpContainerTarget) return;
+
+    // container 클래스 변경: false 추가, focused 제거
+    this.otpContainerTarget.classList.replace("focused", "false");
+
+    // error 상태는 유지
+    console.log("❌ OTP input blurred");
+  }
+
+  // 메시지 초기화
+  clearMessages() {
+    // input 필드에서 error 클래스 제거
+    if (this.hasInputTarget) {
+      this.inputTargets.forEach(element => {
+        element.classList.remove("error");
+      });
+    }
+
+    // 에러 메시지 숨기기
+    if (this.hasNicknameErrorTarget) {
+      this.nicknameErrorTarget.style.display = "none";
+      this.nicknameErrorTarget.textContent = "";
+    }
+    if (this.hasSignupEmailErrorTarget) {
+      this.signupEmailErrorTarget.style.display = "none";
+      this.signupEmailErrorTarget.textContent = "";
+    }
+    if (this.hasSigninEmailErrorTarget) {
+      this.signinEmailErrorTarget.style.display = "none";
+      this.signinEmailErrorTarget.textContent = "";
+    }
+  }
+
+  // 로그인 Submit 결과 모달(OTP 입력) 표시
+  showSigninResult() {
+    if (!this.hasSubmitResultTarget || !this.hasSigninFormTarget) {
+      console.error("❌ Signin submit result targets not found");
+      return;
+    }
+
+    // OTP 에러 상태 초기화
+    this.hasOtpError = false;
+    if (this.hasOtpErrorTarget) {
+      this.otpErrorTarget.innerHTML = "";
+    }
+    if (this.hasOtpContainerTarget) {
+      this.otpContainerTarget.classList.remove("error");
+      this.otpContainerTarget.classList.add("undefined");
+    }
+    if (this.hasOtpInputTarget) {
+      this.otpInputTarget.classList.remove("error");
+      this.otpInputTarget.value = "";
+    }
+
+    // 로그인 폼 숨기고 Submit 결과 화면 표시
+    this.signinFormTarget.style.display = "none";
+    this.submitResultTarget.style.display = "block";
+
+    // wrapper와 container 클래스 변경
+    if (this.hasWrapperTarget) {
+      this.wrapperTarget.classList.remove("signup");
+      this.wrapperTarget.classList.add("magiclink");
+    }
+    if (this.hasContainerTarget) {
+      this.containerTarget.classList.remove("signup");
+      this.containerTarget.classList.add("magiclink");
+    }
+
+    // 모달 닫기 방지
+    this.startSubmit();
+
+    // OTP 입력 필드 초기 상태 설정 (false undefined)
+    if (this.hasOtpContainerTarget) {
+      this.otpContainerTarget.classList.remove("focused");
+      this.otpContainerTarget.classList.add("false", "undefined");
+    }
+
+    console.log("✅ Signin Submit result screen displayed");
+  }
+
+  // 회원가입 Submit 결과 모달 표시
+  showSignupResult() {
+    if (!this.hasSubmitResultTarget || !this.hasSignupFormTarget) {
+      console.error("❌ Signup Submit result targets not found");
+      return;
+    }
+
+    // OTP 폼만 숨기고(회원가입 시에는 OTP 필요 없음)
+    // 회원가입 폼 숨기고 Submit 결과 화면 표시
+    this.isSignupTarget.style.display = "none";
+    this.signupFormTarget.style.display = "none";
+    this.submitResultTarget.style.display = "block";
+
+    // wrapper와 container 클래스 변경
+    if (this.hasWrapperTarget) {
+      this.wrapperTarget.classList.remove("signup");
+      this.wrapperTarget.classList.add("magiclink");
+    }
+    if (this.hasContainerTarget) {
+      this.containerTarget.classList.remove("signup");
+      this.containerTarget.classList.add("magiclink");
+    }
+
+    console.log("✅ Signup Submit result screen displayed");
+  }
+
+  // OTP 인증 실패 시 에러 메시지 표시 (동적)
+  showOtpError(message) {
+    if (!this.hasOtpErrorTarget) return;
+
+    // OTP 에러 상태 플래그 설정
+    this.hasOtpError = true;
+
+    // container에 error 클래스 추가
+    if (this.hasOtpContainerTarget) {
+      this.otpContainerTarget.classList.add("error");
+      // undefined 제거 (error와 undefined는 함께 사용하지 않음)
+      this.otpContainerTarget.classList.remove("undefined");
+    }
+
+    // otpError HTML
+    this.otpErrorTarget.innerHTML = `
+      <div class="gh-portal-otp-error">
+        ${message}
+      </div>
+    `;
+
+    console.log("❌ OTP error:", message);
+  }
+
+  // 쿠키 활성화 상태 체크
+  checkCookiesEnabled() {
+    if (!this.hasContainerTarget) return;
+
+    try {
+      const containerElement = this.containerTarget;
+
+      // 브라우저의 쿠키 활성화 여부 확인
+      const cookiesEnabled = navigator.cookieEnabled;
+
+      // 기존 cookie banner 제거
+      const existingCookieBanner = containerElement.querySelector(".gh-portal-cookiebanner");
+      if (existingCookieBanner) {
+        existingCookieBanner.remove();
+        console.log("🧹 Removed existing cookie banner");
+      }
+
+      if (!cookiesEnabled) {
+        // 쿠키 비활성화 시에만 배너 생성 및 표시
+        const cookieBanner = document.createElement("div");
+        cookieBanner.className = "gh-portal-cookiebanner";
+
+        // 이벤트 전파 중단 (모달이 닫히지 않도록)
+        cookieBanner.addEventListener("click", e => e.stopPropagation());
+
+        // 현재 모드에 따라 메시지 설정
+        if (this.containerTarget.classList.contains("signup")) {
+          cookieBanner.textContent = "Cookies must be enabled in your browser to sign up.";
+        } else if (this.containerTarget.classList.contains("signin")) {
+          cookieBanner.textContent = "Cookies must be enabled in your browser to sign in.";
+        } else {
+          cookieBanner.textContent = "Cookies must be enabled in your browser.";
+        }
+
+        // container의 첫 번째 자식으로 추가
+        containerElement.insertBefore(cookieBanner, containerElement.firstChild);
+
+        // 입력 필드와 버튼 비활성화
+        this.inputTargets.forEach(element => {
+          element.disabled = true;
+        });
+        if (this.hasSigninButtonTarget) {
+          this.signinButtonTarget.disabled = true;
+        }
+        if (this.hasSignupButtonTarget) {
+          this.signupButtonTarget.disabled = true;
+        }
+
+        console.warn("⚠️ Cookies are disabled - banner displayed");
+      } else {
+        // 쿠키 활성화 시 입력 필드와 버튼 활성화
+        this.inputTargets.forEach(element => {
+          element.disabled = false;
+        });
+        if (this.hasSigninButtonTarget) {
+          this.signinButtonTarget.disabled = false;
+        }
+        if (this.hasSignupButtonTarget) {
+          this.signupButtonTarget.disabled = false;
+        }
+
+        console.log("✅ Cookies are enabled - banner hidden");
+      }
+
+      return cookiesEnabled;
+    } catch (error) {
+      console.error("❌ Failed to check cookies enabled:", error);
+      return true; // 에러 발생 시 활성화로 간주
+    }
+  }
+
+  // cookie banner 숨기기
+  hideCookieBanner(event) {
+    // 이벤트 전파 중단
+    if (event) {
+      event.stopPropagation();
+    }
+
+    if (!this.hasContainerTarget) return;
+
+    // cookie banner 제거
+    const cookieBanner = this.containerTarget.querySelector(".gh-portal-cookiebanner");
+    if (cookieBanner) {
+      cookieBanner.remove();
+      console.log("✅ Cookie banner hidden");
+    }
+  }
+
+  // ===== Global Controller Helper 메서드 =====
+  // Global controller 인스턴스 가져오기
+  getGlobalController() {
+    const globalController = this.application.getControllerForElementAndIdentifier(document.body, "global");
+
+    if (!globalController) {
+      console.error("❌ Global controller not found");
+    }
+
+    return globalController;
+  }
+
+  // [호출] 키보드 단축키 처리 (Escape)
+  handleGlobalKeyboard(event) {
+    const globalController = this.application.getControllerForElementAndIdentifier(document.body, "global");
+
+    if (globalController) {
+      // Global controller의 handleKeyboard 호출
+      globalController.handleKeyboard(event, {
+        // onEscape: Escape 키를 눌렀을 때 실행할 함수
+        onEscape: () => this.close(),
+        // condition: 키 이벤트를 처리할 조건 (모달이 열려있는지 확인)
+        condition: () => this.isOpen(),
+      });
+    } else {
+      console.error("❌ Global controller not found");
+    }
+  }
+
+  // [호출] 유효한 이메일 주소인지 검사
+  isGlobalValidEmail(email) {
+    const globalController = this.getGlobalController();
+    if (globalController) {
+      return globalController.isValidEmail(email);
+    }
+  }
+
+  // [로컬] 특정 타겟의 부모 노드에 자식 요소 추가
+  addTargetElement(targetName, newTargetName, elementTag = "p") {
+    if (!targetName || !newTargetName) return;
+
+    try {
+      // 기존 타겟 확인
+      const hasTargetMethod = `has${targetName.charAt(0).toUpperCase() + targetName.slice(1)}Target`;
+      if (!this[hasTargetMethod]) {
+        console.error(`❌ Target not found: ${targetName}`);
+        return;
+      }
+
+      const target = this[`${targetName}Target`];
+      console.log("🎯 Target Found:", target);
+
+      // 이미 같은 타겟이 존재하는지 확인
+      const hasNewTargetMethod = `has${newTargetName.charAt(0).toUpperCase() + newTargetName.slice(1)}Target`;
+      if (this[hasNewTargetMethod]) {
+        console.log("⚠️ Target already exists:", newTargetName);
+        return;
+      }
+
+      // 새로운 요소 생성
+      const newElement = document.createElement(elementTag);
+
+      // attribute 추가
+      newElement.setAttribute("data-authorization-target", newTargetName);
+      // newElement.style.display = 'none'
+
+      // 부모 요소에 추가
+      target.parentNode.appendChild(newElement);
+
+      console.log("✅ New element added:", newTargetName);
+    } catch (error) {
+      console.error("❌ Failed to add target element:", error);
+    }
+  }
+
+  // [로컬] 메시지 표시 및 특정 태그에 클래스 추가
+  showMessage(targetName, message) {
+    // 메시지 표시
+    const target = this[`${targetName}Target`];
+    if (target) {
+      target.textContent = message;
+      target.style.display = "block";
+    }
+
+    // 해당 input 필드에 error 클래스 추가
+    let inputField = null;
+    if (targetName === "nicknameError") {
+      inputField = this.signupNicknameTarget;
+    } else if (targetName === "signupEmailError") {
+      inputField = this.signupEmailTarget;
+    } else if (targetName === "signinEmailError") {
+      inputField = this.signinEmailTarget;
+    }
+
+    if (inputField) {
+      inputField.classList.add("error");
+    }
+  }
+
+  // [호출] notification 표시
+  showGlobalNotification(message, type, nickname = null) {
+    const globalController = this.getGlobalController();
+    if (globalController) {
+      globalController.showNotification(message, type, nickname);
+    }
+  }
+
+  // [호출] buttonLoading 표시
+  setGlobalButtonContent(button, isLoading, hasError) {
+    const globalController = this.getGlobalController();
+    if (globalController) {
+      globalController.setButtonContent(button, isLoading, hasError);
+    }
+  }
+
+  // [호출] closeMenu 호출
+  closeGlobalMenu() {
+    const globalController = this.getGlobalController();
+    if (globalController) {
+      globalController.closeMenu();
+    }
+  }
+
+  // [호출] CSRF 토큰 가져오기
+  getGlobalCSRFToken() {
+    const globalController = this.getGlobalController();
+    return globalController ? globalController.getCSRFToken() : "";
   }
 }

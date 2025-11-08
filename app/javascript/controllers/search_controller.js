@@ -30,9 +30,8 @@ export default class extends Controller {
     this.authors = [] // 저자 목록 캐시
     this.categories = [] // 카테고리 목록 캐시
     this.posts = [] // 포스트 목록 캐시
-    this.loadAuthors()
-    this.loadCategories()
-    this.loadPosts()
+    this.postsData = null // 전체 포스트 데이터 캐시
+    this.loadAllData() // 한 번에 모든 데이터 로드
 
     // #search-root 요소 참조 저장
     this.rootElement = document.getElementById("search-root")
@@ -989,16 +988,18 @@ export default class extends Controller {
     }
   }
 
-  // 저자 목록 로드 (Posts에서 고유 author_name 추출)
-  async loadAuthors() {
+  // 모든 데이터를 한 번에 로드 (authors, categories, posts)
+  async loadAllData() {
     try {
+      console.log("📡 Fetching posts data...")
       const response = await fetch('/posts.json')
       if (!response.ok) throw new Error('Failed to load posts')
 
       const data = await response.json()
       const posts = data.posts || []
+      this.postsData = posts // 캐시 저장
 
-      // 고유한 저자 목록 추출
+      // 저자 목록 추출
       const uniqueAuthors = [...new Set(posts.map(post => post.author_name))]
       this.authors = uniqueAuthors.map(name => {
         const findAuthor = posts.find(p => p.author_name === name)
@@ -1008,23 +1009,7 @@ export default class extends Controller {
         }
       })
 
-      console.log("✅ Loaded authors:", this.authors)
-    } catch (error) {
-      console.error("❌ Failed to load authors:", error)
-      this.authors = []
-    }
-  }
-
-  // 카테고리 목록 로드 (Posts에서 고유 category 추출)
-  async loadCategories() {
-    try {
-      const response = await fetch('/posts.json')
-      if (!response.ok) throw new Error('Failed to load posts')
-
-      const data = await response.json()
-      const posts = data.posts || []
-
-      // 고유한 카테고리 목록 추출
+      // 카테고리 목록 추출
       const uniqueCategories = [...new Set(posts.map(post => post.category))]
       this.categories = uniqueCategories.map(name => {
         return {
@@ -1032,23 +1017,7 @@ export default class extends Controller {
         }
       })
 
-      console.log("✅ Loaded categories:", this.categories)
-    } catch (error) {
-      console.error("❌ Failed to load categories:", error)
-      this.categories = []
-    }
-  }
-
-  // 포스트 목록 로드 (Posts에서 고유 title 및 excerpt 추출)
-  async loadPosts() {
-    try {
-      const response = await fetch('/posts.json')
-      if (!response.ok) throw new Error('Failed to load posts')
-
-      const data = await response.json()
-      const posts = data.posts || []
-
-      // 고유한 포스트 목록 추출
+      // 포스트 목록 추출
       const uniquePosts = [...new Set(posts.map(post => post.title))]
       this.posts = uniquePosts.map(name => {
         const findPost = posts.find(p => p.title === name)
@@ -1059,47 +1028,16 @@ export default class extends Controller {
         }
       })
 
-      console.log("✅ Loaded posts:", this.posts)
+      console.log("✅ All search data loaded:", {
+        authors: this.authors.length,
+        categories: this.categories.length,
+        posts: this.posts.length
+      })
     } catch (error) {
-      console.error("❌ Failed to load posts:", error)
+      console.error("❌ Failed to load search data:", error)
+      this.authors = []
+      this.categories = []
       this.posts = []
-    }
-  }
-
-  // 키보드 단축키 처리 (Cmd/Ctrl + K, Escape)
-  handleKeyboard(event) {
-    console.log("⌨️ Key pressed:", event.key, "Modal open:", this.isOpen())
-
-    // Cmd/Ctrl + K: 검색 모달 열기
-    if ((event.metaKey || event.ctrlKey) && event.key === "k") {
-      event.preventDefault()
-      console.log("🔑 Ctrl+K detected, opening modal")
-      this.open()
-      return
-    }
-
-    // 모달이 열려있지 않으면 나머지 키 이벤트 무시
-    if (!this.isOpen()) return
-
-    // Escape: 검색 모달 닫기
-    if (event.key === "Escape") {
-      event.preventDefault()
-      this.close()
-      return
-    }
-
-    // 화살표 키 네비게이션
-    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-      event.preventDefault()
-      this.navigateResults(event.key === "ArrowDown" ? 1 : -1)
-      return
-    }
-
-    // Enter: 선택된 결과로 이동
-    if (event.key === "Enter") {
-      event.preventDefault()
-      this.selectResult()
-      return
     }
   }
 
@@ -1145,7 +1083,8 @@ export default class extends Controller {
     this.unloadModalCSS()
   }
 
-  // 이벤트 전파 중단 (흰색 박스 클릭 시)
+  // 이벤트 전파 중단 (모달 컨테이너 내부 클릭 시)
+  // 모달 안쪽을 클릭해도 모달이 닫히지 않도록 함
   stopPropagation(event) {
     event.stopPropagation()
   }
@@ -1407,5 +1346,40 @@ export default class extends Controller {
     // mouseenter와 mouseleave는 버블링되지 않으므로 capture phase 사용
     this.resultsTarget.addEventListener('mouseenter', this.hoverHandler, true)
     this.resultsTarget.addEventListener('mouseleave', this.hoverHandler, true)
+  }
+
+  // ===== Global Controller Helper 메서드 =====
+  // Global controller 인스턴스 가져오기
+  getGlobalController() {
+    const globalController = this.application.getControllerForElementAndIdentifier(
+      document.body,
+      'global'
+    )
+
+    if (!globalController) {
+      console.error("❌ Global controller not found")
+    }
+
+    return globalController
+  }
+
+  // [호출] 키보드 단축키 처리 (Escape)
+  handleGlobalKeyboard(event) {
+    const globalController = this.application.getControllerForElementAndIdentifier(
+      document.body,
+      'global'
+    )
+
+    if (globalController) {
+      // Global controller의 handleKeyboard 호출
+      globalController.handleKeyboard(event, {
+        // onEscape: Escape 키를 눌렀을 때 실행할 함수
+        onEscape: () => this.close(),
+        // condition: 키 이벤트를 처리할 조건 (모달이 열려있는지 확인)
+        condition: () => this.isOpen()
+      })
+    } else {
+      console.error("❌ Global controller not found")
+    }
   }
 }
