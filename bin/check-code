@@ -3,19 +3,19 @@ set -e
 
 echo "🔍 Running code quality checks..."
 
-echo "1️⃣  RuboCop (Style & Lint)..."
-if ! bin/rubocop --autocorrect; then
-  echo "❌ RuboCop failed. Please fix the issues above."
-  exit 1
-fi
-
-echo "2️⃣  Brakeman (Security)..."
+echo "1️⃣  Scan Ruby..."
 if ! bin/brakeman --no-pager; then
   echo "❌ Brakeman failed. Please fix the issues above."
   exit 1
 fi
 
-echo "3️⃣  Rails Tests..."
+echo "2️⃣  Lint Tests..."
+if ! bin/rubocop; then
+  echo "❌ RuboCop failed. Please fix the issues above."
+  exit 1
+fi
+
+echo "3️⃣  Tests..."
 if ! bin/rails db:test:prepare test test:system; then
   echo "❌ Rails Tests failed. Please fix the failing tests."
   exit 1
