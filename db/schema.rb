@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_08_050716) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_08_145936) do
   create_table "posts", force: :cascade do |t|
     t.string "title", null: false
     t.string "slug", null: false
@@ -32,6 +32,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_08_050716) do
     t.index ["author_name"], name: "index_posts_on_author_name"
     t.index ["category"], name: "index_posts_on_category"
     t.index ["featured"], name: "index_posts_on_featured"
+    t.index ["published_at", "featured"], name: "index_posts_on_published_featured"
     t.index ["published_at"], name: "index_posts_on_published_at"
     t.index ["slug"], name: "index_posts_on_slug", unique: true
     t.index ["user_id"], name: "index_posts_on_user_id"
@@ -61,6 +62,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_08_050716) do
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["magic_link_token"], name: "index_users_on_magic_link_token", unique: true
+    t.index ["verified", "enable_newsletter_notifications", "deleted_at"], name: "index_users_on_newsletter_scope"
   end
 
   add_foreign_key "posts", "users"
