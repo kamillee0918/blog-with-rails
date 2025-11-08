@@ -73,4 +73,35 @@ class PostTest < ActiveSupport::TestCase
     post = posts(:published_post)
     assert_equal post.slug, post.to_param, "to_param did not return slug"
   end
+
+  test "search scope returns all posts when query is blank" do
+    assert_equal Post.count, Post.search("").count
+    assert_equal Post.count, Post.search(nil).count
+  end
+
+  test "search scope finds posts by title" do
+    post = posts(:published_post)
+    results = Post.search(post.title)
+
+    assert results.count > 0
+    assert_includes results.pluck(:id), post.id
+  end
+
+  test "search scope finds posts by content" do
+    post = posts(:published_post)
+    # content에서 특정 단어 추출 (최소 3글자 이상)
+    content_word = post.content&.split&.find { |word| word.length >= 3 } || post.title.split.first
+
+    results = Post.search(content_word)
+    assert results.count > 0
+  end
+
+  test "search scope is case insensitive" do
+    post = posts(:published_post)
+
+    results_lower = Post.search(post.title.downcase)
+    results_upper = Post.search(post.title.upcase)
+
+    assert_equal results_lower.pluck(:id).sort, results_upper.pluck(:id).sort
+  end
 end

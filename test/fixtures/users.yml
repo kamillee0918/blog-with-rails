@@ -1,0 +1,33 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+lazaro_nixon:
+  email: lazaronixon@hotmail.com
+  nickname: Lazaro Nixon
+  verified: true
+  magic_link_token: <%= SecureRandom.urlsafe_base64(36) %>
+
+verified_user:
+  email: verified@example.com
+  nickname: Verified User
+  verified: true
+  magic_link_token: <%= SecureRandom.urlsafe_base64(36) %>
+
+unverified_user:
+  email: unverified@example.com
+  nickname: Unverified User
+  verified: false
+  magic_link_token: <%= SecureRandom.urlsafe_base64(36) %>
+
+user_with_otp:
+  email: otp@example.com
+  nickname: OTP User
+  verified: true
+  magic_link_token: <%= SecureRandom.urlsafe_base64(36) %>
+  email_otp_code: "123456"
+  email_otp_expires_at: <%= 5.minutes.from_now %>
+
+john_doe:
+  email: john@example.com
+  nickname: John Doe
+  verified: true
+  magic_link_token: <%= SecureRandom.urlsafe_base64(36) %>
