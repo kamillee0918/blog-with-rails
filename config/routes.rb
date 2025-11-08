@@ -1,4 +1,38 @@
 Rails.application.routes.draw do
+  # API Documentation (Swagger UI)
+  mount Rswag::Ui::Engine => "/api-docs"
+  mount Rswag::Api::Engine => "/api-docs"
+
+  get    "signin", to: "sessions#new"
+  post   "signin", to: "sessions#create"
+  delete "signin", to: "sessions#destroy"
+  get    "signup", to: "registrations#new"
+  post   "signup", to: "registrations#create"
+
+  # Magic Link & OTP 인증
+  get "magic_link/:token", to: "sessions#magic_link", as: :magic_link
+  get "otp_verification", to: "sessions#otp_verification"
+
+  # Members API
+  namespace :members do
+    namespace :api do
+      get    "member",            to: "member#show"
+      put    "member",            to: "member#update"
+      delete "member",            to: "member#destroy"
+      get    "session",           to: "session#show"
+      delete "session",           to: "session#destroy"
+      post   "member/email",      to: "member#update_email"
+      get    "integrity-token",   to: "integrity_token#show"
+      post   "send-magic-link",   to: "magic_link#create"
+      post   "verify-otp",        to: "otp#create"
+    end
+  end
+
+  resources :sessions, only: [ :index, :show, :destroy ]
+  namespace :identity do
+    resource :email,              only: [ :edit, :update ]
+    resource :email_verification, only: [ :show, :create ]
+  end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Root route
