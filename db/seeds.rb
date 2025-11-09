@@ -9,8 +9,27 @@
 #   end
 
 # Clear existing data
+User.destroy_all
 Post.destroy_all
 
+# 1. User 생성
+kamil = User.create!(
+  email: "kamil@lee.com",
+  nickname: "Kamil Lee",
+  verified: true,
+  enable_newsletter_notifications: true,
+  deleted_at: nil
+)
+
+dummy_user = User.create!(
+  email: "dummy@example.com",
+  nickname: "Dummy User",
+  verified: true,
+  enable_newsletter_notifications: true,
+  deleted_at: nil
+)
+
+# 2. Post에 user_id 추가
 posts_data = [
   {
     title: "Gumbel AlphaZero 04: 핵심 정리와 구현 체크리스트",
@@ -26,7 +45,8 @@ posts_data = [
     published_at: 3.day.ago,
     featured: false,
     featured_image: "thumbnail/gumbel_alphazero_thumbnail.png",
-    image_caption: "Gumbel AlphaZero 04: 핵심 정리와 구현 체크리스트"
+    image_caption: "Gumbel AlphaZero 04: 핵심 정리와 구현 체크리스트",
+    user_id: kamil.id
   },
   {
     title: "Gumbel AlphaZero 03: 정책 학습 — Completed Q-values",
@@ -42,7 +62,8 @@ posts_data = [
     published_at: 14.day.ago,
     featured: false,
     featured_image: "thumbnail/gumbel_alphazero_thumbnail.png",
-    image_caption: "Gumbel AlphaZero 03: 정책 학습 — Completed Q-values"
+    image_caption: "Gumbel AlphaZero 03: 정책 학습 — Completed Q-values",
+    user_id: kamil.id
   },
   {
     title: "Gumbel AlphaZero 02: 행동 선택 — Gumbel-Top-k & Sequential Halving",
@@ -58,7 +79,8 @@ posts_data = [
     published_at: 18.day.ago,
     featured: false,
     featured_image: "thumbnail/gumbel_alphazero_thumbnail.png",
-    image_caption: "Gumbel AlphaZero 02: 행동 선택 — Gumbel-Top-k & Sequential Halving"
+    image_caption: "Gumbel AlphaZero 02: 행동 선택 — Gumbel-Top-k & Sequential Halving",
+    user_id: kamil.id
   },
   {
     title: "Gumbel AlphaZero 01: 소개 및 기본 탐색 알고리즘",
@@ -74,7 +96,8 @@ posts_data = [
     published_at: 20.day.ago,
     featured: true,
     featured_image: "thumbnail/gumbel_alphazero_thumbnail.png",
-    image_caption: "Gumbel AlphaZero 01: 소개 및 기본 탐색 알고리즘"
+    image_caption: "Gumbel AlphaZero 01: 소개 및 기본 탐색 알고리즘",
+    user_id: kamil.id
   },
   {
     title: "CPU 스케줄러",
@@ -90,7 +113,8 @@ posts_data = [
     published_at: 154.day.ago,
     featured: true,
     featured_image: "thumbnail/cpu_scheduler_thumbnail.png",
-    image_caption: "CPU 스케줄러"
+    image_caption: "CPU 스케줄러",
+    user_id: kamil.id
   },
   {
     title: "Dummy 1",
@@ -106,7 +130,8 @@ posts_data = [
     published_at: 164.day.ago,
     featured: false,
     featured_image: "thumbnail/dummy_thumbnail.png",
-    image_caption: "Dummy 01"
+    image_caption: "Dummy 01",
+    user_id: dummy_user.id
   },
   {
     title: "Dummy 2",
@@ -122,7 +147,8 @@ posts_data = [
     published_at: 174.day.ago,
     featured: false,
     featured_image: "thumbnail/dummy_thumbnail.png",
-    image_caption: "Dummy 02"
+    image_caption: "Dummy 02",
+    user_id: dummy_user.id
   },
   {
     title: "Dummy 3",
@@ -138,7 +164,8 @@ posts_data = [
     published_at: 184.day.ago,
     featured: false,
     featured_image: "thumbnail/dummy_thumbnail.png",
-    image_caption: "Dummy 03"
+    image_caption: "Dummy 03",
+    user_id: dummy_user.id
   },
   {
     title: "Dummy 4",
@@ -154,7 +181,8 @@ posts_data = [
     published_at: 194.day.ago,
     featured: false,
     featured_image: "thumbnail/dummy_thumbnail.png",
-    image_caption: "Dummy 04"
+    image_caption: "Dummy 04",
+    user_id: dummy_user.id
   },
   {
     title: "Dummy 5",
@@ -170,7 +198,8 @@ posts_data = [
     published_at: 204.day.ago,
     featured: false,
     featured_image: "thumbnail/dummy_thumbnail.png",
-    image_caption: "Dummy 05"
+    image_caption: "Dummy 05",
+    user_id: dummy_user.id
   },
   {
     title: "Dummy 6",
@@ -186,7 +215,8 @@ posts_data = [
     published_at: 214.day.ago,
     featured: false,
     featured_image: "thumbnail/dummy_thumbnail.png",
-    image_caption: "Dummy 06"
+    image_caption: "Dummy 06",
+    user_id: dummy_user.id
   }
 ]
 

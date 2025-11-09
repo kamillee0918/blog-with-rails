@@ -2,8 +2,8 @@ class PostsController < ApplicationController
   before_action :set_categories
 
   def index
-    # 모든 포스트
-    @posts = Post.published.recent.to_a
+    # 모든 포스트 (N+1 쿼리 방지를 위해 includes(:user) 사용)
+    @posts = Post.published.includes(:user).recent.to_a
 
     respond_to do |format|
       format.html # index.html.erb
