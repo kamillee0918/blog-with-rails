@@ -1,5 +1,5 @@
 class SearchController < ApplicationController
-  before_action :set_categories
+  include CategoriesCacheable
 
   def index
     @query = params[:q]&.strip
@@ -32,10 +32,6 @@ class SearchController < ApplicationController
   end
 
   private
-
-  def set_categories
-    @categories = Post.published.distinct.pluck(:category).compact.sort
-  end
 
   def post_to_json(post)
     {

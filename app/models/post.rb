@@ -10,6 +10,8 @@ class Post < ApplicationRecord
 
   # Callbacks
   after_create :notify_newsletter_subscribers, if: :should_notify_subscribers?
+  after_save :clear_categories_cache, if: :saved_change_to_category?
+  after_destroy :clear_categories_cache
 
   # Scopes
   scope :published, -> { where.not(published_at: nil).where("published_at <= ?", Time.current) }
@@ -74,5 +76,10 @@ class Post < ApplicationRecord
     User.newsletter_subscribers.find_each do |user|
       UserMailer.new_post_notification(user, self).deliver_later
     end
+  end
+
+  # 카테고리 목록 캐시 무효화
+  def clear_categories_cache
+    Rails.cache.delete("categories_list")
   end
 end

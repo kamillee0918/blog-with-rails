@@ -1,5 +1,5 @@
 class PostsController < ApplicationController
-  before_action :set_categories
+  include CategoriesCacheable
 
   def index
     # 모든 포스트 (N+1 쿼리 방지를 위해 includes(:user) 사용)
@@ -41,11 +41,6 @@ class PostsController < ApplicationController
   end
 
   private
-
-  def set_categories
-    # Footer용 모든 카테고리
-    @categories = Post.published.distinct.pluck(:category).compact.sort
-  end
 
   def author_avatar_url(avatar_filename)
     return nil if avatar_filename.blank?
