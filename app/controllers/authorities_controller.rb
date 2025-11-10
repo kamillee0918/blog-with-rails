@@ -1,5 +1,5 @@
 class AuthoritiesController < ApplicationController
-  before_action :set_categories
+  include CategoriesCacheable
 
   def show
     @author_slug = params[:name].downcase
@@ -18,10 +18,6 @@ class AuthoritiesController < ApplicationController
   end
 
   private
-
-  def set_categories
-    @categories = Post.published.distinct.pluck(:category).compact.sort
-  end
 
   def safe_url(url)
     return nil if url.blank?

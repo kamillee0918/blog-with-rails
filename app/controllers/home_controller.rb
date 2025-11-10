@@ -1,5 +1,5 @@
 class HomeController < ApplicationController
-  before_action :set_categories
+  include CategoriesCacheable
 
   def index
     # 필요한 컬럼만 선택하여 메모리 사용량 최적화
@@ -26,12 +26,5 @@ class HomeController < ApplicationController
     # 홈페이지 캐싱 (새 포스트 발행 시까지 유효)
     expires_in 30.minutes, public: true
     fresh_when(etag: Post.published.maximum(:updated_at))
-  end
-
-  private
-
-  def set_categories
-    # Footer용 모든 카테고리
-    @categories = Post.published.distinct.pluck(:category).compact.sort
   end
 end
