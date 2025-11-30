@@ -1,51 +1,112 @@
 class PostsController < ApplicationController
-  include CategoriesCacheable
+  before_action :authenticate_admin!, only: %i[ new create edit update destroy ]
+  before_action :set_post, only: %i[ show edit update destroy ]
 
+  # GET /posts or /posts.json
   def index
-    # 모든 포스트 (N+1 쿼리 방지를 위해 includes(:user) 사용)
-    @posts = Post.published.includes(:user).recent.to_a
+    @posts = Post.order(published_at: :desc)
+
+    if params[:category].present?
+      @posts = @posts.by_category(params[:category])
+    end
+
+    @posts = @posts.page(params[:page]).per(10)
+
+    # 페이지 2 이상이면 show_all 레이아웃으로 표시
+    if params[:page].to_i > 1
+      render :show_all
+    end
+  end
+
+  # GET /search/:keyword
+  def search
+    @query = params[:keyword]
+    if @query.present?
+      @posts = Post.where("title LIKE ? OR summary LIKE ? OR tags LIKE ?",
+                          "%#{@query}%", "%#{@query}%", "%#{@query}%")
+                   .order(published_at: :desc)
+    else
+      @posts = Post.none
+    end
+  end
+
+  # GET /posts/1 or /posts/1.json
+  def show
+    @recent_posts = Post.order(published_at: :desc).limit(5)
+    @archives = Post.group("strftime('%Y', published_at)").count
+    @caption = @post.cover_image.attached? ? @post.cover_image.metadata[:caption] : ""
+
+    # 이전/다음 게시글 (published_at 기준)
+    @prev_post = Post.where("published_at < ?", @post.published_at).order(published_at: :desc).first
+    @next_post = Post.where("published_at > ?", @post.published_at).order(published_at: :asc).first
+
+    # 추천 게시글: 같은 태그를 가진 게시글 (최대 3개)
+    if @post.tags.present?
+      post_tags = @post.tags.split(",").map(&:strip)
+      @recommended_posts = Post.where.not(id: @post.id)
+                               .where("tags IS NOT NULL AND tags != ''")
+                               .select { |p| (p.tags.split(",").map(&:strip) & post_tags).any? }
+                               .first(3)
+    else
+      @recommended_posts = []
+    end
+  end
+
+  # GET /posts/new
+  def new
+    @post = Post.new
+  end
+
+  # GET /posts/1/edit
+  def edit
+  end
+
+  # POST /posts or /posts.json
+  def create
+    @post = Post.new(post_params)
 
     respond_to do |format|
-      format.html # index.html.erb
-      format.json do
-        render json: {
-          posts: @posts.map do |post|
-            {
-              title: post.title,
-              slug: post.slug,
-              excerpt: post.excerpt,
-              category: post.category,
-              author_name: post.author_name,
-              author_avatar: post.author_avatar,
-              author_avatar_url: author_avatar_url(post.author_avatar),
-              author_url: post.author_url,
-              author_bio: post.author_bio,
-              author_social_url: post.author_social_url,
-              published_at: post.published_at.strftime("%Y-%m-%d"),
-              path: "/#{post.slug}"
-            }
-          end
-        }
+      if @post.save
+        format.html { redirect_to @post, notice: "Post was successfully created." }
+        format.json { render :show, status: :created, location: @post }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: @post.errors, status: :unprocessable_entity }
       end
     end
   end
 
-  def show
-    # 특정 포스트 조회
-    @post_id = params[:slug]
-    @post = Post.published.find_by!(slug: @post_id)
+  # PATCH/PUT /posts/1 or /posts/1.json
+  def update
+    respond_to do |format|
+      if @post.update(post_params)
+        format.html { redirect_to @post, notice: "Post was successfully updated.", status: :see_other }
+        format.json { render :show, status: :ok, location: @post }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @post.errors, status: :unprocessable_entity }
+      end
+    end
+  end
 
-    # 블로그 포스트는 거의 변경되지 않으므로 캐싱 헤더 설정
-    expires_in 1.hour, public: true
-    fresh_when(@post, strong_etag: true)
+  # DELETE /posts/1 or /posts/1.json
+  def destroy
+    @post.destroy!
+
+    respond_to do |format|
+      format.html { redirect_to posts_path, notice: "Post was successfully destroyed.", status: :see_other }
+      format.json { head :no_content }
+    end
   end
 
   private
+    # Use callbacks to share common setup or constraints between actions.
+    def set_post
+      @post = Post.find_by!(slug: params[:id])
+    end
 
-  def author_avatar_url(avatar_filename)
-    return nil if avatar_filename.blank?
-
-    # View context의 asset_path 사용 (digest URL 생성)
-    view_context.asset_path(avatar_filename)
-  end
+    # Only allow a list of trusted parameters through.
+    def post_params
+      params.expect(post: [ :title, :summary, :author, :tags, :published_at, :content, :cover_image, :slug, :category ])
+    end
 end
