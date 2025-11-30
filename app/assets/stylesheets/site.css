@@ -3656,6 +3656,11 @@ sup {
   font-weight: 800
 }
 
+.ts-entry__post-pagination {
+  background: linear-gradient(0deg, #eaf5fe 80%, #fff);
+  margin-top: 5rem;
+}
+
 .ts-entry__post-related {
   background: linear-gradient(0deg, #eaf5fe 80%, #fff);
   margin-top: 3rem;
@@ -5677,7 +5682,7 @@ pre[class*=language-] {
     font-family: Salesforce-Avant-Garde;
     font-style: normal;
     font-weight: 700;
-    src: local('â˜º'), url(avant-garde.woff2) format('woff2'), url(avant-garde.woff) format('woff');
+    src: local('â˜º'), url(avant-garde.woff2) format('woff2');
     unicode-range: U+0000-F8FE, U+F900-FFFF
   }
 
@@ -5686,7 +5691,7 @@ pre[class*=language-] {
     font-family: Salesforce-Sans;
     font-style: normal;
     font-weight: 100;
-    src: local('â˜º'), url(salesforce-sans-thin.woff2) format('woff2'), url(salesforce-sans-thin.woff) format('woff');
+    src: local('â˜º'), url(salesforce-sans-thin.woff2) format('woff2');
     unicode-range: U+0000-F8FE, U+F900-FFFF
   }
 
@@ -5695,7 +5700,7 @@ pre[class*=language-] {
     font-family: Salesforce-Sans;
     font-style: italic;
     font-weight: 400;
-    src: local('â˜º'), url(salesforce-sans-italic.woff2) format('woff2'), url(salesforce-sans-italic.woff) format('woff');
+    src: local('â˜º'), url(salesforce-sans-italic.woff2) format('woff2');
     unicode-range: U+0000-F8FE, U+F900-FFFF
   }
 
@@ -5704,7 +5709,7 @@ pre[class*=language-] {
     font-family: Salesforce-Sans;
     font-style: italic;
     font-weight: 100;
-    src: local('â˜º'), url(salesforce-sans-thin-italic.woff2) format('woff2'), url(salesforce-sans-thin-italic.woff) format('woff');
+    src: local('â˜º'), url(salesforce-sans-thin-italic.woff2) format('woff2');
     unicode-range: U+0000-F8FE, U+F900-FFFF
   }
 
@@ -5713,7 +5718,7 @@ pre[class*=language-] {
     font-family: Salesforce-Sans;
     font-style: normal;
     font-weight: 400;
-    src: local('â˜º'), url(salesforce-sans-regular.woff2) format('woff2'), url(salesforce-sans-regular.woff) format('woff');
+    src: local('â˜º'), url(salesforce-sans-regular.woff2) format('woff2');
     unicode-range: U+0000-F8FE, U+F900-FFFF
   }
 
@@ -5722,7 +5727,7 @@ pre[class*=language-] {
     font-family: Salesforce-Sans;
     font-style: italic;
     font-weight: 200;
-    src: local('â˜º'), url(salesforce-sans-light-italic.woff2) format('woff2'), url(salesforce-sans-light-italic.woff) format('woff');
+    src: local('â˜º'), url(salesforce-sans-light-italic.woff2) format('woff2');
     unicode-range: U+0000-F8FE, U+F900-FFFF
   }
 
@@ -5731,7 +5736,7 @@ pre[class*=language-] {
     font-family: Salesforce-Sans;
     font-style: normal;
     font-weight: 200;
-    src: local('â˜º'), url(salesforce-sans-light.woff2) format('woff2'), url(salesforce-sans-light.woff) format('woff');
+    src: local('â˜º'), url(salesforce-sans-light.woff2) format('woff2');
     unicode-range: U+0000-F8FE, U+F900-FFFF
   }
 
@@ -5740,7 +5745,7 @@ pre[class*=language-] {
     font-family: Salesforce-Sans;
     font-style: normal;
     font-weight: 700;
-    src: local('â˜º'), url(salesforce-sans-bold.woff2) format('woff2'), url(salesforce-sans-bold.woff) format('woff');
+    src: local('â˜º'), url(salesforce-sans-bold.woff2) format('woff2');
     unicode-range: U+0000-F8FE, U+F900-FFFF
   }
 
@@ -5749,7 +5754,7 @@ pre[class*=language-] {
     font-family: Salesforce-Sans;
     font-style: italic;
     font-weight: 700;
-    src: local('â˜º'), url(salesforce-sans-bold-italic.woff2) format('woff2'), url(salesforce-sans-bold-italic.woff) format('woff');
+    src: local('â˜º'), url(salesforce-sans-bold-italic.woff2) format('woff2');
     unicode-range: U+0000-F8FE, U+F900-FFFF
   }
 
@@ -5758,7 +5763,7 @@ pre[class*=language-] {
     font-family: Salesforce-Sans;
     font-style: normal;
     font-weight: 600;
-    src: local('â˜º'), url(salesforce-sans-semi-bold.woff2) format('woff2'), url(salesforce-sans-semi-bold.woff) format('woff');
+    src: local('â˜º'), url(salesforce-sans-semi-bold.woff2) format('woff2');
     unicode-range: U+0000-F8FE, U+F900-FFFF
   }
 
@@ -5767,7 +5772,7 @@ pre[class*=language-] {
     font-family: Salesforce-Sans;
     font-style: normal;
     font-weight: 300;
-    src: local('â˜º'), url(salesforce-sans-book.woff2) format('woff2'), url(salesforce-sans-book.woff) format('woff');
+    src: local('â˜º'), url(salesforce-sans-book.woff2) format('woff2');
     unicode-range: U+0000-F8FE, U+F900-FFFF
   }
 
@@ -5775,7 +5780,7 @@ pre[class*=language-] {
     font-family: Lato;
     font-style: normal;
     font-weight: 300;
-    src: local('☺'), url(lato-light.woff2) format('woff2'), url(lato-light.woff) format('woff');
+    src: local('☺'), url(lato-light.woff2) format('woff2');
     unicode-range: U+0000-F8FE, U+F900-FFFF
   }
 
@@ -5783,7 +5788,7 @@ pre[class*=language-] {
     font-family: Lato;
     font-style: normal;
     font-weight: 400;
-    src: local('☺'), url(lato-regular.woff2) format('woff2'), url(lato-regular.woff) format('woff');
+    src: local('☺'), url(lato-regular.woff2) format('woff2');
     unicode-range: U+0000-2157, U+2159-F8FE, U+F900-FFFF
   }
 
@@ -5791,7 +5796,7 @@ pre[class*=language-] {
     font-family: Lato;
     font-style: normal;
     font-weight: 700;
-    src: local('☺'), url(lato-bold.woff2) format('woff2'), url(lato-bold.woff) format('woff');
+    src: local('☺'), url(lato-bold.woff2) format('woff2');
     unicode-range: U+0000-F8FE, U+F900-FFFF
   }
 
@@ -5799,7 +5804,7 @@ pre[class*=language-] {
     font-family: Lato;
     font-style: normal;
     font-weight: 900;
-    src: local('☺'), url(lato-black.woff2) format('woff2'), url(lato-black.woff) format('woff');
+    src: local('☺'), url(lato-black.woff2) format('woff2');
     unicode-range: U+0000-F8FE, U+F900-FFFF
   }
 
@@ -5807,7 +5812,7 @@ pre[class*=language-] {
     font-family: Lato;
     font-style: italic;
     font-weight: 300;
-    src: local('☺'), url(lato-italic-light.woff2) format('woff2'), url(lato-italic-light.woff) format('woff');
+    src: local('☺'), url(lato-italic-light.woff2) format('woff2');
     unicode-range: U+0000-2259, U+2261-F8FE, U+F900-FFFF
   }
 
@@ -5815,7 +5820,7 @@ pre[class*=language-] {
     font-family: Lato;
     font-style: italic;
     font-weight: 400;
-    src: local('☺'), url(lato-italic.woff2) format('woff2'), url(lato-italic.woff) format('woff');
+    src: local('☺'), url(lato-italic.woff2) format('woff2');
     unicode-range: U+0000-2259, U+2261-F8FE, U+F900-FFFF
   }
 
@@ -5823,7 +5828,7 @@ pre[class*=language-] {
     font-family: Lato;
     font-style: italic;
     font-weight: 700;
-    src: local('☺'), url(lato-italic-bold.woff2) format('woff2'), url(lato-italic-bold.woff) format('woff');
+    src: local('☺'), url(lato-italic-bold.woff2) format('woff2');
     unicode-range: U+0000-2259, U+2261-F8FE, U+F900-FFFF
   }
 
@@ -5831,7 +5836,7 @@ pre[class*=language-] {
     font-family: Lato;
     font-style: italic;
     font-weight: 900;
-    src: local('☺'), url(lato-italic-black.woff2) format('woff2'), url(lato-italic-black.woff) format('woff');
+    src: local('☺'), url(lato-italic-black.woff2) format('woff2');
     unicode-range: U+0000-2259, U+2261-F8FE, U+F900-FFFF
   }
 }

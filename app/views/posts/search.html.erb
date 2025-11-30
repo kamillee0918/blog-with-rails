@@ -1,4 +1,3 @@
- TODO: 검색 결과 페이지 레이아웃 수정하기 -->
 <% content_for :title, "검색: #{@query} | Kamil Lee의 개발 일기" %>
 
 <div class="ts-site-content ts-sidebar-enabled ts-singular-thumbnail-enabled">
@@ -45,7 +44,7 @@
                         </div>
                         <div class="ts-entry__inner ts-entry__content">
                           <h2 class="ts-entry__title">
-                            <%= link_to post.title, post %>
+                            <%= link_to post.title, post, data: {turbo: false} %>
                           </h2>
                           <p class="ts-entry__excerpt"><%= truncate(post.summary, length: 150) %></p>
                           <% if post.tags.present? %>

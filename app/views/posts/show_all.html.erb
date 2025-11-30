@@ -25,7 +25,7 @@
                   </div>
                   <div class="ts-entry__inner ts-entry__content">
                     <h2 class="ts-entry__title">
-                      <%= link_to post.title, post %>
+                      <%= link_to post.title, post, data: {turbo: false} %>
                     </h2>
                     <p class="ts-entry__excerpt"><%= truncate(post.summary, length: 150) %></p>
                     <% if post.tags.present? %>

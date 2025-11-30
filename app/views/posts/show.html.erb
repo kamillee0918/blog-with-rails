@@ -79,8 +79,8 @@
                     </div>
                   </form>
                 </div>
-                <!-- 검색 레이아웃 끝 -->
-                <!-- 최근 게시글 시작 -->
+                <!-- 검색(Search) 레이아웃 끝 -->
+                <!-- 최근 게시글(Latest Posts) 레이아웃 시작 -->
                 <div class="widget">
                   <p class="ts-section-heading">Latest Posts</p>
                   <div class="widget-body ts-widget-posts">
@@ -105,8 +105,8 @@
                     </ul>
                   </div>
                 </div>
-                <!-- 최근 게시글 끝 -->
-                <!-- 아카이브(Archives) 시작 -->
+                <!-- 최근 게시글(Latest Posts) 레이아웃 끝 -->
+                <!-- 아카이브(Archives) 레이아웃 시작 -->
                 <div class="widget">
                   <p class="ts-section-heading">Archives</p>
                   <ul class="wp-block-archives-list wp-block-archives">
@@ -118,7 +118,7 @@
                     <% end %>
                   </ul>
                 </div>
-                <!-- 아카이브(Archives) 끝 -->
+                <!-- 아카이브(Archives) 레이아웃 끝 -->
               </div>
             </aside>
             <!-- 본문 2 시작 -->
@@ -157,7 +157,6 @@
                     </svg>
                   </a>
                 </div>
-                <!-- TODO: 클릭 시, 주소 복사 기능 작동하기 -->
                 <!-- 주소 복사 버튼(작동 X) -->
                 <div class="ts-share-buttons-item ts-share-buttons-copy">
                   <a href="#" class="ts-share-buttons-copy" data-share-link="" title="Copy link">
@@ -176,7 +175,11 @@
     </div>
   </div>
   <!-- 이전/다음 게시글 시작 -->
-  <div style="margin-top: 5rem;">
+  <% if @recommended_posts.present? %>
+    <div style="margin-top: 5rem;">
+  <% else %>
+    <div class="ts-entry__post-pagination">
+  <% end %>
     <div class="ts-container">
       <div class="ts-post-pagination">
         <% if @prev_post.present? %>
@@ -239,53 +242,53 @@
         <% end %>
       </div>
     </div>
-    <!-- 추천 게시글 시작 -->
-    <% if @recommended_posts.present? %>
-      <div class="ts-entry__post-related">
-        <div class="ts-container">
-          <p class="ts-section-heading">Recommended Reading</p>
-          <div class="ts-entry__post-wrap">
-            <% @recommended_posts.each do |post| %>
-              <article class="post type-post status-publish format-standard has-post-thumbnail category-uncategorized ts-entry">
-                <div class="ts-entry__outer">
-                  <div class="ts-entry__inner ts-entry__thumbnail">
-                    <div class="ts-overlay-background">
-                      <% if post.cover_image.attached? %>
-                        <%= optimized_image_tag post.cover_image,
-                            size: :small,
-                            class: "attachment-tinyspeck-thumbnail size-tinyspeck-thumbnail wp-post-image",
-                            alt: post.title %>
-                      <% end %>
-                    </div>
-                    <%= link_to "", post_path(post), class: "ts-overlay-link", data: { turbo: false } %>
+  </div>
+  <!-- 이전 게시글/다음 게시글 끝 -->
+  <!-- 추천 게시글 시작 -->
+  <% if @recommended_posts.present? %>
+    <div class="ts-entry__post-related">
+      <div class="ts-container">
+        <p class="ts-section-heading">Recommended Reading</p>
+        <div class="ts-entry__post-wrap">
+          <% @recommended_posts.each do |post| %>
+            <article class="post type-post status-publish format-standard has-post-thumbnail category-uncategorized ts-entry">
+              <div class="ts-entry__outer">
+                <div class="ts-entry__inner ts-entry__thumbnail">
+                  <div class="ts-overlay-background">
+                    <% if post.cover_image.attached? %>
+                      <%= optimized_image_tag post.cover_image,
+                          size: :small,
+                          class: "attachment-tinyspeck-thumbnail size-tinyspeck-thumbnail wp-post-image",
+                          alt: post.title %>
+                    <% end %>
                   </div>
-                  <div class="ts-entry__inner ts-entry__content">
-                    <div class="ts-entry__post-meta">
-                      <div class="ts-meta-date"><%= post.published_at.strftime("%B %-d, %Y") %></div>
-                      <div class="ts-meta-reading-time"><%= post.read_time rescue "0 min read" %></div>
-                    </div>
-                    <h2 class="ts-entry__title">
-                      <%= link_to post_path(post), data: { turbo: false } do %>
-                        <span><%= post.title %></span>
-                      <% end %>
-                    </h2>
-                    <span class="ts-mention">@<%= post.author %></span>
-                  </div>
+                  <%= link_to "", post_path(post), class: "ts-overlay-link", data: { turbo: false } %>
                 </div>
-              </article>
-            <% end %>
-          </div>
+                <div class="ts-entry__inner ts-entry__content">
+                  <div class="ts-entry__post-meta">
+                    <div class="ts-meta-date"><%= post.published_at.strftime("%B %-d, %Y") %></div>
+                    <div class="ts-meta-reading-time"><%= post.read_time rescue "0 min read" %></div>
+                  </div>
+                  <h2 class="ts-entry__title">
+                    <%= link_to post_path(post), data: { turbo: false } do %>
+                      <span><%= post.title %></span>
+                    <% end %>
+                  </h2>
+                  <span class="ts-mention">@<%= post.author %></span>
+                </div>
+              </div>
+            </article>
+          <% end %>
         </div>
       </div>
-    <% end %>
-    <!-- 추천 게시글 끝 -->
-    <!-- 상세 페이지 하단에 Arc 패턴 시작 -->
-    <div class="c-arc concave-up">
-      <div class="c-arc__upper color-blue"></div>
-      <div class="c-arc__lower color-white"></div>
     </div>
-    <!-- 상세 페이지 하단에 Arc 패턴 끝 -->
+  <% end %>
+  <!-- 추천 게시글 끝 -->
+  <!-- 상세 페이지 하단에 Arc 패턴 시작 -->
+  <div class="c-arc concave-up">
+    <div class="c-arc__upper color-blue"></div>
+    <div class="c-arc__lower color-white"></div>
   </div>
-  <!-- 다음 게시글/이전 게시글 끝 -->
+  <!-- 상세 페이지 하단에 Arc 패턴 끝 -->
 </div>
 

@@ -43,6 +43,11 @@
                               <div class="ts-entry__post-meta">
                                 <div class="ts-meta-date"><%= featured_post.published_at.strftime("%B %-d, %Y") %></div>
                                 <div class="ts-meta-reading-time"><%= featured_post.read_time %></div>
+                                <% if featured_post.category.present? %>
+                                  <div class="ts-meta-category">
+                                    <%= link_to featured_post.category, posts_path(category: featured_post.category), class: "ts-category-link", style: "color: var(--wp--preset--color--vivid-cyan-blue); text-decoration: none; font-weight: 600;" %>
+                                  </div>
+                                <% end %>
                               </div>
                             </div>
                             <div class="tts-entry__content-inner">
@@ -144,7 +149,7 @@
                       </div>
                       <div class="ts-entry__inner ts-entry__content">
                         <h2 class="ts-entry__title">
-                          <%= link_to post.title, post %>
+                          <%= link_to post.title, post, data: {turbo: false} %>
                         </h2>
                         <p class="ts-entry__excerpt"><%= truncate(post.summary, length: 150) %></p>
                       </div>
