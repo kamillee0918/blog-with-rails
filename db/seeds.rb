@@ -1,230 +1,85 @@
 # This file should ensure the existence of records required to run the application in every environment (production,
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
 
-# Clear existing data
-User.destroy_all
+puts "Cleaning up existing posts..."
 Post.destroy_all
 
-# 1. User 생성
-kamil = User.create!(
-  email: "kamil@lee.com",
-  nickname: "Kamil Lee",
-  verified: true,
-  enable_newsletter_notifications: true,
-  deleted_at: nil
-)
+puts "Creating seed posts..."
 
-dummy_user = User.create!(
-  email: "dummy@example.com",
-  nickname: "Dummy User",
-  verified: true,
-  enable_newsletter_notifications: true,
-  deleted_at: nil
-)
+10.times do |i|
+  title = [
+    "Scaling Rails to 100k Requests per Second",
+    "How We Migrated from Microservices Back to Monolith",
+    "Optimizing Database Queries for High Performance",
+    "The Future of Frontend Development at Our Company",
+    "Building a Resilient Distributed System",
+    "Our Journey to Cloud Native Architecture",
+    "Improving Developer Productivity with Custom Tools",
+    "Deep Dive into Ruby Memory Management",
+    "Securing Your Rails Application Against Modern Threats",
+    "Why We Chose Hotwire for Our New Project"
+  ][i]
 
-# 2. Post에 user_id 추가
-posts_data = [
-  {
-    title: "Gumbel AlphaZero 04: 핵심 정리와 구현 체크리스트",
-    slug: "2025-09-19-gumbel-alphazero-04",
-    content: "AI 시리즈 4편: 핵심 메커니즘 종합, 하이퍼파라미터 가이드, 복잡도/이론적 보장, 실전 적용 팁.",
-    excerpt: "Gumbel AlphaZero의 전체 흐름과 구현 시 꼭 확인할 체크리스트를 정리합니다.",
-    category: "AI",
-    author_name: "Kamil Lee",
-    author_avatar: "avatar.png",
-    author_url: "https://github.com/kamillee0918",
-    author_bio: "Solo Developer",
-    author_social_url: "https://github.com/kamillee0918",
-    published_at: 3.day.ago,
-    featured: false,
-    featured_image: "thumbnail/gumbel_alphazero_thumbnail.png",
-    image_caption: "Gumbel AlphaZero 04: 핵심 정리와 구현 체크리스트",
-    user_id: kamil.id
-  },
-  {
-    title: "Gumbel AlphaZero 03: 정책 학습 — Completed Q-values",
-    slug: "2025-09-08-gumbel-alphazero-03",
-    content: "AI 시리즈 3편: Completed Q-values, Mixed Value(혼합 가치), 정규화/스케일링과 목표 정책 생성.",
-    excerpt: "방문하지 않은 행동까지 포함한 완성된 Q값으로 이론적 정책 새선을 달성.",
-    category: "AI",
-    author_name: "Kamil Lee",
-    author_avatar: "avatar.png",
-    author_url: "https://github.com/kamillee0918",
-    author_bio: "Solo Developer",
-    author_social_url: "https://github.com/kamillee0918",
-    published_at: 14.day.ago,
-    featured: false,
-    featured_image: "thumbnail/gumbel_alphazero_thumbnail.png",
-    image_caption: "Gumbel AlphaZero 03: 정책 학습 — Completed Q-values",
-    user_id: kamil.id
-  },
-  {
-    title: "Gumbel AlphaZero 02: 행동 선택 — Gumbel-Top-k & Sequential Halving",
-    slug: "2025-09-04-gumbel-alphazero-02",
-    content: "AI 시리즈 2편: Gumbel-Max/Top-k, Sequential Halving, 루트/내부 노드 행동 선택 전략과 코드.",
-    excerpt: "Gumbel-Top-k로 후보 선정, Sequential Halving으로 자원 배분, 루트/내부 노드의 이원화 전략.",
-    category: "AI",
-    author_name: "Kamil Lee",
-    author_avatar: "avatar.png",
-    author_url: "https://github.com/kamillee0918",
-    author_bio: "Solo Developer",
-    author_social_url: "https://github.com/kamillee0918",
-    published_at: 18.day.ago,
-    featured: false,
-    featured_image: "thumbnail/gumbel_alphazero_thumbnail.png",
-    image_caption: "Gumbel AlphaZero 02: 행동 선택 — Gumbel-Top-k & Sequential Halving",
-    user_id: kamil.id
-  },
-  {
-    title: "Gumbel AlphaZero 01: 소개 및 기본 탐색 알고리즘",
-    slug: "2025-09-02-gumbel-alphazero-01",
-    content: "AI 시리즈 1편: DeepMind Mctx(JAX) 환경 구성, visualization_demo.py로 탐색 트리 이해, 기존 AlphaZero의 한계 요약.",
-    excerpt: "Mctx 설치/설정과 visualization_demo.py로 Gumbel MuZero 탐색을 직관적으로 살펴봅니다.",
-    category: "AI",
-    author_name: "Kamil Lee",
-    author_avatar: "avatar.png",
-    author_url: "https://github.com/kamillee0918",
-    author_bio: "Solo Developer",
-    author_social_url: "https://github.com/kamillee0918",
-    published_at: 20.day.ago,
-    featured: true,
-    featured_image: "thumbnail/gumbel_alphazero_thumbnail.png",
-    image_caption: "Gumbel AlphaZero 01: 소개 및 기본 탐색 알고리즘",
-    user_id: kamil.id
-  },
-  {
-    title: "CPU 스케줄러",
-    slug: "2025-04-30-cpu-scheduler",
-    content: "CS 시리즈 1편: CPU 스케줄링 개요, 스케줄링의 역할과 작동 시점, 디스패처와 컨텍스트 스위칭.",
-    excerpt: "CPU 스케줄링 개요, 스케줄링의 역할과 작동 시점, 디스패처와 컨텍스트 스위칭.",
-    category: "CS",
-    author_name: "Kamil Lee",
-    author_avatar: "avatar.png",
-    author_url: "https://github.com/kamillee0918",
-    author_bio: "Solo Developer",
-    author_social_url: "https://github.com/kamillee0918",
-    published_at: 154.day.ago,
-    featured: true,
-    featured_image: "thumbnail/cpu_scheduler_thumbnail.png",
-    image_caption: "CPU 스케줄러",
-    user_id: kamil.id
-  },
-  {
-    title: "Dummy 1",
-    slug: "2025-03-01-dummy-01",
-    content: "Dummy 1",
-    excerpt: "Dummy 1",
-    category: "DUMMY",
-    author_name: "dummy",
-    author_avatar: "avatar.png",
-    author_url: "https://github.com/kamillee0918",
-    author_bio: "Solo Developer",
-    author_social_url: "https://github.com/kamillee0918",
-    published_at: 164.day.ago,
-    featured: false,
-    featured_image: "thumbnail/dummy_thumbnail.png",
-    image_caption: "Dummy 01",
-    user_id: dummy_user.id
-  },
-  {
-    title: "Dummy 2",
-    slug: "2025-02-01-dummy-02",
-    content: "Dummy 2",
-    excerpt: "Dummy 2",
-    category: "DUMMY",
-    author_name: "dummy",
-    author_avatar: "avatar.png",
-    author_url: "https://github.com/kamillee0918",
-    author_bio: "Solo Developer",
-    author_social_url: "https://github.com/kamillee0918",
-    published_at: 174.day.ago,
-    featured: false,
-    featured_image: "thumbnail/dummy_thumbnail.png",
-    image_caption: "Dummy 02",
-    user_id: dummy_user.id
-  },
-  {
-    title: "Dummy 3",
-    slug: "2025-01-01-dummy-03",
-    content: "Dummy 3",
-    excerpt: "Dummy 3",
-    category: "DUMMY",
-    author_name: "dummy",
-    author_avatar: "avatar.png",
-    author_url: "https://github.com/kamillee0918",
-    author_bio: "Solo Developer",
-    author_social_url: "https://github.com/kamillee0918",
-    published_at: 184.day.ago,
-    featured: false,
-    featured_image: "thumbnail/dummy_thumbnail.png",
-    image_caption: "Dummy 03",
-    user_id: dummy_user.id
-  },
-  {
-    title: "Dummy 4",
-    slug: "2024-12-01-dummy-04",
-    content: "Dummy 4",
-    excerpt: "Dummy 4",
-    category: "DUMMY",
-    author_name: "dummy",
-    author_avatar: "avatar.png",
-    author_url: "https://github.com/kamillee0918",
-    author_bio: "Solo Developer",
-    author_social_url: "https://github.com/kamillee0918",
-    published_at: 194.day.ago,
-    featured: false,
-    featured_image: "thumbnail/dummy_thumbnail.png",
-    image_caption: "Dummy 04",
-    user_id: dummy_user.id
-  },
-  {
-    title: "Dummy 5",
-    slug: "2024-11-01-dummy-05",
-    content: "Dummy 5",
-    excerpt: "Dummy 5",
-    category: "DUMMY",
-    author_name: "dummy",
-    author_avatar: "avatar.png",
-    author_url: "https://github.com/kamillee0918",
-    author_bio: "Solo Developer",
-    author_social_url: "https://github.com/kamillee0918",
-    published_at: 204.day.ago,
-    featured: false,
-    featured_image: "thumbnail/dummy_thumbnail.png",
-    image_caption: "Dummy 05",
-    user_id: dummy_user.id
-  },
-  {
-    title: "Dummy 6",
-    slug: "2024-10-01-dummy-06",
-    content: "Dummy 6",
-    excerpt: "Dummy 6",
-    category: "DUMMY",
-    author_name: "dummy",
-    author_avatar: "avatar.png",
-    author_url: "https://github.com/kamillee0918",
-    author_bio: "Solo Developer",
-    author_social_url: "https://github.com/kamillee0918",
-    published_at: 214.day.ago,
-    featured: false,
-    featured_image: "thumbnail/dummy_thumbnail.png",
-    image_caption: "Dummy 06",
-    user_id: dummy_user.id
-  }
-]
+  tags = [
+    "rails, performance, scaling, infrastructure",
+    "architecture, microservices, monolith",
+    "database, activerecord, sql, optimization",
+    "frontend, react, javascript, ux",
+    "distributed-systems, resilience, reliability",
+    "cloud, kubernetes, docker, devops",
+    "developer-experience, tools, productivity",
+    "ruby, memory, debugging, performance",
+    "security, authentication, rails",
+    "hotwire, turbo, stimulus, rails"
+  ][i]
 
-# Create posts
-posts_data.each do |post_attrs|
-  Post.find_or_create_by!(slug: post_attrs[:slug]) do |post|
-    post.assign_attributes(post_attrs)
+  summary = [
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc accumsan odio dolor, eu iaculis ex semper pretium. Phasellus in consectetur lorem. Nam feugiat sollicitudin risus quis cursus. Mauris mi nisi, venenatis in bibendum eleifend, aliquet nec nulla. Aenean sollicitudin, justo eget faucibus scelerisque, eros tortor luctus orci, a faucibus odio diam in orci. Integer dictum scelerisque ante, a accumsan leo efficitur efficitur. Maecenas pharetra pretium sapien non tempus. Phasellus ex massa, facilisis consectetur dui eget, condimentum semper ex. Aliquam aliquam felis sit amet diam congue, vel tristique lectus interdum. Nam pretium molestie leo at aliquet. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec molestie risus. Sed ipsum magna, cursus id venenatis at, ullamcorper at eros. Phasellus id tellus dui. Fusce sit amet iaculis massa. Aenean non porttitor risus. Maecenas et diam nulla. Aliquam ac erat dolor. Nunc vitae venenatis elit. In eget justo nulla. Quisque lacinia bibendum nulla, ac efficitur justo elementum eget. Quisque ornare, massa vitae gravida interdum, velit neque dictum felis, at feugiat turpis felis vitae nunc. Donec vehicula velit vel eleifend semper. Etiam gravida, est eu commodo faucibus, urna turpis hendrerit neque, malesuada viverra neque turpis at magna. In fermentum placerat nibh non malesuada. Pellentesque eget mauris fringilla, elementum erat sed, porttitor justo. Praesent mollis elit nec felis placerat mollis. Nulla ipsum mi, ullamcorper et tellus nec, porttitor tincidunt leo. Fusce varius auctor ornare. Aenean ullamcorper eu massa et pellentesque. Aliquam erat volutpat. Pellentesque sed ante sit amet orci suscipit aliquam at eget ante. Aliquam erat volutpat. Vestibulum fermentum tellus id iaculis condimentum. Vivamus et nunc et felis scelerisque auctor. Nam ornare quis dui in pellentesque. Proin diam justo, imperdiet ut magna sed, lacinia efficitur massa. Sed nec tellus quis eros mollis pellentesque. Phasellus sit amet nisi lectus. Sed non commodo risus. Sed fermentum nulla quis tristique varius. Duis molestie urna sed magna ultrices condimentum. Proin massa velit, dignissim sit amet odio eu, tempor aliquam est. Etiam ac maximus enim, sed ultrices magna. Sed ut erat aliquam, varius metus nec, efficitur odio. Aenean sagittis euismod est ac rhoncus. Etiam maximus lectus sed erat feugiat, id semper turpis fringilla. Mauris maximus arcu metus, ac mattis neque venenatis eget. Suspendisse potenti. Interdum et malesuada fames ac ante ipsum primis in faucibus. Suspendisse lacus nisi, rutrum in nisl et, placerat semper dui. Curabitur commodo, lectus id aliquet iaculis, metus orci hendrerit dolor, quis porta ligula ligula eu odio. Sed dapibus lobortis blandit. Nunc volutpat mauris non vestibulum mollis. Praesent ornare mollis lectus, vitae finibus ante scelerisque ullamcorper. Cras ac dui scelerisque, efficitur quam elementum, cursus felis.",
+    "Discover the reasons behind our architectural shift and the benefits we've seen since returning to a monolith.",
+    "A technical deep dive into ActiveRecord optimizations and SQL tuning techniques.",
+    "We're adopting new frontend technologies to improve user experience and developer velocity.",
+    "Strategies and patterns we use to ensure our systems stay up even when parts fail.",
+    "How we containerized our applications and orchestrated them with Kubernetes.",
+    "An overview of the internal tools we've built to streamline our development workflow.",
+    "Understanding how Ruby handles memory and how to debug memory leaks in production.",
+    "Best practices for protecting your application data and user privacy.",
+    "A case study on using Hotwire to build responsive SPAs without writing complex JavaScript."
+  ][i]
+
+  credit = [
+    "Gumbel AlphaZero",
+    "Computer Science",
+    "Dummy Credit"
+  ]
+
+  post = Post.create!(
+    title: title,
+    summary: summary,
+    author: "Kamil Lee",
+    tags: tags,
+    content: "<p>This is the main content for <strong>#{title}</strong>.</p><p>#{summary}</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
+    published_at: Time.current - i.days
+  )
+
+  # Attach cover image
+  image_files = [ "gumbel_alphazero_thumbnail.png", "cpu_scheduler_thumbnail.png", "dummy_thumbnail.png" ]
+  image_file = image_files[i % image_files.length]
+  image_path = Rails.root.join("app/assets/images/thumbnail", image_file)
+  caption = credit[i % credit.length]
+
+  # TODO: Caption 이 이미지에 적용되지 않는 이슈 확인
+  if File.exist?(image_path)
+    post.cover_image.attach(
+      io: File.open(image_path),
+      filename: image_file,
+      content_type: "image/png",
+      metadata: { credit: caption }
+    )
+    puts "  Attached #{image_file} to '#{title}'"
+  else
+    puts "  Could not find image: #{image_path}"
   end
 end
 
-puts "Created #{Post.count} posts"
+puts "Created #{Post.count} posts."

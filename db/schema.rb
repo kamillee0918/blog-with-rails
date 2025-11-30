@@ -10,61 +10,59 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_08_145936) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_30_051704) do
+  create_table "action_text_rich_texts", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
+  end
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.string "content_type"
+    t.datetime "created_at", null: false
+    t.string "filename", null: false
+    t.string "key", null: false
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
   create_table "posts", force: :cascade do |t|
-    t.string "title", null: false
-    t.string "slug", null: false
-    t.text "content"
-    t.text "excerpt"
-    t.string "category"
-    t.string "author_name"
-    t.string "author_avatar"
+    t.string "author"
+    t.datetime "created_at", null: false
     t.datetime "published_at"
-    t.boolean "featured", default: false
-    t.string "featured_image"
-    t.string "image_caption"
-    t.datetime "created_at", null: false
+    t.text "summary"
+    t.string "tags"
+    t.string "title"
     t.datetime "updated_at", null: false
-    t.string "author_url"
-    t.text "author_bio"
-    t.string "author_social_url"
-    t.integer "user_id"
-    t.index ["author_name"], name: "index_posts_on_author_name"
+    t.string "slug"
+    t.string "category"
     t.index ["category"], name: "index_posts_on_category"
-    t.index ["featured"], name: "index_posts_on_featured"
-    t.index ["published_at", "featured"], name: "index_posts_on_published_featured"
-    t.index ["published_at"], name: "index_posts_on_published_at"
     t.index ["slug"], name: "index_posts_on_slug", unique: true
-    t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
-  create_table "sessions", force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.string "user_agent"
-    t.string "ip_address"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_sessions_on_user_id"
-  end
-
-  create_table "users", force: :cascade do |t|
-    t.string "email", null: false
-    t.boolean "verified", default: false, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "nickname"
-    t.string "magic_link_token", null: false
-    t.datetime "magic_link_sent_at"
-    t.string "email_otp_code"
-    t.datetime "email_otp_expires_at"
-    t.boolean "enable_newsletter_notifications", default: false, null: false
-    t.datetime "deleted_at"
-    t.index ["deleted_at"], name: "index_users_on_deleted_at"
-    t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["magic_link_token"], name: "index_users_on_magic_link_token", unique: true
-    t.index ["verified", "enable_newsletter_notifications", "deleted_at"], name: "index_users_on_newsletter_scope"
-  end
-
-  add_foreign_key "posts", "users"
-  add_foreign_key "sessions", "users"
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
 end
