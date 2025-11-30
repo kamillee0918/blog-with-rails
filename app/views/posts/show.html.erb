@@ -112,7 +112,7 @@
                   <ul class="wp-block-archives-list wp-block-archives">
                     <% @archives.sort.reverse.each do |year, count| %>
                       <li>
-                        <a href="#"><%= year %></a>
+                        <%= link_to year, archive_path(year: year), data: { turbo: false } %>
                         (<%= count %>)
                       </li>
                     <% end %>

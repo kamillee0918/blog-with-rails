@@ -1,4 +1,8 @@
-<% content_for :title, "Posts | Kamil Lee의 개발 일기" %>
+<% if @year.present? %>
+  <% content_for :title, "#{@year}년 | Kamil Lee의 개발 일기" %>
+<% else %>
+  <% content_for :title, "Posts | Kamil Lee의 개발 일기" %>
+<% end %>
 
 <div class="ts-site-content ts-sidebar-disabled">
   <div class="ts-container">
@@ -6,8 +10,12 @@
       <div class="ts-content-area">
         <!-- 게시글 목록 헤더 시작 -->
         <div class="ts-page__header">
-          <span class="ts-page__subtitle"><%= @posts.total_count %> posts</span>
-          <h1 class="ts-page__title">Explore all posts</h1>
+          <% if @year.present? %>
+            <h1 class="ts-page__title">#<%= @year %></h1>
+          <% else %>
+            <span class="ts-page__subtitle"><%= @posts.total_count %> posts</span>
+            <h1 class="ts-page__title">Explore all posts</h1>
+          <% end %>
         </div>
         <!-- 게시글 목록 헤더 끝 -->
         <!-- 게시글 목록 시작 -->

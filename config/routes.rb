@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   resources :posts
   get "search/:keyword", to: "posts#search", as: :search
+  get "posts/archive/:year", to: "posts#archive", as: :archive, constraints: { year: /\d{4}/ }
 
   # Admin session routes
   get "login", to: "sessions#new"

@@ -30,6 +30,16 @@ class PostsController < ApplicationController
     end
   end
 
+  # GET /posts/archive/:year
+  def archive
+    @year = params[:year].to_i
+    @posts = Post.where("strftime('%Y', published_at) = ?", @year.to_s)
+                 .order(published_at: :desc)
+                 .page(params[:page]).per(10)
+
+    render :show_all
+  end
+
   # GET /posts/1 or /posts/1.json
   def show
     @recent_posts = Post.order(published_at: :desc).limit(5)
