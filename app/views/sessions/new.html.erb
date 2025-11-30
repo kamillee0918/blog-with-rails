@@ -1,24 +1,30 @@
-<p style="color: green"><%= notice %></p>
-<p style="color: red"><%= alert %></p>
+<div class="ts-content">
+  <div class="ts-container">
+    <div class="ts-row">
+      <div class="ts-col-12" style="max-width: 500px; margin: 0 auto; padding: 40px 20px;">
+        <header class="ts-section-header" style="text-align: center; margin-bottom: 40px;">
+          <h1 class="ts-section-title">Admin Login</h1>
+        </header>
 
-<h1>Sign in</h1>
+        <div class="ts-post-content">
+          <%= form_with url: login_path, method: :post, data: { turbo: false } do |form| %>
+            <% if flash[:alert] %>
+              <div style="color: #cf2e2e; background: #fdd; padding: 10px; border-radius: 4px; margin-bottom: 20px;">
+                <%= flash[:alert] %>
+              </div>
+            <% end %>
 
-<%= form_with(url: signin_path) do |form| %>
-  <div>
-    <%= form.label :email, style: "display: block" %>
-    <%= form.email_field :email, value: params[:email_hint], required: true, autofocus: true, autocomplete: "email" %>
+            <div style="margin-bottom: 20px;">
+              <%= form.label :password, style: "display: block; margin-bottom: 8px; font-weight: bold;" %>
+              <%= form.password_field :password, style: "width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;" %>
+            </div>
+
+            <div style="text-align: center;">
+              <%= form.submit "Log In", style: "background: #000; color: white; padding: 12px 24px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
   </div>
-
-  <div>
-    <%= form.submit "Sign in" %>
-  </div>
-<% end %>
-
-<br>
-
-
-<br>
-
-<div>
-  <%= link_to "Sign up", signup_path %> |
 </div>

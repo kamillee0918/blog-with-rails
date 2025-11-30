@@ -1,0 +1,71 @@
+<% content_for :title, "Posts | Kamil Lee의 개발 일기" %>
+
+<div class="ts-site-content ts-sidebar-disabled">
+  <div class="ts-container">
+    <div class="ts-main-content">
+      <div class="ts-content-area">
+        <!-- 게시글 목록 헤더 시작 -->
+        <div class="ts-page__header">
+          <span class="ts-page__subtitle"><%= @posts.total_count %> posts</span>
+          <h1 class="ts-page__title">Explore all posts</h1>
+        </div>
+        <!-- 게시글 목록 헤더 끝 -->
+        <!-- 게시글 목록 시작 -->
+        <div class="ts-posts-area">
+          <div class="ts-posts-area__main ts-posts-list">
+            <% @posts.each do |post| %>
+              <article class="post type-post status-publish format-standard has-post-thumbnail category-uncategorized ts-entry">
+                <div class="ts-entry__outer">
+                  <div class="ts-entry__inner ts-entry__inner-left">
+                    <div class="ts-entry__post-meta">
+                      <div class="ts-meta-date"><%= post.published_at.strftime("%B %-d, %Y") %></div>
+                      <div class="ts-meta-reading-time"><%= post.read_time rescue "0 min read" %></div>
+                    </div>
+                    <span class="ts-mention">@<%= post.author %></span>
+                  </div>
+                  <div class="ts-entry__inner ts-entry__content">
+                    <h2 class="ts-entry__title">
+                      <%= link_to post.title, post %>
+                    </h2>
+                    <p class="ts-entry__excerpt"><%= truncate(post.summary, length: 150) %></p>
+                    <% if post.tags.present? %>
+                      <div class="ts-tags-section" style="margin-top: 0.5rem;">
+                        <% post.tags.split(',').each do |tag| %>
+                          <span class="ts-tag" style="font-size: 0.75rem;">
+                            #<%= link_to tag.strip, search_path(keyword: tag.strip), rel: "tag" %>
+                          </span>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+                  <div class="ts-entry__inner ts-entry__inner-right">
+                    <div class="ts-entry__gallery">
+                      <div class="ts-entry__thumbnail ts-ratio-square">
+                        <div class="ts-overlay-background">
+                          <% if post.cover_image.attached? %>
+                            <%# 썸네일 이미지: WebP 변환 + 반응형 srcset (Lazy Loading 비활성화) %>
+                            <%= responsive_image_tag post.cover_image,
+                                class: "attachment-post-thumbnail size-post-thumbnail wp-post-image",
+                                alt: post.title,
+                                lazy: false %>
+                          <% end %>
+                        </div>
+                        <%= link_to "", post_path(post), class: "ts-overlay-link", data: {turbo: false} %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            <% end %>
+          </div>
+        </div>
+        <!-- 게시글 목록 끝 -->
+        <!-- 게시글 목록 페이지네이션 시작 -->
+        <%= paginate @posts %>
+        <!-- 게시글 목록 페이지네이션 끝 -->
+      </div>
+    </div>
+  </div>
+</div>
+
+

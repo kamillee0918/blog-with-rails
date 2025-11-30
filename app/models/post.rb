@@ -1,85 +1,51 @@
 class Post < ApplicationRecord
-  # Associations
-  belongs_to :user, optional: true
+  has_rich_text :content
+  has_one_attached :cover_image do |attachable|
+    # 미리 생성할 variant 정의 (on-demand로 생성됨)
+    attachable.variant :thumbnail, resize_to_limit: [ 160, 160 ], format: :webp, saver: { quality: 80 }
+    attachable.variant :small, resize_to_limit: [ 380, 250 ], format: :webp, saver: { quality: 80 }
+    attachable.variant :medium, resize_to_limit: [ 640, 430 ], format: :webp, saver: { quality: 80 }
+    attachable.variant :large, resize_to_limit: [ 1024, 688 ], format: :webp, saver: { quality: 80 }
+    attachable.variant :hero, resize_to_limit: [ 1920, 1080 ], format: :webp, saver: { quality: 85 }
+  end
 
-  # Validations
   validates :title, presence: true
-  validates :slug, presence: true, uniqueness: true, format: { with: /\A[a-z0-9\-]+\z/, message: "only allows lowercase letters, numbers, and hyphens" }
-  validates :content, presence: true
+  validates :published_at, presence: true
+  validates :slug, presence: true, uniqueness: true
   validates :category, presence: true
 
-  # Callbacks
-  after_create :notify_newsletter_subscribers, if: :should_notify_subscribers?
-  after_save :clear_categories_cache, if: :saved_change_to_category?
-  after_destroy :clear_categories_cache
+  before_validation :generate_slug
 
-  # Scopes
-  scope :published, -> { where.not(published_at: nil).where("published_at <= ?", Time.current) }
-  scope :featured, -> { where(featured: true) }
+  scope :published, -> { where("published_at <= ?", Time.current) }
+  scope :featured, -> { where(featured: true) } # If we had a featured column, but we don't yet. I'll stick to what exists.
   scope :by_category, ->(category) { where(category: category) }
-  scope :by_author_slug, ->(author_slug) { where("LOWER(author_name) LIKE ?", "#{author_slug.downcase}%") }
   scope :recent, -> { order(published_at: :desc) }
-  scope :search, ->(query) {
-    return all if query.blank?
-
-    # Simple LIKE search (works with SQLite and PostgreSQL)
-    sanitized_query = "%#{sanitize_sql_like(query.to_s)}%"
-    where(
-      "LOWER(title) LIKE ? OR LOWER(content) LIKE ? OR LOWER(category) LIKE ? OR LOWER(excerpt) LIKE ?",
-      sanitized_query.downcase, sanitized_query.downcase, sanitized_query.downcase, sanitized_query.downcase
-    )
-  }
-
-  # Instance methods
-  def published?
-    published_at.present? && published_at <= Time.current
-  end
-
-  def reading_time
-    return 1 if content.blank?
-
-    # Estimate reading time based on word count (average 200 words per minute)
-    word_count = content.split.size
-    (word_count / 200.0).ceil
-  end
 
   def to_param
     slug
   end
 
-  def path
-    "/#{slug}"
+  def read_time
+    words_per_minute = 180
+    text_content = content.to_plain_text
+    word_count = text_content.split.size
+    minutes = (word_count / words_per_minute).ceil
+    "#{minutes} min read"
   end
 
-  def author_slug
-    author_name&.split&.first&.downcase
-  end
+  # 커버 이미지 캡션 반환
+  def cover_image_caption
+    return nil unless cover_image.attached?
 
-  # User와 연결된 경우 User 정보를 우선 사용, 아니면 author_name 사용
-  def author_display_name
-    user&.nickname || author_name
-  end
-
-  def author_display_avatar
-    user&.email&.then { |email| "https://www.gravatar.com/avatar/#{Digest::MD5.hexdigest(email)}" } || author_avatar
+    cover_image.blob.metadata["caption"]
   end
 
   private
 
-  # Kamil Lee가 작성한 포스트만 알림 발송
-  def should_notify_subscribers?
-    author_name == "Kamil Lee" && published?
-  end
-
-  # Newsletter 구독자에게 알림 발송
-  def notify_newsletter_subscribers
-    User.newsletter_subscribers.find_each do |user|
-      UserMailer.new_post_notification(user, self).deliver_later
+  def generate_slug
+    if title.present? && slug.blank?
+      generated = title.parameterize
+      self.slug = generated.presence || "post-#{SecureRandom.hex(4)}"
     end
-  end
-
-  # 카테고리 목록 캐시 무효화
-  def clear_categories_cache
-    Rails.cache.delete("categories_list")
   end
 end

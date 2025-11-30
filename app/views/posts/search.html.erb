@@ -1,0 +1,94 @@
+ TODO: 검색 결과 페이지 레이아웃 수정하기 -->
+<% content_for :title, "검색: #{@query} | Kamil Lee의 개발 일기" %>
+
+<div class="ts-site-content ts-sidebar-enabled ts-singular-thumbnail-enabled">
+  <div class="ts-front-page">
+    <!-- 검색 결과 헤더 -->
+    <div class="ts-search-header" style="padding: 2rem 0;">
+      <div class="ts-container">
+        <h1 class="ts-jumbo" style="font-size: 2rem;">
+          <% if @query.present? %>
+            "<%= @query %>" 검색 결과
+          <% else %>
+            검색
+          <% end %>
+        </h1>
+        <p style="color: #666; margin-top: 0.5rem;">
+          <% if @posts.any? %>
+            <%= @posts.count %>개의 게시글을 찾았습니다.
+          <% elsif @query.present? %>
+            검색 결과가 없습니다.
+          <% else %>
+            검색어를 입력하세요.
+          <% end %>
+        </p>
+      </div>
+    </div>
+
+    <% if @posts.any? %>
+      <!-- 검색 결과 목록 -->
+      <div class="more-posts ts-section">
+        <div class="ts-section-outer">
+          <div class="ts-section-inner">
+            <div class="ts-posts">
+              <div class="ts-posts-area">
+                <div class="ts-posts-area__main ts-posts-list">
+                  <% @posts.each do |post| %>
+                    <article class="post type-post status-publish format-standard has-post-thumbnail category-uncategorized ts-entry">
+                      <div class="ts-entry__outer">
+                        <div class="ts-entry__inner ts-entry__inner-left">
+                          <div class="ts-entry__post-meta">
+                            <div class="ts-meta-date"><%= post.published_at.strftime("%B %-d, %Y") %></div>
+                            <div class="ts-meta-reading-time"><%= post.read_time rescue "0 min read" %></div>
+                          </div>
+                          <span class="ts-mention">@<%= post.author %></span>
+                        </div>
+                        <div class="ts-entry__inner ts-entry__content">
+                          <h2 class="ts-entry__title">
+                            <%= link_to post.title, post %>
+                          </h2>
+                          <p class="ts-entry__excerpt"><%= truncate(post.summary, length: 150) %></p>
+                          <% if post.tags.present? %>
+                            <div class="ts-tags-section" style="margin-top: 0.5rem;">
+                              <% post.tags.split(',').each do |tag| %>
+                                <span class="ts-tag" style="font-size: 0.75rem;">
+                                  #<%= link_to tag.strip, search_path(keyword: tag.strip), rel: "tag" %>
+                                </span>
+                              <% end %>
+                            </div>
+                          <% end %>
+                        </div>
+                        <div class="ts-entry__inner ts-entry__inner-right">
+                          <div class="ts-entry__gallery">
+                            <div class="ts-entry__thumbnail ts-ratio-square">
+                              <div class="ts-overlay-background">
+                                <% if post.cover_image.attached? %>
+                                  <%= image_tag post.cover_image,
+                                      class: "attachment-post-thumbnail size-post-thumbnail wp-post-image",
+                                      alt: post.title,
+                                      decoding: "async",
+                                      fetchpriority: "high" %>
+                                <% end %>
+                              </div>
+                              <%= link_to "", post_path(post), class: "ts-overlay-link" %>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </article>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Arc 패턴 -->
+    <div class="c-arc concave-up">
+      <div class="c-arc__upper color-blue"></div>
+      <div class="c-arc__lower color-white"></div>
+    </div>
+  </div>
+</div>

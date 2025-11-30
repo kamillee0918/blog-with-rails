@@ -1,0 +1,88 @@
+<%= form_with(model: post, class: "ts-entry__wrap") do |form| %>
+  <div class="ts-entry__container">
+    <div class="ts-entry__content-wrap">
+      <div class="ts-single-post ts-wysiwyg">
+        <% if post.errors.any? %>
+          <!-- TODO: 스타일 클래스 변경 -->
+          <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+            <h2><%= pluralize(post.errors.count, "error") %> prohibited this post from being saved:</h2>
+
+            <ul class="list-disc ml-6">
+              <% post.errors.each do |error| %>
+                <li><%= error.full_message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <!-- 게시글 제목 필드 -->
+        <div class="ts-search__wrapper">
+          <%= form.label :title %>
+          <div class="ts-search__group" style="<%= post.errors[:title].any? ? 'border-bottom: 1px solid var(--wp--preset--color--vivid-red)' : '' %>">
+            <%= form.text_field :title, class: "ts-search__input", style: "border: none; outline: none;", onfocus: "this.parentElement.style.borderBottom = '1px solid var(--wp--preset--color--vivid-cyan-blue)'", onblur: "if (!this.classList.contains('error')) { this.parentElement.style.borderBottom = '' }" %>
+          </div>
+        </div>
+
+        <!-- 게시글 요약 필드 -->
+        <div class="ts-search__wrapper">
+          <%= form.label :summary %>
+          <div class="ts-search__group" style="<%= post.errors[:summary].any? ? 'border-bottom: 1px solid var(--wp--preset--color--vivid-red)' : '' %>">
+            <%= form.text_field :summary, class: "ts-search__input", style: "border: none; outline: none;", onfocus: "this.parentElement.style.borderBottom = '1px solid var(--wp--preset--color--vivid-cyan-blue)'", onblur: "if (!this.classList.contains('error')) { this.parentElement.style.borderBottom = '' }" %>
+          </div>
+        </div>
+
+        <!-- 게시글 게시일 필드 -->
+        <div class="ts-search__wrapper">
+          <%= form.label :published_at %>
+          <div class="ts-search__group" style="<%= post.errors[:published_at].any? ? 'border-bottom: 1px solid var(--wp--preset--color--vivid-red)' : '' %>">
+            <%= form.date_field :published_at, class: "ts-search__input", style: "border: none; outline: none;", onfocus: "this.parentElement.style.borderBottom = '1px solid var(--wp--preset--color--vivid-cyan-blue)'", onblur: "if (!this.classList.contains('error')) { this.parentElement.style.borderBottom = '' }" %>
+          </div>
+        </div>
+
+        <!-- 게시글 대표 이미지 필드 -->
+        <div class="ts-search__wrapper">
+          <%= form.label :cover_image %>
+          <div class="ts-search__group" style="<%= post.errors[:cover_image].any? ? 'border-bottom: 1px solid var(--wp--preset--color--vivid-red)' : '' %>">
+            <%= form.file_field :cover_image, class: "ts-search__input", style: "border: none; outline: none;", onfocus: "this.parentElement.style.borderBottom = '1px solid var(--wp--preset--color--vivid-cyan-blue)'", onblur: "if (!this.classList.contains('error')) { this.parentElement.style.borderBottom = '' }" %>
+          </div>
+        </div>
+
+        <!-- 게시글 작성자 필드 (기본값: Kamil Lee) -->
+        <div class="ts-search__wrapper">
+          <%= form.label :author %>
+          <div class="ts-search__group" style="<%= post.errors[:author].any? ? 'border-bottom: 1px solid var(--wp--preset--color--vivid-red)' : '' %>">
+            <%= form.text_field :author, value: post.author.presence || 'Kamil Lee', class: "ts-search__input", style: "border: none; outline: none;", onfocus: "this.parentElement.style.borderBottom = '1px solid var(--wp--preset--color--vivid-cyan-blue)'", onblur: "if (!this.classList.contains('error')) { this.parentElement.style.borderBottom = '' }" %>
+          </div>
+        </div>
+
+        <!-- 게시글 태그 필드 -->
+        <div class="ts-search__wrapper">
+          <%= form.label :tags %>
+          <div class="ts-search__group" style="<%= post.errors[:tags].any? ? 'border-bottom: 1px solid var(--wp--preset--color--vivid-red)' : '' %>">
+            <%= form.text_field :tags, class: "ts-search__input", style: "border: none; outline: none;", onfocus: "this.parentElement.style.borderBottom = '1px solid var(--wp--preset--color--vivid-cyan-blue)'", onblur: "if (!this.classList.contains('error')) { this.parentElement.style.borderBottom = '' }" %>
+          </div>
+        </div>
+
+        <!-- 게시글 카테고리 필드 -->
+        <div class="ts-search__wrapper">
+          <%= form.label :category %>
+          <div class="ts-search__group" style="<%= post.errors[:category].any? ? 'border-bottom: 1px solid var(--wp--preset--color--vivid-red)' : '' %>">
+            <%= form.text_field :category, class: "ts-search__input", style: "border: none; outline: none;", onfocus: "this.parentElement.style.borderBottom = '1px solid var(--wp--preset--color--vivid-cyan-blue)'", onblur: "if (!this.classList.contains('error')) { this.parentElement.style.borderBottom = '' }" %>
+          </div>
+        </div>
+
+        <!-- 게시글 내용 필드 (Froala Editor) -->
+        <div class="ts-search__wrapper">
+          <%= form.label :content %>
+          <%= form.text_area :content, id: "froala-editor" %>
+        </div>
+
+        <!-- 게시글 버튼(이전 페이지 이동/등록) -->
+        <div class="hiring">
+          <%= link_to "Back to Home", root_path %>
+          <%= form.submit %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

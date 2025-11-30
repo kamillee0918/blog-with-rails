@@ -9,7 +9,7 @@ Rails 8 기반의 모던 블로그 애플리케이션입니다.
 - ✅ **Phase 1**: 블로그 포스트 모델 (완료)
 - ✅ **Phase 2**: 블로그 레이아웃 구현 (완료)
 - ✅ **Phase 3**: 검색 및 사용자 상호작용 기능 (완료)
-- ✅ **Phase 4**: 사용자 인증 및 뉴스레터 시스템 (완료)
+- ✅ **Phase 4**: 관리자 인증 시스템 (완료)
 
 ### 🎯 Phase 2 주요 기능 ✅
 
@@ -23,19 +23,14 @@ Rails 8 기반의 모던 블로그 애플리케이션입니다.
 ### 🎯 Phase 3 주요 기능 ✅
 
 - **🔍 검색 시스템**: 실시간 검색 모달 + Stimulus 컨트롤러
-- **📧 구독 기능 레이아웃**: 뉴스레터 구독 폼
 - **📱 모바일 네비게이션**: 햄버거 메뉴 + 모바일 최적화
 - **🎭 인터랙티브 요소**: 로딩 스피너, 토스트 알림, 애니메이션
 - **⚡ 향상된 UX**: 키보드 단축키, 접근성 개선
 
 ### 🎯 Phase 4 주요 기능 ✅
 
-- **🔐 Magic Link 인증**: 비밀번호 없는 안전한 로그인 (OTP 지원)
-- **📧 Newsletter 시스템**: 이메일 구독 관리 + 자동 알림 발송
-- **👤 계정 관리 API**: 닉네임/이메일 변경, 구독 설정
-- **📮 이메일 알림**: Kamil Lee의 새 포스트 발행 시 자동 발송
-- **🗑️ Soft Delete**: 회원 탈퇴 (데이터 보존)
-- **🧪 테스트 커버리지**: 120+ 테스트 (Unit, Integration, Mailer)
+- **🔐 관리자 인증**: 세션 기반의 간단한 관리자 로그인
+- **📝 게시글 관리**: 웹 인터페이스를 통한 게시글 작성/수정/삭제
 
 ## 🛠️ 기술 스택
 
@@ -62,14 +57,14 @@ Rails 8 기반의 모던 블로그 애플리케이션입니다.
 
 [![Ruby Version Badge](https://img.shields.io/badge/Ruby_INSTALLATION-3.4.5-CC342D?style=for-the-badge&labelColor=black&logo=ruby&logoColor=CC342D)](https://www.ruby-lang.org/ko/documentation/installation/)
 
-[![Rails Version Badge](https://img.shields.io/badge/Rails_INSTALLATION-8.0.3-D30001?style=for-the-badge&labelColor=black&logo=rubyonrails&logoColor=D30001)](https://rails.insomenia.com/install_ruby_on_rails)
+[![Rails Version Badge](https://img.shields.io/badge/Rails_INSTALLATION-8.0.4-D30001?style=for-the-badge&labelColor=black&logo=rubyonrails&logoColor=D30001)](https://rails.insomenia.com/install_ruby_on_rails)
 
 ### 설치
 
 ```bash
 # 저장소 클론
 git clone https://github.com/kamillee0918/blog-with-rails.git
-cd ./blog
+cd blog-with-rails
 
 # 의존성 설치
 bundle install
@@ -93,83 +88,31 @@ bin/dev
 
 ### Post 모델
 
-| 필드           | 타입     | 설명                             |
-| -------------- | -------- | -------------------------------- |
-| title          | string   | 포스트 제목 (필수)               |
-| slug           | string   | URL 친화적 식별자 (필수, 유니크) |
-| content        | text     | 포스트 본문 (필수)               |
-| excerpt        | text     | 포스트 요약                      |
-| category       | string   | 카테고리 (필수)                  |
-| author_name    | string   | 작성자 이름                      |
-| author_avatar  | string   | 작성자 아바타 경로               |
-| published_at   | datetime | 발행 일시                        |
-| featured       | boolean  | 추천 포스트 여부 (기본값: false) |
-| featured_image | string   | 대표 이미지 경로                 |
-| image_caption  | string   | 이미지 캡션                      |
-| user_id        | integer  | 작성자 User ID (FK, optional)    |
+| 필드           | 타입     | 설명                                     |
+| -------------- | -------- | ---------------------------------------- |
+| title          | string   | 포스트 제목 (필수)                       |
+| summary        | text     | 포스트 요약                              |
+| content        | rich_text| 포스트 본문 (ActionText)                 |
+| tags           | string   | 태그 (쉼표로 구분)                       |
+| author         | string   | 작성자 이름                              |
+| published_at   | datetime | 발행 일시                                |
+| slug           | string   | URL 슬러그 (제목에서 자동 생성)          |
+| category       | string   | 카테고리                                 |
+| cover_image    | attachment| 대표 이미지 (ActiveStorage)              |
 
-**인덱스:**
-
-- `slug` (unique)
-- `published_at`
-- `category`
-- `featured`
-- `user_id` (foreign key)
-
-### User 모델
-
-| 필드                            | 타입     | 설명                                 |
-| ------------------------------- | -------- | ------------------------------------ |
-| email                           | string   | 이메일 주소 (필수, 유니크)           |
-| nickname                        | string   | 닉네임 (필수)                        |
-| verified                        | boolean  | 이메일 인증 여부 (기본값: false)     |
-| magic_link_token                | string   | Magic Link 토큰 (유니크)             |
-| magic_link_sent_at              | datetime | Magic Link 발송 시각                 |
-| email_otp_code                  | string   | OTP 코드 (6자리)                     |
-| email_otp_expires_at            | datetime | OTP 만료 시각                        |
-| enable_newsletter_notifications | boolean  | Newsletter 구독 여부 (기본값: false) |
-| deleted_at                      | datetime | Soft Delete 시각                     |
-
-**인덱스:**
-
-- `email` (unique)
-- `magic_link_token` (unique)
-- `deleted_at`
-
-**Scopes:**
-
-- `User.active` - 삭제되지 않은 사용자
-- `User.deleted` - 삭제된 사용자
-- `User.newsletter_subscribers` - 구독 활성 + 인증 완료 사용자
-
-### Session 모델
-
-| 필드       | 타입    | 설명               |
-| ---------- | ------- | ------------------ |
-| user_id    | integer | User ID (FK, 필수) |
-| user_agent | string  | User Agent         |
-| ip_address | string  | IP 주소            |
-
-**인덱스:**
-
-- `user_id` (foreign key)
-
-## 🔍 주요 기능
-
-### Post 모델 Scopes
+**메서드:**
 
 ```ruby
-Post.published          # 발행된 포스트만
-Post.featured           # 추천 포스트만
-Post.by_category("AI")  # 특정 카테고리
-Post.recent             # 최신순 정렬
+post.read_time          # 읽는 시간 계산
+post.cover_image_caption # 커버 이미지 캡션 (메타데이터)
 ```
+
+## 🔍 주요 기능
 
 ### Post 모델 메서드
 
 ```ruby
-post.published? # 발행 여부 확인
-post.to_param   # SEO 친화적 URL (slug 반환)
+Post.order(published_at: :desc) # 최신순 정렬
 ```
 
 ## 📝 개발 가이드
@@ -179,8 +122,8 @@ post.to_param   # SEO 친화적 URL (slug 반환)
 [![Ruby Reference Badge](https://img.shields.io/badge/Ruby_REFERENCE-3.4.5-CC342D?style=for-the-badge&labelColor=black&logo=rubyonrails&logoColor=CC342D)](https://www.ruby-lang.org/ko/documentation/)
 [![Ruby API Badge](https://img.shields.io/badge/Ruby_API-3.4.5-CC342D?style=for-the-badge&labelColor=black&logo=rubyonrails&logoColor=CC342D)](https://docs.ruby-lang.org/en/3.4/)
 
-[![Rails Reference Badge](https://img.shields.io/badge/Rails_REFERENCE-8.0.3-D30001?style=for-the-badge&labelColor=black&logo=rubyonrails&logoColor=D30001)](https://rails.insomenia.com/)
-[![Rails API Badge](https://img.shields.io/badge/Rails_API-8.0.3-D30001?style=for-the-badge&labelColor=black&logo=rubyonrails&logoColor=D30001)](https://api.rubyonrails.org/)
+[![Rails Reference Badge](https://img.shields.io/badge/Rails_REFERENCE-8.0.4-D30001?style=for-the-badge&labelColor=black&logo=rubyonrails&logoColor=D30001)](https://rails.insomenia.com/)
+[![Rails API Badge](https://img.shields.io/badge/Rails_API-8.0.4-D30001?style=for-the-badge&labelColor=black&logo=rubyonrails&logoColor=D30001)](https://api.rubyonrails.org/)
 
 ### 코드 스타일
 
