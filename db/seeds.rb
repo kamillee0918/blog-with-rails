@@ -7,58 +7,112 @@ Post.destroy_all
 
 puts "Creating seed posts..."
 
-10.times do |i|
-  title = [
-    "Scaling Rails to 100k Requests per Second",
-    "How We Migrated from Microservices Back to Monolith",
-    "Optimizing Database Queries for High Performance",
-    "The Future of Frontend Development at Our Company",
-    "Building a Resilient Distributed System",
-    "Our Journey to Cloud Native Architecture",
-    "Improving Developer Productivity with Custom Tools",
-    "Deep Dive into Ruby Memory Management",
-    "Securing Your Rails Application Against Modern Threats",
-    "Why We Chose Hotwire for Our New Project"
-  ][i]
+titles = [
+  "Scaling Rails to 100k Requests per Second",
+  "How We Migrated from Microservices Back to Monolith",
+  "Optimizing Database Queries for High Performance",
+  "The Future of Frontend Development at Our Company",
+  "Building a Resilient Distributed System",
+  "Our Journey to Cloud Native Architecture",
+  "Improving Developer Productivity with Custom Tools",
+  "Deep Dive into Ruby Memory Management",
+  "Securing Your Rails Application Against Modern Threats",
+  "Why We Chose Hotwire for Our New Project",
+  "Understanding Concurrency in Ruby 3",
+  "GraphQL vs REST: A Practical Comparison",
+  "Implementing Real-time Features with ActionCable",
+  "CI/CD Best Practices for Rails Applications",
+  "Managing Technical Debt in Growing Codebases",
+  "Introduction to Solid Queue for Background Jobs",
+  "Building APIs with Rails 8 and JSON:API",
+  "Effective Testing Strategies for Rails Apps",
+  "Deploying Rails with Kamal 2",
+  "PostgreSQL Performance Tips for Rails Developers"
+]
 
-  tags = [
-    "rails, performance, scaling, infrastructure",
-    "architecture, microservices, monolith",
-    "database, activerecord, sql, optimization",
-    "frontend, react, javascript, ux",
-    "distributed-systems, resilience, reliability",
-    "cloud, kubernetes, docker, devops",
-    "developer-experience, tools, productivity",
-    "ruby, memory, debugging, performance",
-    "security, authentication, rails",
-    "hotwire, turbo, stimulus, rails"
-  ][i]
+tags_list = [
+  "rails, performance, scaling, infrastructure",
+  "architecture, microservices, monolith",
+  "database, activerecord, sql, optimization",
+  "frontend, react, javascript, ux",
+  "distributed-systems, resilience, reliability",
+  "cloud, kubernetes, docker, devops",
+  "developer-experience, tools, productivity",
+  "ruby, memory, debugging, performance",
+  "security, authentication, rails",
+  "hotwire, turbo, stimulus, rails",
+  "ruby, concurrency, ractor, fiber",
+  "api, graphql, rest, design",
+  "websockets, actioncable, realtime",
+  "ci, cd, github-actions, deployment",
+  "refactoring, technical-debt, code-quality",
+  "background-jobs, solid-queue, async",
+  "api, rails, json-api, serialization",
+  "testing, rspec, minitest, tdd",
+  "deployment, kamal, docker, production",
+  "postgresql, database, performance, indexing"
+]
 
-  summary = [
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc accumsan odio dolor, eu iaculis ex semper pretium. Phasellus in consectetur lorem. Nam feugiat sollicitudin risus quis cursus. Mauris mi nisi, venenatis in bibendum eleifend, aliquet nec nulla. Aenean sollicitudin, justo eget faucibus scelerisque, eros tortor luctus orci, a faucibus odio diam in orci. Integer dictum scelerisque ante, a accumsan leo efficitur efficitur. Maecenas pharetra pretium sapien non tempus. Phasellus ex massa, facilisis consectetur dui eget, condimentum semper ex. Aliquam aliquam felis sit amet diam congue, vel tristique lectus interdum. Nam pretium molestie leo at aliquet. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec molestie risus. Sed ipsum magna, cursus id venenatis at, ullamcorper at eros. Phasellus id tellus dui. Fusce sit amet iaculis massa. Aenean non porttitor risus. Maecenas et diam nulla. Aliquam ac erat dolor. Nunc vitae venenatis elit. In eget justo nulla. Quisque lacinia bibendum nulla, ac efficitur justo elementum eget. Quisque ornare, massa vitae gravida interdum, velit neque dictum felis, at feugiat turpis felis vitae nunc. Donec vehicula velit vel eleifend semper. Etiam gravida, est eu commodo faucibus, urna turpis hendrerit neque, malesuada viverra neque turpis at magna. In fermentum placerat nibh non malesuada. Pellentesque eget mauris fringilla, elementum erat sed, porttitor justo. Praesent mollis elit nec felis placerat mollis. Nulla ipsum mi, ullamcorper et tellus nec, porttitor tincidunt leo. Fusce varius auctor ornare. Aenean ullamcorper eu massa et pellentesque. Aliquam erat volutpat. Pellentesque sed ante sit amet orci suscipit aliquam at eget ante. Aliquam erat volutpat. Vestibulum fermentum tellus id iaculis condimentum. Vivamus et nunc et felis scelerisque auctor. Nam ornare quis dui in pellentesque. Proin diam justo, imperdiet ut magna sed, lacinia efficitur massa. Sed nec tellus quis eros mollis pellentesque. Phasellus sit amet nisi lectus. Sed non commodo risus. Sed fermentum nulla quis tristique varius. Duis molestie urna sed magna ultrices condimentum. Proin massa velit, dignissim sit amet odio eu, tempor aliquam est. Etiam ac maximus enim, sed ultrices magna. Sed ut erat aliquam, varius metus nec, efficitur odio. Aenean sagittis euismod est ac rhoncus. Etiam maximus lectus sed erat feugiat, id semper turpis fringilla. Mauris maximus arcu metus, ac mattis neque venenatis eget. Suspendisse potenti. Interdum et malesuada fames ac ante ipsum primis in faucibus. Suspendisse lacus nisi, rutrum in nisl et, placerat semper dui. Curabitur commodo, lectus id aliquet iaculis, metus orci hendrerit dolor, quis porta ligula ligula eu odio. Sed dapibus lobortis blandit. Nunc volutpat mauris non vestibulum mollis. Praesent ornare mollis lectus, vitae finibus ante scelerisque ullamcorper. Cras ac dui scelerisque, efficitur quam elementum, cursus felis.",
-    "Discover the reasons behind our architectural shift and the benefits we've seen since returning to a monolith.",
-    "A technical deep dive into ActiveRecord optimizations and SQL tuning techniques.",
-    "We're adopting new frontend technologies to improve user experience and developer velocity.",
-    "Strategies and patterns we use to ensure our systems stay up even when parts fail.",
-    "How we containerized our applications and orchestrated them with Kubernetes.",
-    "An overview of the internal tools we've built to streamline our development workflow.",
-    "Understanding how Ruby handles memory and how to debug memory leaks in production.",
-    "Best practices for protecting your application data and user privacy.",
-    "A case study on using Hotwire to build responsive SPAs without writing complex JavaScript."
-  ][i]
+summaries = [
+  "Learn how we scaled our Rails application to handle massive traffic with careful optimization and infrastructure tuning.",
+  "Discover the reasons behind our architectural shift and the benefits we've seen since returning to a monolith.",
+  "A technical deep dive into ActiveRecord optimizations and SQL tuning techniques.",
+  "We're adopting new frontend technologies to improve user experience and developer velocity.",
+  "Strategies and patterns we use to ensure our systems stay up even when parts fail.",
+  "How we containerized our applications and orchestrated them with Kubernetes.",
+  "An overview of the internal tools we've built to streamline our development workflow.",
+  "Understanding how Ruby handles memory and how to debug memory leaks in production.",
+  "Best practices for protecting your application data and user privacy.",
+  "A case study on using Hotwire to build responsive SPAs without writing complex JavaScript.",
+  "Exploring Ruby 3's new concurrency features including Ractors and Fiber Scheduler.",
+  "When to use GraphQL and when REST is the better choice for your API needs.",
+  "Building interactive real-time features using Rails ActionCable and WebSockets.",
+  "Setting up robust continuous integration and deployment pipelines for Rails projects.",
+  "Strategies for identifying, prioritizing, and paying down technical debt effectively.",
+  "Getting started with Solid Queue, Rails' new default background job processor.",
+  "Building clean, well-documented APIs following the JSON:API specification.",
+  "Writing maintainable tests that give you confidence without slowing you down.",
+  "A complete guide to deploying Rails applications with Kamal 2.",
+  "Advanced PostgreSQL techniques to boost your Rails application performance."
+]
 
-  credit = [
-    "Gumbel AlphaZero",
-    "Computer Science",
-    "Dummy Credit"
-  ]
+categories = [
+  "Engineering",
+  "Architecture",
+  "Database",
+  "Frontend",
+  "Infrastructure",
+  "DevOps",
+  "Productivity",
+  "Ruby",
+  "Security",
+  "Rails",
+  "Ruby",
+  "API",
+  "Rails",
+  "DevOps",
+  "Engineering",
+  "Rails",
+  "API",
+  "Testing",
+  "DevOps",
+  "Database"
+]
 
+credits = [
+  "Gumbel AlphaZero",
+  "Computer Science",
+  "Dummy Credit"
+]
+
+20.times do |i|
   post = Post.create!(
-    title: title,
-    summary: summary,
+    title: titles[i],
+    summary: summaries[i],
     author: "Kamil Lee",
-    tags: tags,
-    content: "<p>This is the main content for <strong>#{title}</strong>.</p><p>#{summary}</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
+    tags: tags_list[i],
+    category: categories[i],
+    content: "<p>This is the main content for <strong>#{titles[i]}</strong>.</p><p>#{summaries[i]}</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
     published_at: Time.current - i.days
   )
 
@@ -66,9 +120,8 @@ puts "Creating seed posts..."
   image_files = [ "gumbel_alphazero_thumbnail.png", "cpu_scheduler_thumbnail.png", "dummy_thumbnail.png" ]
   image_file = image_files[i % image_files.length]
   image_path = Rails.root.join("app/assets/images/thumbnail", image_file)
-  caption = credit[i % credit.length]
+  caption = credits[i % credits.length]
 
-  # TODO: Caption 이 이미지에 적용되지 않는 이슈 확인
   if File.exist?(image_path)
     post.cover_image.attach(
       io: File.open(image_path),
@@ -76,7 +129,7 @@ puts "Creating seed posts..."
       content_type: "image/png",
       metadata: { credit: caption }
     )
-    puts "  Attached #{image_file} to '#{title}'"
+    puts "  Attached #{image_file} to '#{titles[i]}'"
   else
     puts "  Could not find image: #{image_path}"
   end
