@@ -1,0 +1,14 @@
+<%# Link to the "Previous" page
+  - available local variables
+    url:            url to the previous page
+    current_page:   a page object for the currently displayed page
+    total_pages:    total number of pages
+    per_page:       number of items to fetch per page
+    remote:         data-remote
+-%>
+<%= link_to url, class: "prev page-numbers", rel: "prev", remote: remote do %>
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M19 12H5M5 12L12 5M5 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+  </svg>
+  Previous
+<% end %>
