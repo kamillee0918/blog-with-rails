@@ -1,0 +1,10 @@
+{
+  "ignored_warnings": [
+    {
+      "fingerprint": "b5f312ed2a08643b810f319d343eaac9bdb56c8490fd77ee8e5b952f628ec2aa",
+      "note": "File access is safe: params sanitized with File.basename and path validated to stay within allowed directory"
+    }
+  ],
+  "updated": "2025-11-30",
+  "brakeman_version": "7.1.1"
+}
