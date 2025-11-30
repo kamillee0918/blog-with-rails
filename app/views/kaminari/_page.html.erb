@@ -7,8 +7,14 @@
     per_page:       number of items to fetch per page
     remote:         data-remote
 -%>
+<%
+  target_url = url
+  if controller_name == 'posts' && action_name == 'index' && params[:category].blank? && params[:keyword].blank? && params[:year].blank?
+    target_url = posts_page_path(page: page)
+  end
+%>
 <% if page.current? %>
   <span aria-current="page" class="page-numbers current"><%= page %></span>
 <% else %>
-  <%= link_to page, url, class: "page-numbers", remote: remote %>
+  <%= link_to page, target_url, class: "page-numbers", remote: remote, data: { turbo: false } %>
 <% end %>

@@ -7,13 +7,14 @@ class PostsController < ApplicationController
     @posts = Post.order(published_at: :desc)
 
     if params[:category].present?
-      @posts = @posts.by_category(params[:category])
+      @category = params[:category]
+      @posts = @posts.by_category(@category)
     end
 
     @posts = @posts.page(params[:page]).per(10)
 
-    # 페이지 2 이상이면 show_all 레이아웃으로 표시
-    if params[:page].to_i > 1
+    # 페이지 파라미터가 있거나(1페이지 포함) 카테고리가 있으면 show_all 레이아웃으로 표시
+    if params[:page].present? || @category.present?
       render :show_all
     end
   end
@@ -25,9 +26,11 @@ class PostsController < ApplicationController
       @posts = Post.where("title LIKE ? OR summary LIKE ? OR tags LIKE ?",
                           "%#{@query}%", "%#{@query}%", "%#{@query}%")
                    .order(published_at: :desc)
+                   .page(params[:page]).per(8)
     else
-      @posts = Post.none
+      @posts = Post.none.page(params[:page]).per(8)
     end
+    render :show_all
   end
 
   # GET /posts/archive/:year
@@ -35,7 +38,7 @@ class PostsController < ApplicationController
     @year = params[:year].to_i
     @posts = Post.where("strftime('%Y', published_at) = ?", @year.to_s)
                  .order(published_at: :desc)
-                 .page(params[:page]).per(10)
+                 .page(params[:page]).per(8)
 
     render :show_all
   end
