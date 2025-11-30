@@ -1,5 +1,7 @@
 <% if @year.present? %>
   <% content_for :title, "#{@year}년 | Kamil Lee의 개발 일기" %>
+<% elsif @query.present? %>
+  <% content_for :title, "#{@query} | Kamil Lee의 개발 일기" %>
 <% else %>
   <% content_for :title, "Posts | Kamil Lee의 개발 일기" %>
 <% end %>
@@ -12,6 +14,12 @@
         <div class="ts-page__header">
           <% if @year.present? %>
             <h1 class="ts-page__title">#<%= @year %></h1>
+          <% elsif @query.present? %>
+            <span class="ts-page__subtitle">Search Results</span>
+            <h1 class="ts-page__title"><%= @query %></h1>
+          <% elsif @category.present? %>
+            <span class="ts-page__subtitle">Category</span>
+            <h1 class="ts-page__title"><%= @category %></h1>
           <% else %>
             <span class="ts-page__subtitle"><%= @posts.total_count %> posts</span>
             <h1 class="ts-page__title">Explore all posts</h1>
@@ -32,6 +40,11 @@
                     <span class="ts-mention">@<%= post.author %></span>
                   </div>
                   <div class="ts-entry__inner ts-entry__content">
+                    <% if post.category.present? %>
+                      <div class="ts-meta-category">
+                        <%= link_to post.category, category_posts_path(category: post.category), class: "ts-category-link", style: "color: var(--wp--preset--color--vivid-cyan-blue); text-decoration: none; font-weight: 600;" %>
+                      </div>
+                    <% end %>
                     <h2 class="ts-entry__title">
                       <%= link_to post.title, post, data: {turbo: false} %>
                     </h2>

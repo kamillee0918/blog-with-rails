@@ -45,7 +45,7 @@
                                 <div class="ts-meta-reading-time"><%= featured_post.read_time %></div>
                                 <% if featured_post.category.present? %>
                                   <div class="ts-meta-category">
-                                    <%= link_to featured_post.category, posts_path(category: featured_post.category), class: "ts-category-link", style: "color: var(--wp--preset--color--vivid-cyan-blue); text-decoration: none; font-weight: 600;" %>
+                                    <%= link_to featured_post.category, category_posts_path(category: featured_post.category), class: "ts-category-link", style: "color: var(--wp--preset--color--vivid-cyan-blue); text-decoration: none; font-weight: 600;" %>
                                   </div>
                                 <% end %>
                               </div>
@@ -111,12 +111,12 @@
                     <div class="ts-entry__post-meta">
                       <div class="ts-meta-date"><%= post.published_at.strftime("%B %-d, %Y") %></div>
                       <div class="ts-meta-reading-time"><%= post.read_time rescue "0 min read" %></div>
-                      <% if post.category.present? %>
-                         <div class="ts-meta-category">
-                           <%= link_to post.category, posts_path(category: post.category), class: "ts-category-link", style: "color: var(--wp--preset--color--vivid-cyan-blue); text-decoration: none; font-weight: 600;" %>
-                         </div>
-                      <% end %>
                     </div>
+                    <% if post.category.present? %>
+                      <div class="ts-meta-category">
+                        <%= link_to post.category, category_posts_path(category: post.category), class: "ts-category-link", style: "color: var(--wp--preset--color--vivid-cyan-blue); text-decoration: none; font-weight: 600;" %>
+                      </div>
+                    <% end %>
                     <h2 class="ts-entry__title">
                       <%= link_to post.title, post %>
                     </h2>
@@ -148,6 +148,11 @@
                         <span class="ts-mention">@<%= post.author %></span>
                       </div>
                       <div class="ts-entry__inner ts-entry__content">
+                        <% if post.category.present? %>
+                          <div class="ts-meta-category">
+                            <%= link_to post.category, category_posts_path(category: post.category), class: "ts-category-link", style: "color: var(--wp--preset--color--vivid-cyan-blue); text-decoration: none; font-weight: 600;" %>
+                          </div>
+                        <% end %>
                         <h2 class="ts-entry__title">
                           <%= link_to post.title, post, data: {turbo: false} %>
                         </h2>

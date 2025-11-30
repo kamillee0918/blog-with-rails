@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  get "posts/category/:category", to: "posts#index", as: :category_posts
+  get "posts/page/:page", to: "posts#index", as: :posts_page
+
   resources :posts
   get "search/:keyword", to: "posts#search", as: :search
   get "posts/archive/:year", to: "posts#archive", as: :archive, constraints: { year: /\d{4}/ }
