@@ -196,6 +196,11 @@
                 <div class="ts-entry__post-meta">
                   <div class="ts-meta-date"><%= @prev_post.published_at.strftime("%B %-d, %Y") %></div>
                   <div class="ts-meta-reading-time"><%= @prev_post.read_time rescue "0 min read" %></div>
+                  <% if @prev_post.category.present? %>
+                    <div class="ts-meta-category">
+                      <%= link_to @prev_post.category, posts_path(category: @prev_post.category), class: "ts-category-link", style: "color: var(--wp--preset--color--vivid-cyan-blue); text-decoration: none; font-weight: 600;" %>
+                    </div>
+                  <% end %>
                 </div>
               </div>
               <% if @prev_post.cover_image.attached? %>
@@ -225,6 +230,11 @@
                 <div class="ts-entry__post-meta">
                   <div class="ts-meta-date"><%= @next_post.published_at.strftime("%B %-d, %Y") %></div>
                   <div class="ts-meta-reading-time"><%= @next_post.read_time rescue "0 min read" %></div>
+                  <% if @next_post.category.present? %>
+                    <div class="ts-meta-category">
+                      <%= link_to @next_post.category, posts_path(category: @next_post.category), class: "ts-category-link", style: "color: var(--wp--preset--color--vivid-cyan-blue); text-decoration: none; font-weight: 600;" %>
+                    </div>
+                  <% end %>
                 </div>
               </div>
               <% if @next_post.cover_image.attached? %>

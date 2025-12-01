@@ -7,7 +7,12 @@ function initFroalaEditor(selector, options = {}) {
   const element = document.querySelector(selector);
   if (!element) return null;
 
+  // Meta 태그에서 Key 가져오기
+  const keyMeta = document.querySelector('meta[name="froala-activation-key"]');
+  const activationKey = keyMeta ? keyMeta.content : null;
+
   const defaultOptions = {
+    key: activationKey,
     height: 300
   };
 
