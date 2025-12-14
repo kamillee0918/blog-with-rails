@@ -11,65 +11,67 @@
   -->
   <% more_posts = @posts.drop(4) %>
 
-  <!-- 메인 페이지 게시글 시작 -->
-  <div class="ts-front-page">
-    <!-- featured_post 시작 -->
-    <div class="ts-featured-post tts-block-section">
-      <div class="tts-block-section-outer">
-        <div class="tts-block-section-inner">
-          <div class="tts-block-section-content">
-            <div class="tts-block-section-content-inner">
-              <div class="tts-block-posts">
-                <div class="tts-posts-area">
-                  <div class="tts-posts-area__outer">
-                    <div class="tts-posts-area__main">
-                      <article class="tts-entry">
-                        <div class="tts-entry__outer">
-                          <div class="tts-entry__inner tts-entry__thumbnail tts-entry__overlay tts-overlay-ratio ts-ratio-square">
-                            <div class="tts-overlay-background tts-overlay-transparent">
-                              <% if featured_post.cover_image.attached? %>
-                                <%# Featured 이미지: WebP + 고우선순위 로딩 %>
-                                <%= responsive_image_tag featured_post.cover_image, 
-                                    class: "attachment-post-thumbnail size-post-thumbnail wp-post-image", 
-                                    alt: featured_post.title,
-                                    lazy: false,
-                                    fetchpriority: true %>
-                              <% end %>
-                            </div>
-                            <%= link_to "", post_path(featured_post), class: "tts-overlay-link" %>
-                          </div>
-                          <div class="tts-entry__inner tts-entry__content">
-                            <div class="ts-entry__post-meta-wrapper">
-                              <div class="ts-entry__post-meta">
-                                <div class="ts-meta-date"><%= featured_post.published_at.strftime("%B %-d, %Y") %></div>
-                                <div class="ts-meta-reading-time"><%= featured_post.read_time %></div>
-                                <% if featured_post.category.present? %>
-                                  <div class="ts-meta-category">
-                                    <%= link_to featured_post.category, category_posts_path(category: featured_post.category), class: "ts-category-link", style: "color: var(--wp--preset--color--vivid-cyan-blue); text-decoration: none; font-weight: 600;" %>
-                                  </div>
+  <% if @posts.present? %>
+    <!-- 메인 페이지 게시글 시작 -->
+    <div class="ts-front-page">
+      <!-- featured_post 시작 -->
+      <div class="ts-featured-post tts-block-section">
+        <div class="tts-block-section-outer">
+          <div class="tts-block-section-inner">
+            <div class="tts-block-section-content">
+              <div class="tts-block-section-content-inner">
+                <div class="tts-block-posts">
+                  <div class="tts-posts-area">
+                    <div class="tts-posts-area__outer">
+                      <div class="tts-posts-area__main">
+                        <article class="tts-entry">
+                          <div class="tts-entry__outer">
+                            <div class="tts-entry__inner tts-entry__thumbnail tts-entry__overlay tts-overlay-ratio ts-ratio-square">
+                              <div class="tts-overlay-background tts-overlay-transparent">
+                                <% if featured_post.cover_image.attached? %>
+                                  <%# Featured 이미지: WebP + 고우선순위 로딩 %>
+                                  <%= responsive_image_tag featured_post.cover_image, 
+                                      class: "attachment-post-thumbnail size-post-thumbnail wp-post-image", 
+                                      alt: featured_post.title,
+                                      lazy: false,
+                                      fetchpriority: true %>
                                 <% end %>
                               </div>
+                              <%= link_to "", post_path(featured_post), class: "tts-overlay-link" %>
                             </div>
-                            <div class="tts-entry__content-inner">
-                              <h2 class="tts-entry__title ">
-                                <%= link_to featured_post.title, post_path(featured_post) %>
-                              </h2>
-                              <!--p class="ts-hero-paragraph"><%= truncate(featured_post.summary, length: 150) %></p-->
-                              <div class="c-article__author__meta">
-                                <div class="c-article__author">
-                                  <div class="c-article__author__avatar">
-                                    <img src="<%= asset_path('avatar.png') %>">
-                                  </div>
-                                  <div class="c-article__author__info">
-                                    <span class="c-article__author__name"><%= featured_post.author %></span>
-                                    <!-- <span class="c-article__author__title">Author</span> -->
+                            <div class="tts-entry__inner tts-entry__content">
+                              <div class="ts-entry__post-meta-wrapper">
+                                <div class="ts-entry__post-meta">
+                                  <div class="ts-meta-date"><%= featured_post.published_at.strftime("%B %-d, %Y") %></div>
+                                  <div class="ts-meta-reading-time"><%= featured_post.read_time %></div>
+                                  <% if featured_post.category.present? %>
+                                    <div class="ts-meta-category">
+                                      <%= link_to featured_post.category, category_posts_path(category: featured_post.category), class: "ts-category-link" %>
+                                    </div>
+                                  <% end %>
+                                </div>
+                              </div>
+                              <div class="tts-entry__content-inner">
+                                <h2 class="tts-entry__title ">
+                                  <%= link_to featured_post.title, post_path(featured_post) %>
+                                </h2>
+                                <!--p class="ts-hero-paragraph"><%= truncate(featured_post.summary, length: 150) %></p-->
+                                <div class="c-article__author__meta">
+                                  <div class="c-article__author">
+                                    <div class="c-article__author__avatar">
+                                      <img src="<%= asset_path('avatar.png') %>">
+                                    </div>
+                                    <div class="c-article__author__info">
+                                      <span class="c-article__author__name"><%= featured_post.author %></span>
+                                      <!-- <span class="c-article__author__title">Author</span> -->
+                                    </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </article>
+                        </article>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -78,116 +80,128 @@
           </div>
         </div>
       </div>
-    </div>
-    <!-- featured_post 끝 -->
-    <!-- featured_post 하단의 Arc 패턴 시작 -->
-    <div class="c-arc concave-up">
-      <div class="c-arc__upper color-blue"></div>
-      <div class="c-arc__lower color-white"></div>
-    </div>
-    <!-- featured_post 하단의 Arc 패턴 끝 -->
-    <!-- secondary_posts 시작 -->
-    <div class="secondary-posts ts-section">
-      <div class="ts-section-outer">
-        <div class="ts-section-inner">
-          <div class="ts-posts-area__main">
-            <% secondary_posts.each do |post| %>
-              <article class="post type-post status-publish format-standard has-post-thumbnail category-uncategorized ts-entry">
-                <div class="ts-entry__outer">
-                  <div class="ts-entry__inner ts-entry__thumbnail ts-ratio-landscape-3-2">
-                    <div class="ts-overlay-background">
-                      <% if post.cover_image.attached? %>
-                        <%# Secondary 이미지: WebP 변환 + 반응형 srcset (Lazy Loading 비활성화) %>
-                        <%= responsive_image_tag post.cover_image,
-                            class: "attachment-post-thumbnail size-post-thumbnail wp-post-image",
-                            alt: post.title,
-                            lazy: false,
-                            fetchpriority: false %>
-                      <% end %>
-                    </div>
-                    <%= link_to "", post_path(post), class: "tts-overlay-link", data: {turbo: false} %>
-                  </div>
-                  <div class="ts-entry__inner ts-entry__content">
-                    <div class="ts-entry__post-meta">
-                      <div class="ts-meta-date"><%= post.published_at.strftime("%B %-d, %Y") %></div>
-                      <div class="ts-meta-reading-time"><%= post.read_time rescue "0 min read" %></div>
-                    </div>
-                    <% if post.category.present? %>
-                      <div class="ts-meta-category">
-                        <%= link_to post.category, category_posts_path(category: post.category), class: "ts-category-link", style: "color: var(--wp--preset--color--vivid-cyan-blue); text-decoration: none; font-weight: 600;" %>
-                      </div>
-                    <% end %>
-                    <h2 class="ts-entry__title">
-                      <%= link_to post.title, post %>
-                    </h2>
-                    <span class="ts-mention">@<%= post.author %></span>
-                  </div>
-                </div>
-              </article>
-            <% end %>
-          </div>
-        </div>
+      <!-- featured_post 끝 -->
+      <!-- featured_post 하단의 Arc 패턴 시작 -->
+      <div class="c-arc concave-up">
+        <div class="c-arc__upper color-blue"></div>
+        <div class="c-arc__lower color-white"></div>
       </div>
-    </div>
-    <!-- secondary_posts 끝 -->
-    <!-- more_posts 시작 -->
-    <div class="more-posts ts-section">
-      <div class="ts-section-outer">
-        <div class="ts-section-inner">
-          <div class="ts-posts">
-            <div class="ts-posts-area">
-              <div class="ts-posts-area__main ts-posts-list">
-                <% more_posts.each do |post| %>
-                  <article class="post type-post status-publish format-standard has-post-thumbnail category-uncategorized ts-entry">
-                    <div class="ts-entry__outer">
-                      <div class="ts-entry__inner ts-entry__inner-left">
-                        <div class="ts-entry__post-meta">
-                          <div class="ts-meta-date"><%= post.published_at.strftime("%B %-d, %Y") %></div>
-                          <div class="ts-meta-reading-time"><%= post.read_time rescue "0 min read" %></div>
-                        </div>
-                        <span class="ts-mention">@<%= post.author %></span>
-                      </div>
-                      <div class="ts-entry__inner ts-entry__content">
-                        <% if post.category.present? %>
-                          <div class="ts-meta-category">
-                            <%= link_to post.category, category_posts_path(category: post.category), class: "ts-category-link", style: "color: var(--wp--preset--color--vivid-cyan-blue); text-decoration: none; font-weight: 600;" %>
-                          </div>
+      <!-- featured_post 하단의 Arc 패턴 끝 -->
+      <!-- secondary_posts 시작 -->
+      <div class="secondary-posts ts-section">
+        <div class="ts-section-outer">
+          <div class="ts-section-inner">
+            <div class="ts-posts-area__main">
+              <% secondary_posts.each do |post| %>
+                <article class="post type-post status-publish format-standard has-post-thumbnail category-uncategorized ts-entry">
+                  <div class="ts-entry__outer">
+                    <div class="ts-entry__inner ts-entry__thumbnail ts-ratio-landscape-3-2">
+                      <div class="ts-overlay-background">
+                        <% if post.cover_image.attached? %>
+                          <%# Secondary 이미지: WebP 변환 + 반응형 srcset (Lazy Loading 비활성화) %>
+                          <%= responsive_image_tag post.cover_image,
+                              class: "attachment-post-thumbnail size-post-thumbnail wp-post-image",
+                              alt: post.title,
+                              lazy: false,
+                              fetchpriority: false %>
                         <% end %>
-                        <h2 class="ts-entry__title">
-                          <%= link_to post.title, post, data: {turbo: false} %>
-                        </h2>
-                        <p class="ts-entry__excerpt"><%= truncate(post.summary, length: 150) %></p>
                       </div>
-                      <div class="ts-entry__inner ts-entry__inner-right">
-                        <div class="ts-entry__gallery">
-                          <div class="ts-entry__thumbnail ts-ratio-square">
-                            <div class="ts-overlay-background">
-                              <% if post.cover_image.attached? %>
-                                <%# 썸네일 이미지: WebP 변환 + 반응형 srcset (Lazy Loading 비활성화) %>
-                                <%= responsive_image_tag post.cover_image,
-                                    class: "attachment-post-thumbnail size-post-thumbnail wp-post-image",
-                                    alt: post.title,
-                                    lazy: false,
-                                    fetchpriority: false %>
-                              <% end %>
+                      <%= link_to "", post_path(post), class: "tts-overlay-link", data: {turbo: false} %>
+                    </div>
+                    <div class="ts-entry__inner ts-entry__content">
+                      <div class="ts-entry__post-meta">
+                        <div class="ts-meta-date"><%= post.published_at.strftime("%B %-d, %Y") %></div>
+                        <div class="ts-meta-reading-time"><%= post.read_time rescue "0 min read" %></div>
+                      </div>
+                      <% if post.category.present? %>
+                        <div class="ts-meta-category">
+                          <%= link_to post.category, category_posts_path(category: post.category), class: "ts-category-link" %>
+                        </div>
+                      <% end %>
+                      <h2 class="ts-entry__title">
+                        <%= link_to post.title, post %>
+                      </h2>
+                      <span class="ts-mention">@<%= post.author %></span>
+                    </div>
+                  </div>
+                </article>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- secondary_posts 끝 -->
+      <!-- more_posts 시작 -->
+      <div class="more-posts ts-section">
+        <div class="ts-section-outer">
+          <div class="ts-section-inner">
+            <div class="ts-posts">
+              <div class="ts-posts-area">
+                <div class="ts-posts-area__main ts-posts-list">
+                  <% more_posts.each do |post| %>
+                    <article class="post type-post status-publish format-standard has-post-thumbnail category-uncategorized ts-entry">
+                      <div class="ts-entry__outer">
+                        <div class="ts-entry__inner ts-entry__inner-left">
+                          <div class="ts-entry__post-meta">
+                            <div class="ts-meta-date"><%= post.published_at.strftime("%B %-d, %Y") %></div>
+                            <div class="ts-meta-reading-time"><%= post.read_time rescue "0 min read" %></div>
+                          </div>
+                          <span class="ts-mention">@<%= post.author %></span>
+                        </div>
+                        <div class="ts-entry__inner ts-entry__content">
+                          <% if post.category.present? %>
+                            <div class="ts-meta-category">
+                              <%= link_to post.category, category_posts_path(category: post.category), class: "ts-category-link" %>
                             </div>
-                            <%= link_to "", post_path(post), class: "ts-overlay-link" %>
+                          <% end %>
+                          <h2 class="ts-entry__title">
+                            <%= link_to post.title, post, data: {turbo: false} %>
+                          </h2>
+                          <p class="ts-entry__excerpt"><%= truncate(post.summary, length: 150) %></p>
+                        </div>
+                        <div class="ts-entry__inner ts-entry__inner-right">
+                          <div class="ts-entry__gallery">
+                            <div class="ts-entry__thumbnail ts-ratio-square">
+                              <div class="ts-overlay-background">
+                                <% if post.cover_image.attached? %>
+                                  <%# 썸네일 이미지: WebP 변환 + 반응형 srcset (Lazy Loading 비활성화) %>
+                                  <%= responsive_image_tag post.cover_image,
+                                      class: "attachment-post-thumbnail size-post-thumbnail wp-post-image",
+                                      alt: post.title,
+                                      lazy: false,
+                                      fetchpriority: false %>
+                                <% end %>
+                              </div>
+                              <%= link_to "", post_path(post), class: "ts-overlay-link" %>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </article>
-                <% end %>
+                    </article>
+                  <% end %>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <!-- more_posts 끝 -->
+      <!-- 페이지네이션 시작 -->
+      <%= paginate @posts %>
+      <!-- 페이지네이션 끝 -->
     </div>
-    <!-- more_posts 끝 -->
-    <!-- 페이지네이션 시작 -->
-    <%= paginate @posts %>
-    <!-- 페이지네이션 끝 -->
-  </div>
-  <!-- 메인 페이지 게시글 끝 -->
+    <!-- 메인 페이지 게시글 끝 -->
+  <% else %>
+    <div class="ts-front-page" style="min-height: 50vh; display: flex; align-items: center; justify-content: center;">
+      <div class="ts-section-outer" style="text-align: center;">
+        <h2 style="font-size: 2rem; margin-bottom: 1rem;">아직 작성된 게시글이 없습니다.</h2>
+        <p style="color: #666;">첫 번째 게시글을 작성하여 블로그를 시작해보세요!</p>
+        <% if admin_signed_in? %>
+          <div style="margin-top: 2rem;">
+            <%= link_to "새 글 작성하기", new_post_path, class: "wp-block-button__link", style: "background-color: var(--wp--preset--color--vivid-cyan-blue); color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
 </div>

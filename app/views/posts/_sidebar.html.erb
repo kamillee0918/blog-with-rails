@@ -1,0 +1,56 @@
+<%# 사이드바: 검색, 최근 게시글, 아카이브 %>
+<%# locals: (recent_posts:, archives:) %>
+<aside class="ts-widget-area ts-sidebar__area">
+  <div class="ts-sidebar__inner">
+    <!-- 검색 -->
+    <div class="widget widget_search">
+      <p class="ts-section-heading">Search</p>
+      <%= form_tag search_path(keyword: ''), method: :get, role: "search", class: "ts-search__form" do %>
+        <div class="ts-search__container">
+          <input required class="ts-search__input" type="search" name="keyword" placeholder="">
+          <button class="ts-search__submit">
+            <svg class="ts-icon ts-icon-search" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 21L16.7 16.7M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- 최근 게시글 -->
+    <div class="widget">
+      <p class="ts-section-heading">Latest Posts</p>
+      <div class="widget-body ts-widget-posts">
+        <ul>
+          <% recent_posts.each do |post| %>
+            <li class="ts-post-item">
+              <article class="post type-post status-publish format-standard has-post-thumbnail category-uncategorized ts-entry">
+                <div class="ts-entry__outer">
+                  <div class="ts-entry__inner ts-entry__content">
+                    <%= render "posts/post_meta", post: post, show_category: false %>
+                    <h2 class="ts-entry__title">
+                      <%= link_to post.title, post, data: { turbo: false } %>
+                    </h2>
+                  </div>
+                </div>
+              </article>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 아카이브 -->
+    <div class="widget">
+      <p class="ts-section-heading">Archives</p>
+      <ul class="wp-block-archives-list wp-block-archives">
+        <% archives.sort.reverse.each do |year, count| %>
+          <li>
+            <%= link_to year, archive_posts_path(year: year), data: { turbo: false } %>
+            (<%= count %>)
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</aside>
