@@ -25,7 +25,20 @@
 # Any libraries that use a connection pool or another resource pool should
 # be configured to provide at least as many connections as the number of
 # threads. This includes Active Record's `pool` parameter in `database.yml`.
-threads_count = ENV.fetch("RAILS_MAX_THREADS", 3)
+
+# === 환경별 스레드/워커 설정 ===
+environment = ENV.fetch("RAILS_ENV", "development")
+
+if environment == "production"
+  # 프로덕션: CPU 코어에 맞게 워커 설정, 스레드는 I/O 대기 고려
+  threads_count = ENV.fetch("RAILS_MAX_THREADS", 5).to_i
+  workers_count = ENV.fetch("WEB_CONCURRENCY", 4).to_i
+else
+  # 개발/테스트: 단일 워커, 최소 스레드 (빠른 시작, 낮은 메모리)
+  threads_count = ENV.fetch("RAILS_MAX_THREADS", 5).to_i
+  workers_count = 0  # 클러스터 모드 비활성화
+end
+
 threads threads_count, threads_count
 
 # Specifies the `port` that Puma will listen on to receive requests; default is 3000.
@@ -40,3 +53,21 @@ plugin :solid_queue if ENV["SOLID_QUEUE_IN_PUMA"]
 # Specify the PID file. Defaults to tmp/pids/server.pid in development.
 # In other environments, only set the PID file if requested.
 pidfile ENV["PIDFILE"] if ENV["PIDFILE"]
+
+# === 프로덕션 클러스터 모드 설정 ===
+if workers_count > 0
+  workers workers_count
+
+  # 워커 포크 전 앱 사전 로드 (메모리 효율, Copy-on-Write)
+  preload_app!
+
+  # 워커 부팅 후 DB 연결 재설정
+  on_worker_boot do
+    ActiveRecord::Base.establish_connection if defined?(ActiveRecord)
+  end
+
+  # 워커 종료 전 정리
+  on_worker_shutdown do
+    ActiveRecord::Base.connection_pool.disconnect! if defined?(ActiveRecord)
+  end
+end
