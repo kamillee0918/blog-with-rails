@@ -4,7 +4,8 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @post = posts(:one)
     # Mock admin login
-    post login_url, params: { password: "password" }
+    post login_url, params: { password: (ENV["ADMIN_PASSWORD"] || "password") }
+    assert_response :redirect
   end
 
   test "should get index" do
