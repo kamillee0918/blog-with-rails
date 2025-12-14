@@ -1,24 +1,154 @@
 // ========================================
-// Froala Editor 커스텀 버튼
+// TinyMCE Editor 
 // ========================================
 
-// Froala Editor 초기화 모듈
-function initFroalaEditor(selector, options = {}) {
-  const element = document.querySelector(selector);
-  if (!element) return null;
+// TinyMCE 초기화 모듈
+function initTinyMCE() {
+  const textarea = document.getElementById('post_content');
+  if (!textarea) return null;
 
-  // Meta 태그에서 Key 가져오기
-  const keyMeta = document.querySelector('meta[name="froala-activation-key"]');
-  const activationKey = keyMeta ? keyMeta.content : null;
+  // 이미 초기화되었는지 확인 (중복 방지)
+  if (textarea.dataset.tinymceInitialized) return null;
+  textarea.dataset.tinymceInitialized = 'true';
 
-  const defaultOptions = {
-    key: activationKey,
-    height: 300
-  };
+  // 기존 TinyMCE 인스턴스 제거 (Turbo 네비게이션 대응)
+  if (typeof tinymce !== 'undefined') {
+    tinymce.remove('#post_content');
+  }
 
-  const mergedOptions = { ...defaultOptions, ...options };
+  // CSRF 토큰 가져오기
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
 
-  return new FroalaEditor(selector, mergedOptions);
+  tinymce.init({
+    selector: '#post_content',
+    height: 500,
+    plugins: [
+      'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+      'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+      'insertdatetime', 'media', 'table', 'help', 'wordcount'
+    ],
+    toolbar: 'undo redo | blocks | ' +
+      'bold italic forecolor | alignleft aligncenter ' +
+      'alignright alignjustify | bullist numlist outdent indent | ' +
+      'table image media | removeformat | code | help',
+    content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 16px; }',
+
+    // URL 설정: 절대 경로 사용 (이미지 404 오류 방지)
+    relative_urls: false,
+    remove_script_host: false,
+    document_base_url: window.location.origin + '/',
+
+    // CORS: Tiny Cloud 리소스(plugins/skins/css 등) 로딩 시 crossOrigin/referrer 정책 적용
+    // https://www.tiny.cloud/docs/tinymce/latest/tinymce-and-cors/
+    referrer_policy: 'origin',
+    crossorigin: (url, resourceType) => {
+      try {
+        const parsed = new URL(url, window.location.origin);
+        if (parsed.hostname.endsWith('tiny.cloud')) return 'anonymous';
+      } catch (_) {
+      }
+      return undefined;
+    },
+
+    link_attributes_postprocess: (attrs) => {
+      attrs['data-turbo'] = 'false';
+    },
+
+    // 테이블 기본 설정
+    table_default_styles: {
+      'border-collapse': 'collapse',
+      'width': '100%'
+    },
+
+    // ========================================
+    // 이미지 업로드 설정 (드래그 & 드롭 지원)
+    // ========================================
+    automatic_uploads: true,
+    images_upload_url: '/uploads/image',
+    images_upload_credentials: true,
+
+    // 이미지 업로드 핸들러 (CSRF 토큰 포함)
+    images_upload_handler: function (blobInfo, progress) {
+      return new Promise(function (resolve, reject) {
+        const formData = new FormData();
+        formData.append('file', blobInfo.blob(), blobInfo.filename());
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/uploads/image');
+        xhr.setRequestHeader('X-CSRF-Token', csrfToken);
+
+        xhr.upload.onprogress = function (e) {
+          if (e.lengthComputable) {
+            progress(e.loaded / e.total * 100);
+          }
+        };
+
+        xhr.onload = function () {
+          if (xhr.status === 200 || xhr.status === 201) {
+            const json = JSON.parse(xhr.responseText);
+            if (json.location) {
+              resolve(json.location);
+            } else {
+              reject('Invalid response: ' + xhr.responseText);
+            }
+          } else {
+            reject('Upload failed: ' + xhr.status);
+          }
+        };
+
+        xhr.onerror = function () {
+          reject('Upload failed due to network error');
+        };
+
+        xhr.send(formData);
+      });
+    },
+
+    // 파일 선택 다이얼로그 설정
+    file_picker_types: 'image',
+    file_picker_callback: function (callback, value, meta) {
+      if (meta.filetype === 'image') {
+        const input = document.createElement('input');
+        input.setAttribute('type', 'file');
+        input.setAttribute('accept', 'image/*');
+        input.onchange = function () {
+          const file = this.files[0];
+          const reader = new FileReader();
+          reader.onload = function () {
+            const id = 'blobid' + (new Date()).getTime();
+            const blobCache = tinymce.activeEditor.editorUpload.blobCache;
+            const base64 = reader.result.split(',')[1];
+            const blobInfo = blobCache.create(id, file, base64);
+            blobCache.add(blobInfo);
+            callback(blobInfo.blobUri(), { title: file.name });
+          };
+          reader.readAsDataURL(file);
+        };
+        input.click();
+      }
+    },
+
+    // Turbo 호환: 폼 제출 전 에디터 내용 동기화
+    setup: function (editor) {
+      const ensureTurboFalseLinks = () => {
+        const body = editor.getBody();
+        if (!body) return;
+
+        body.querySelectorAll('a').forEach((a) => {
+          a.setAttribute('data-turbo', 'false');
+        });
+      };
+
+      editor.on('BeforeGetContent', function () {
+        ensureTurboFalseLinks();
+      });
+
+      editor.on('change', function () {
+        ensureTurboFalseLinks();
+        editor.save();
+      });
+    }
+  });
 }
 
 // ========================================
@@ -63,9 +193,10 @@ function handleCopyLink(event) {
 
 // 페이지 초기화 함수
 function initializePage() {
-  // Froala Editor 초기화 (해당 요소가 있을 때만)
-  if (document.querySelector('#froala-editor')) {
-    window.froalaEditorInstance = initFroalaEditor('#froala-editor');
+  // PrismJS: 코드 블록 하이라이팅 적용
+  // 동적으로 로드된 콘텐츠 (DB에서 가져온 HTML)에 구문 강조 적용
+  if (typeof Prism !== 'undefined') {
+    Prism.highlightAll();
   }
 
   // Scroll to top 버튼 설정
@@ -106,6 +237,9 @@ function initializePage() {
     copyLinkBtn.addEventListener('click', handleCopyLink);
     copyLinkBtn.setAttribute('data-initialized', 'true');
   }
+
+  // TinyMCE Editor 초기화
+  initTinyMCE();
 }
 
 // ========================================
@@ -127,6 +261,6 @@ if (!window._initJsLoaded) {
 }
 
 // 전역으로 노출 (inline에서 호출 가능하도록)
-window.initFroalaEditor = initFroalaEditor;
+window.initTinyMCE = initTinyMCE;
 window.handleSearchSubmit = handleSearchSubmit;
 window.handleCopyLink = handleCopyLink;

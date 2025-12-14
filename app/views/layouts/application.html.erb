@@ -6,14 +6,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Blog With Rails">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="froala-activation-key" content="<%= ENV['FROALA_ACTIVATION_KEY'] %>">
+    <%# TinyMCE API Key (선택사항 - 무료 tier에서는 no-api-key 사용 가능) %>
+    <meta name="tinymce-api-key" content="<%= ENV['TINYMCE_API_KEY'] %>">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= yield :head %>
-
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
     <%= stylesheet_link_tag "style.min", "data-turbo-track": "reload" %>
     
@@ -32,10 +30,30 @@
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "site", "data-turbo-track": "reload" %>
 
-    <link href="https://cdn.jsdelivr.net/npm/froala-editor@4.7.1/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.jsdelivr.net/npm/froala-editor@4.7.1/js/froala_editor.pkgd.min.js"></script>
-    
     <%= javascript_importmap_tags %>
+
+    <%# TinyMCE editor %>
+    <script src="https://cdn.tiny.cloud/1/<%= ENV['TINYMCE_API_KEY'] %>/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
+    
+    <%# PrismJS (Core + Custom Class Plugin) %>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/custom-class/prism-custom-class.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/remove-initial-line-feed/prism-remove-initial-line-feed.min.js"></script>
+
+    <%# PrismJS: 주요 언어 컴포넌트 로드 %>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-java.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-python.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-bash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-ruby.min.js"></script>
+    <%# PrismJS Custom Class Configuration %>
+    <script>
+      // Register 'plain' as empty grammar (no syntax highlighting)
+      Prism.languages.plain = {};
+      Prism.languages.text = {};
+    </script>
+
+    <%# PrismJS: BibTeX %>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs-bibtex@2.1.0/prism-bibtex.min.js"></script>
   </head>
 
   <%
@@ -64,10 +82,6 @@
                 </div>
                 <a href="https://github.com/kamillee0918">About</a>
                 <a href="#">Project</a>
-                <% if admin_signed_in? %>
-                  <%= link_to "Write Post", new_post_path %>
-                  <%= link_to "Logout", logout_path, data: { turbo_method: :delete } %>
-                <% end %>
               </div>
               <div class="ts-header__col ts-col-center"></div>
               <div class="ts-header__col ts-col-right">
@@ -155,7 +169,15 @@
                       </li>
                       <% if admin_signed_in? %>
                         <li>
-                          <%= link_to "Write Post", new_post_path %>
+                          <%= link_to "Write Post", new_post_path, data: { turbo: false } %>
+                        </li>
+                        <% if action_name == "show" && @post.present? %>
+                          <li>
+                            <%= link_to "Edit Post", edit_post_path(@post), data: { turbo: false } %>
+                          </li>
+                        <% end %>
+                        <li>
+                          <%= link_to "Logout", logout_path, data: { turbo_method: :delete } %>
                         </li>
                       <% else %>
                         <li>
@@ -195,5 +217,19 @@
       </svg>
       <span>scroll to top</span>
     </a>
+
+    <%# MathJax v4: 수식 렌더링 %>
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$']],
+          displayMath: [['$$', '$$']]
+        }
+      };
+    </script>
+    <%= javascript_include_tag "https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js",
+                               id: "MathJax-script",
+                               async: true,
+                               defer: true %>
   </body>
 </html>

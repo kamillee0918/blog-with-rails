@@ -1,12 +1,16 @@
 Rails.application.routes.draw do
-  get "posts/category/:category", to: "posts#index", as: :category_posts
-  get "posts/page/:page", to: "posts#index", as: :posts_page
-
-  resources :posts
+  # === Posts ===
+  get "posts/page/:page", to: "posts#index", as: :posts_page, constraints: { page: /\d+/ }
+  resources :posts do
+    collection do
+      get "category/:category", action: :index, as: :category
+      get "tag/:tag", action: :tag, as: :tag
+      get "archive/:year", action: :archive, as: :archive, constraints: { year: /\d{4}/ }
+    end
+  end
   get "search/:keyword", to: "posts#search", as: :search
-  get "posts/archive/:year", to: "posts#archive", as: :archive, constraints: { year: /\d{4}/ }
 
-  # Admin session routes
+  # === Admin Session ===
   get "login", to: "sessions#new"
   post "login", to: "sessions#create"
   delete "logout", to: "sessions#destroy"
@@ -23,6 +27,10 @@ Rails.application.routes.draw do
 
   # Dynamic thumbnail generation
   get "thumbnails/:filename", to: "thumbnails#show", as: :thumbnail, constraints: { filename: /.+/ }
+
+  # TinyMCE Editor image upload (Active Storage)
+  post "uploads/image", to: "uploads#image"
+  delete "uploads/image", to: "uploads#destroy_image"
 
   # Defines the root path route ("/")
   root "posts#index"
