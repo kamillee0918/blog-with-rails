@@ -1,0 +1,37 @@
+<%# 추천 게시글 %>
+<%# locals: (posts:) %>
+<% if posts.present? %>
+  <div class="ts-entry__post-related">
+    <div class="ts-container">
+      <p class="ts-section-heading">Recommended Reading</p>
+      <div class="ts-entry__post-wrap">
+        <% posts.each do |post| %>
+          <article class="post type-post status-publish format-standard has-post-thumbnail category-uncategorized ts-entry">
+            <div class="ts-entry__outer">
+              <div class="ts-entry__inner ts-entry__thumbnail">
+                <div class="ts-overlay-background">
+                  <% if post.cover_image.attached? %>
+                    <%= optimized_image_tag post.cover_image,
+                        size: :small,
+                        class: "attachment-tinyspeck-thumbnail size-tinyspeck-thumbnail wp-post-image",
+                        alt: post.title %>
+                  <% end %>
+                </div>
+                <%= link_to "", post_path(post), class: "ts-overlay-link", data: { turbo: false } %>
+              </div>
+              <div class="ts-entry__inner ts-entry__content">
+                <%= render "posts/post_meta", post: post, show_category: false %>
+                <h2 class="ts-entry__title">
+                  <%= link_to post_path(post), data: { turbo: false } do %>
+                    <span><%= post.title %></span>
+                  <% end %>
+                </h2>
+                <span class="ts-mention">@<%= post.author %></span>
+              </div>
+            </div>
+          </article>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

@@ -40,14 +40,17 @@ gem "kamal", require: false
 # Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
 gem "thruster", require: false
 
-# WYSIWYG with Rails
-gem "wysiwyg-rails"
-
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 1.2"
 
 # A Scope & Engine based, clean, powerful, customizable and sophisticated paginator for modern web app frameworks and ORMs
 gem "kaminari"
+
+# Centralization of locale data collection for Ruby on Rails.
+gem "rails-i18n", "~> 8.0.0" # For Rails >= 8.0.0
+
+# minitest provides a complete suite of testing facilities supporting TDD, BDD, mocking, and benchmarking.
+gem "minitest", "~> 5.0"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

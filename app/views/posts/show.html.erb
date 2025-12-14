@@ -4,26 +4,17 @@
   <div class="ts-container">
     <div class="ts-main-content">
       <div class="ts-content-area">
+        <!-- 헤더 -->
         <div class="ts-entry__header ts-entry__header-large">
           <div class="ts-entry__header-inner">
             <div class="ts-entry__header-info">
               <div class="ts-entry__post-meta-wrapper">
-                <div class="ts-entry__post-meta">
-                  <div class="ts-meta-date"><%= @post.published_at.strftime("%B %-d, %Y") %></div>
-                  <div class="ts-meta-reading-time"><%= @post.read_time rescue "0 min read" %></div>
-                  <% if @post.category.present? %>
-                    <div class="ts-meta-category">
-                      <%= link_to @post.category, posts_path(category: @post.category), class: "ts-category-link", style: "color: var(--wp--preset--color--vivid-cyan-blue); text-decoration: none; font-weight: 600;" %>
-                    </div>
-                  <% end %>
-                </div>
+                <%= render "posts/post_meta", post: @post, show_category: true do %>
+                  <%= link_to @post.category, posts_path(category: @post.category), class: "ts-category-link" %>
+                <% end %>
               </div>
-              <!-- 제목 시작 -->
-              <h1 class="ts-jumbo">
-                <span><%= @post.title %></span>
-              </h1>
-              <!-- 제목 끝 -->
-              <!-- 저자 시작 -->
+              <h1 class="ts-jumbo"><span><%= @post.title %></span></h1>
+              <!-- 저자 -->
               <p class="ts-hero-paragraph"></p>
               <div class="c-article__author__meta">
                 <div class="c-article__author">
@@ -31,274 +22,101 @@
                     <img src="<%= asset_path('avatar.png') %>">
                   </div>
                   <div class="c-article__author__info">
-                    <!-- 저자 이름 -->
                     <span class="c-article__author__name"><%= @post.author %></span>
-                    <!-- 저자 직위 -->
-                    <!-- <span class="c-article__author__title">저자 직위</span> -->
                   </div>
                 </div>
               </div>
-              <!-- 저자 끝 -->
             </div>
-            <!-- 썸네일(Thumbnail) 이미지 시작 -->
+            <!-- 커버 이미지 -->
             <figure class="ts-entry__post-media post-media">
               <% if @post.cover_image.attached? %>
-                <%# Hero 이미지: WebP 변환 + 반응형 srcset (Lazy Loading 비활성화) %>
                 <%= responsive_image_tag @post.cover_image,
                     class: "attachment-post-thumbnail size-post-thumbnail wp-post-image",
                     alt: @post.title,
                     lazy: false %>
               <% end %>
             </figure>
-            <!-- 썸네일(Thumbnail) 이미지 끝 -->
-            <!-- 썸네일(Thumbnail) 캡션 시작 -->
             <% if @post.cover_image.attached? && @post.cover_image_caption.present? %>
               <figcaption class="ts-entry__caption-text">
                 Photo credit: <%= @post.cover_image_caption %>
               </figcaption>
             <% end %>
-            <!-- 썸네일(Thumbnail) 캡션 끝 -->
           </div>
         </div>
-        <!-- 본문 시작 -->
+
+        <!-- 본문 + 사이드바 -->
         <div class="ts-entry__wrap">
           <div class="ts-entry__container">
-            <aside class="ts-widget-area ts-sidebar__area">
-              <div class="ts-sidebar__inner">
-                <!-- 검색 레이아웃 시작 -->
-                <div class="widget widget_search">
-                  <p class="ts-section-heading">Search</p>
-                  <form role="search" method="get" class="ts-search__form" action="https://slack.engineering/">
-                    <div class="ts-search__container">
-                      <input required="" class="ts-search__input" type="search" value="" name="s" placeholder="">
-                      <button class="ts-search__submit">
-                        <svg class="ts-icon ts-icon-search" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M21 21L16.7 16.7M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                        </svg>
-                      </button>
-                    </div>
-                  </form>
-                </div>
-                <!-- 검색(Search) 레이아웃 끝 -->
-                <!-- 최근 게시글(Latest Posts) 레이아웃 시작 -->
-                <div class="widget">
-                  <p class="ts-section-heading">Latest Posts</p>
-                  <div class="widget-body ts-widget-posts">
-                    <ul>
-                      <% @recent_posts.each do |post| %>
-                        <li class="ts-post-item">
-                          <article class="post type-post status-publish format-standard has-post-thumbnail category-uncategorized ts-entry">
-                            <div class="ts-entry__outer">
-                              <div class="ts-entry__inner ts-entry__content">
-                                <div class="ts-entry__post-meta">
-                                  <div class="ts-meta-date"><%= post.published_at.strftime("%B %-d, %Y") %></div>
-                                  <div class="ts-meta-reading-time"><%= post.read_time rescue "0 min read" %></div>
-                                </div>
-                                <h2 class="ts-entry__title">
-                                  <%= link_to post.title, post, data: { turbo: false } %>
-                                </h2>
-                              </div>
-                            </div>
-                          </article>
-                        </li>
-                      <% end %>
-                    </ul>
-                  </div>
-                </div>
-                <!-- 최근 게시글(Latest Posts) 레이아웃 끝 -->
-                <!-- 아카이브(Archives) 레이아웃 시작 -->
-                <div class="widget">
-                  <p class="ts-section-heading">Archives</p>
-                  <ul class="wp-block-archives-list wp-block-archives">
-                    <% @archives.sort.reverse.each do |year, count| %>
-                      <li>
-                        <%= link_to year, archive_path(year: year), data: { turbo: false } %>
-                        (<%= count %>)
-                      </li>
-                    <% end %>
-                  </ul>
-                </div>
-                <!-- 아카이브(Archives) 레이아웃 끝 -->
-              </div>
-            </aside>
-            <!-- 본문 2 시작 -->
+            <%= render "posts/sidebar", recent_posts: @recent_posts, archives: @archives %>
             <div class="ts-entry__content-wrap">
               <div class="ts-single-post ts-wysiwyg">
                 <%= @post.content %>
+                <!--
+                  TODO: 하단에 'action-link'가 존재하면 아래의 샘플 코드와 같이 표시되도록 로직 수정
+                    1. @post.content에서 'action-link'가 존재하는지 확인
+                    2. 존재한다면 아래 코드를 표시
+                    3. svg 및 a 태그, img 태그는 글 작성자가 커스터마이징할 수 있어야 함
+                    4. 이러한 로직을 어떻게 구현하는게 최선인지 고민
+                -->
+                <!-- 아래는 샘플 코드임 -->
+                
               </div>
-              <!-- 태그 레이아웃 시작 -->
+              <!-- 태그 -->
               <% if @post.tags.present? %>
                 <div class="ts-tags-section">
                   <% @post.tags.split(',').each do |tag| %>
-                    <span class="ts-tag">#
-                      <%= link_to tag.strip, search_path(keyword: tag.strip), rel: "tag" %>
+                    <span class="ts-tag">
+                      #<%= link_to tag.strip, tag_posts_path(tag: tag.strip), rel: "tag", data: { turbo: false } %>
                     </span>
                   <% end %>
                 </div>
               <% end %>
-              <!-- 태그 레이아웃 끝 -->
             </div>
-            <!-- 본문 2 끝 -->
           </div>
         </div>
-        <!-- 본문 끝 -->
       </div>
-      <!-- 메타바(Metabar) 시작 -->
+
+      <!-- 메타바 (공유 버튼) -->
       <aside class="ts-metabar__area">
         <div class="ts-metabar__inner">
           <div class="ts-metabar__item">
             <div class="ts-share-buttons-wrap">
               <div class="ts-share-buttons-items">
-                <!-- GitHub(kamillee0918) 버튼 -->
                 <div class="ts-share-buttons-item ts-share-buttons-github">
-                  <a href="https://github.com/kamillee0918" class="ts-share-buttons-github" target="_blank" title="GitHub">
+                  <a href="https://github.com/kamillee0918" target="_blank" title="GitHub">
                     <svg width="21" height="21" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M 10.46875 0 C 4.679688 0 0 4.582031 0 10.253906 C 0 14.785156 3 18.621094 7.160156 19.980469 C 7.679688 20.082031 7.867188 19.761719 7.867188 19.488281 C 7.867188 19.25 7.851562 18.4375 7.851562 17.585938 C 4.941406 18.199219 4.332031 16.363281 4.332031 16.363281 C 3.863281 15.175781 3.171875 14.871094 3.171875 14.871094 C 2.21875 14.242188 3.242188 14.242188 3.242188 14.242188 C 4.296875 14.3125 4.851562 15.296875 4.851562 15.296875 C 5.789062 16.855469 7.296875 16.414062 7.902344 16.144531 C 7.988281 15.480469 8.265625 15.023438 8.5625 14.769531 C 6.238281 14.53125 3.796875 13.648438 3.796875 9.710938 C 3.796875 8.589844 4.210938 7.671875 4.871094 6.960938 C 4.765625 6.707031 4.402344 5.652344 4.972656 4.242188 C 4.972656 4.242188 5.859375 3.972656 7.851562 5.296875 C 8.703125 5.070312 9.585938 4.957031 10.46875 4.957031 C 11.351562 4.957031 12.253906 5.074219 13.085938 5.296875 C 15.078125 3.972656 15.964844 4.242188 15.964844 4.242188 C 16.535156 5.652344 16.171875 6.707031 16.066406 6.960938 C 16.742188 7.671875 17.140625 8.589844 17.140625 9.710938 C 17.140625 13.648438 14.699219 14.515625 12.359375 14.769531 C 12.738281 15.089844 13.070312 15.703125 13.070312 16.671875 C 13.070312 18.046875 13.050781 19.148438 13.050781 19.488281 C 13.050781 19.761719 13.242188 20.082031 13.761719 19.980469 C 17.921875 18.621094 20.921875 14.785156 20.921875 10.253906 C 20.9375 4.582031 16.242188 0 10.46875 0 Z M 10.46875 0" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"></path>
                     </svg>
                   </a>
                 </div>
-                <!-- 주소 복사 버튼(작동 X) -->
                 <div class="ts-share-buttons-item ts-share-buttons-copy">
-                  <a href="#" class="ts-share-buttons-copy" data-share-link="" title="Copy link">
+                  <a href="#" class="ts-share-buttons-copy" title="Copy link">
                     <svg width="21" height="21" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M10 13C10.4295 13.5741 10.9774 14.0491 11.6066 14.3929C12.2357 14.7367 12.9315 14.9411 13.6467 14.9923C14.3618 15.0435 15.0796 14.9403 15.7513 14.6897C16.4231 14.4392 17.0331 14.047 17.54 13.54L20.54 10.54C21.4508 9.59695 21.9548 8.33394 21.9434 7.02296C21.932 5.71198 21.4061 4.45791 20.4791 3.53087C19.5521 2.60383 18.298 2.07799 16.987 2.0666C15.676 2.0552 14.413 2.55918 13.47 3.46997L11.75 5.17997M14 11C13.5705 10.4259 13.0226 9.9508 12.3934 9.60704C11.7642 9.26328 11.0684 9.05886 10.3533 9.00765C9.63816 8.95643 8.92037 9.05961 8.24861 9.3102C7.57685 9.56079 6.96684 9.95291 6.45996 10.46L3.45996 13.46C2.54917 14.403 2.04519 15.666 2.05659 16.977C2.06798 18.288 2.59382 19.542 3.52086 20.4691C4.4479 21.3961 5.70197 21.922 7.01295 21.9334C8.32393 21.9447 9.58694 21.4408 10.53 20.53L12.24 18.82" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                     </svg>
                   </a>
-                  <span class="ts-share-notification" data-share-notification="">Copied!</span>
+                  <span class="ts-share-notification">Copied!</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </aside>
-      <!-- 메타바(Metabar) 끝 -->
     </div>
   </div>
-  <!-- 이전/다음 게시글 시작 -->
-  <% if @recommended_posts.present? %>
-    <div style="margin-top: 5rem;">
-  <% else %>
-    <div class="ts-entry__post-pagination">
-  <% end %>
-    <div class="ts-container">
-      <div class="ts-post-pagination">
-        <% if @prev_post.present? %>
-          <div>
-            <p class="ts-section-heading">Previous Post</p>
-            <div class="ts-post-unfurl">
-              <div class="ts-post-unfurl-content">
-                <div>
-                  <%= link_to post_path(@prev_post), data: { turbo: false } do %>
-                    <strong><%= @prev_post.title %></strong>
-                  <% end %>
-                  <p class="ts-post-unfurl-text"><%= truncate(@prev_post.summary, length: 100) %></p>
-                </div>
-                <div class="ts-entry__post-meta">
-                  <div class="ts-meta-date"><%= @prev_post.published_at.strftime("%B %-d, %Y") %></div>
-                  <div class="ts-meta-reading-time"><%= @prev_post.read_time rescue "0 min read" %></div>
-                  <% if @prev_post.category.present? %>
-                    <div class="ts-meta-category">
-                      <%= link_to @prev_post.category, posts_path(category: @prev_post.category), class: "ts-category-link", style: "color: var(--wp--preset--color--vivid-cyan-blue); text-decoration: none; font-weight: 600;" %>
-                    </div>
-                  <% end %>
-                </div>
-              </div>
-              <% if @prev_post.cover_image.attached? %>
-                <div class="ts-post-unfurl-img">
-                  <%= responsive_image_tag @prev_post.cover_image,
-                      class: "attachment-thumbnail size-thumbnail wp-post-image",
-                      alt: @prev_post.title,
-                      lazy: true,
-                      fetchpriority: false,
-                      sizes: "auto, (max-width: 160px) 100vw, 160px" %>
-                </div>
-              <% end %>
-            </div>
-          </div>
-        <% end %>
-        <% if @next_post.present? %>
-          <div>
-            <p class="ts-section-heading">Next Post</p>
-            <div class="ts-post-unfurl">
-              <div class="ts-post-unfurl-content">
-                <div>
-                  <%= link_to post_path(@next_post), data: { turbo: false } do %>
-                    <strong><%= @next_post.title %></strong>
-                  <% end %>
-                  <p class="ts-post-unfurl-text"><%= truncate(@next_post.summary, length: 100) %></p>
-                </div>
-                <div class="ts-entry__post-meta">
-                  <div class="ts-meta-date"><%= @next_post.published_at.strftime("%B %-d, %Y") %></div>
-                  <div class="ts-meta-reading-time"><%= @next_post.read_time rescue "0 min read" %></div>
-                  <% if @next_post.category.present? %>
-                    <div class="ts-meta-category">
-                      <%= link_to @next_post.category, posts_path(category: @next_post.category), class: "ts-category-link", style: "color: var(--wp--preset--color--vivid-cyan-blue); text-decoration: none; font-weight: 600;" %>
-                    </div>
-                  <% end %>
-                </div>
-              </div>
-              <% if @next_post.cover_image.attached? %>
-                <div class="ts-post-unfurl-img">
-                  <%= responsive_image_tag @next_post.cover_image,
-                      class: "attachment-thumbnail size-thumbnail wp-post-image",
-                      alt: @next_post.title,
-                      lazy: false,
-                      fetchpriority: false,
-                      sizes: "auto, (max-width: 160px) 100vw, 160px" %>
-                </div>
-              <% end %>
-            </div>
-          </div>
-        <% end %>
-      </div>
-    </div>
-  </div>
-  <!-- 이전 게시글/다음 게시글 끝 -->
-  <!-- 추천 게시글 시작 -->
-  <% if @recommended_posts.present? %>
-    <div class="ts-entry__post-related">
-      <div class="ts-container">
-        <p class="ts-section-heading">Recommended Reading</p>
-        <div class="ts-entry__post-wrap">
-          <% @recommended_posts.each do |post| %>
-            <article class="post type-post status-publish format-standard has-post-thumbnail category-uncategorized ts-entry">
-              <div class="ts-entry__outer">
-                <div class="ts-entry__inner ts-entry__thumbnail">
-                  <div class="ts-overlay-background">
-                    <% if post.cover_image.attached? %>
-                      <%= optimized_image_tag post.cover_image,
-                          size: :small,
-                          class: "attachment-tinyspeck-thumbnail size-tinyspeck-thumbnail wp-post-image",
-                          alt: post.title %>
-                    <% end %>
-                  </div>
-                  <%= link_to "", post_path(post), class: "ts-overlay-link", data: { turbo: false } %>
-                </div>
-                <div class="ts-entry__inner ts-entry__content">
-                  <div class="ts-entry__post-meta">
-                    <div class="ts-meta-date"><%= post.published_at.strftime("%B %-d, %Y") %></div>
-                    <div class="ts-meta-reading-time"><%= post.read_time rescue "0 min read" %></div>
-                  </div>
-                  <h2 class="ts-entry__title">
-                    <%= link_to post_path(post), data: { turbo: false } do %>
-                      <span><%= post.title %></span>
-                    <% end %>
-                  </h2>
-                  <span class="ts-mention">@<%= post.author %></span>
-                </div>
-              </div>
-            </article>
-          <% end %>
-        </div>
-      </div>
-    </div>
-  <% end %>
-  <!-- 추천 게시글 끝 -->
-  <!-- 상세 페이지 하단에 Arc 패턴 시작 -->
+
+  <!-- 이전/다음 게시글 -->
+  <%= render "posts/post_navigation", 
+      prev_post: @prev_post, 
+      next_post: @next_post, 
+      has_recommended: @recommended_posts.present? %>
+
+  <!-- 추천 게시글 -->
+  <%= render "posts/recommended_posts", posts: @recommended_posts %>
+
+  <!-- Arc 패턴 -->
   <div class="c-arc concave-up">
     <div class="c-arc__upper color-blue"></div>
     <div class="c-arc__lower color-white"></div>
   </div>
-  <!-- 상세 페이지 하단에 Arc 패턴 끝 -->
 </div>
-

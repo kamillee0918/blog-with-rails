@@ -15,8 +15,18 @@ Rails.application.configure do
   # Turn on fragment caching in view templates.
   config.action_controller.perform_caching = true
 
-  # Cache assets for far-future expiry since they are all digest stamped.
-  config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
+  # === HTTP 캐싱 최적화 ===
+  # 정적 에셋: 1년 캐시 + immutable (digest 포함이므로 안전)
+  config.public_file_server.headers = {
+    "cache-control" => "public, max-age=#{1.year.to_i}, immutable"
+  }
+
+  # ETag 생성 활성화 (조건부 GET 지원)
+  config.action_dispatch.rack_cache = true
+
+  # 동적 페이지 기본 캐시 헤더 (Cloudflare와 브라우저)
+  # 개별 컨트롤러에서 fresh_when, stale? 로 세밀하게 제어 가능
+  config.action_controller.default_static_extension = nil
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
@@ -24,14 +34,15 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
-  # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  # config.assume_ssl = true
+  # === Cloudflare Tunnel SSL 설정 ===
+  # Cloudflare가 SSL을 처리하므로 Rails는 프록시 뒤에 있다고 가정
+  config.assume_ssl = true
 
-  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  # config.force_ssl = true
+  # HTTPS 강제 및 Strict-Transport-Security 헤더 활성화
+  config.force_ssl = true
 
-  # Skip http-to-https redirect for the default health check endpoint.
-  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
+  # Health check 엔드포인트는 SSL 리다이렉트에서 제외
+  config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
 
   # Log to STDOUT with the current request id as a default log tag.
   config.log_tags = [ :request_id ]
@@ -58,7 +69,7 @@ Rails.application.configure do
   # config.action_mailer.raise_delivery_errors = false
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "example.com" }
+  config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST", "example.com") }
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
   # config.action_mailer.smtp_settings = {
@@ -79,12 +90,14 @@ Rails.application.configure do
   # Only use :id for inspections in production.
   config.active_record.attributes_for_inspect = [ :id ]
 
-  # Enable DNS rebinding protection and other `Host` header attacks.
-  # config.hosts = [
-  #   "example.com",     # Allow requests from example.com
-  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
-  # ]
-  #
-  # Skip DNS rebinding protection for the default health check endpoint.
-  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  # === Host Authorization (DNS rebinding 방어) ===
+  # 환경변수 ALLOWED_HOSTS로 허용 호스트 설정 (쉼표로 구분)
+  # 예: ALLOWED_HOSTS="blog.example.com,www.example.com"
+  if ENV["ALLOWED_HOSTS"].present?
+    config.hosts = ENV["ALLOWED_HOSTS"].split(",").map(&:strip)
+    config.hosts << /.*\.cfargotunnel\.com/  # Cloudflare Tunnel 내부 도메인 허용
+  end
+
+  # Health check 엔드포인트는 Host 검증에서 제외
+  config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 end

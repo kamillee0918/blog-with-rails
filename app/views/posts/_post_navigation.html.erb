@@ -1,0 +1,26 @@
+<%# 이전/다음 게시글 네비게이션 %>
+<%# locals: (prev_post:, next_post:, has_recommended:) %>
+<% wrapper_class = has_recommended ? "margin-top: 5rem;" : "" %>
+
+<% if has_recommended %>
+  <div style="<%= wrapper_class %>">
+<% else %>
+  <div class="ts-entry__post-pagination">
+<% end %>
+  <div class="ts-container">
+    <div class="ts-post-pagination">
+      <% if prev_post.present? %>
+        <div>
+          <p class="ts-section-heading">Previous Post</p>
+          <%= render "posts/post_card", post: prev_post, lazy_image: true %>
+        </div>
+      <% end %>
+      <% if next_post.present? %>
+        <div>
+          <p class="ts-section-heading">Next Post</p>
+          <%= render "posts/post_card", post: next_post, lazy_image: false %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

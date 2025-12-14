@@ -44,6 +44,15 @@ env:
     # When you start using multiple servers, you should split out job processing to a dedicated machine.
     SOLID_QUEUE_IN_PUMA: true
 
+    # === Cloudflare Tunnel 설정 ===
+    # 허용할 호스트 (쉼표로 구분)
+    # ALLOWED_HOSTS: "blog.yourdomain.com,www.yourdomain.com"
+    ALLOWED_HOSTS: "kamillee0918.blog,www.kamillee0918.blog"
+    
+    # 앱 호스트 (메일러 등에서 사용)
+    # APP_HOST: "blog.yourdomain.com"
+    APP_HOST: "kamillee0918.blog"
+
     # Set number of processes dedicated to Solid Queue (default: 1)
     # JOB_CONCURRENCY: 3
 

@@ -1,0 +1,11 @@
+<%# 게시글 메타 정보 (날짜, 읽기시간, 카테고리) %>
+<%# locals: (post:, show_category: true) %>
+<div class="ts-entry__post-meta">
+  <div class="ts-meta-date"><%= post.published_at.strftime("%B %-d, %Y") %></div>
+  <div class="ts-meta-reading-time"><%= post.read_time rescue "0 min read" %></div>
+  <% if show_category && post.category.present? %>
+    <div class="ts-meta-category">
+      <%= block_given? ? yield : post.category %>
+    </div>
+  <% end %>
+</div>

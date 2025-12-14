@@ -1,0 +1,23 @@
+<%# 포스트 카드 (이전/다음, 추천 등에서 사용) %>
+<%# locals: (post:, lazy_image: true) %>
+<div class="ts-post-unfurl">
+  <div class="ts-post-unfurl-content">
+    <div>
+      <%= link_to post_path(post), data: { turbo: false } do %>
+        <strong><%= post.title %></strong>
+      <% end %>
+      <p class="ts-post-unfurl-text"><%= truncate(post.summary, length: 100) %></p>
+    </div>
+    <%= render "posts/post_meta", post: post, show_category: true %>
+  </div>
+  <% if post.cover_image.attached? %>
+    <div class="ts-post-unfurl-img">
+      <%= responsive_image_tag post.cover_image,
+          class: "attachment-thumbnail size-thumbnail wp-post-image",
+          alt: post.title,
+          lazy: lazy_image,
+          fetchpriority: false,
+          sizes: "auto, (max-width: 160px) 100vw, 160px" %>
+    </div>
+  <% end %>
+</div>
