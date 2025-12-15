@@ -37,7 +37,7 @@
                                       fetchpriority: true %>
                                 <% end %>
                               </div>
-                              <%= link_to "", post_path(featured_post), class: "tts-overlay-link" %>
+                              <%= link_to "", post_path(featured_post), class: "tts-overlay-link", data: { turbo: false } %>
                             </div>
                             <div class="tts-entry__inner tts-entry__content">
                               <div class="ts-entry__post-meta-wrapper">
@@ -106,7 +106,7 @@
                               fetchpriority: false %>
                         <% end %>
                       </div>
-                      <%= link_to "", post_path(post), class: "tts-overlay-link", data: {turbo: false} %>
+                      <%= link_to "", post_path(post), class: "tts-overlay-link", data: { turbo: false } %>
                     </div>
                     <div class="ts-entry__inner ts-entry__content">
                       <div class="ts-entry__post-meta">
@@ -172,7 +172,7 @@
                                       fetchpriority: false %>
                                 <% end %>
                               </div>
-                              <%= link_to "", post_path(post), class: "ts-overlay-link" %>
+                              <%= link_to "", post_path(post), class: "ts-overlay-link", data: { turbo: false } %>
                             </div>
                           </div>
                         </div>
