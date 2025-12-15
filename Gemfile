@@ -47,7 +47,7 @@ gem "image_processing", "~> 1.2"
 gem "kaminari"
 
 # Centralization of locale data collection for Ruby on Rails.
-gem "rails-i18n", "~> 8.0.0" # For Rails >= 8.0.0
+gem "rails-i18n", "~> 8.1.0" # For Rails >= 8.0.0
 
 # minitest provides a complete suite of testing facilities supporting TDD, BDD, mocking, and benchmarking.
 gem "minitest", "~> 5.0"
