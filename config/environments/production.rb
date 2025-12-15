@@ -21,8 +21,8 @@ Rails.application.configure do
     "cache-control" => "public, max-age=#{1.year.to_i}, immutable"
   }
 
-  # ETag 생성 활성화 (조건부 GET 지원)
-  config.action_dispatch.rack_cache = true
+  # ETag/조건부 GET: 컨트롤러에서 stale?/fresh_when 사용
+  # rack-cache는 레거시 - Thruster가 HTTP 캐싱 처리
 
   # 동적 페이지 기본 캐시 헤더 (Cloudflare와 브라우저)
   # 개별 컨트롤러에서 fresh_when, stale? 로 세밀하게 제어 가능
