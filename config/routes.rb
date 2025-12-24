@@ -34,4 +34,9 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "posts#index"
+
+  # === Error Pages ===
+  get "/404", to: "errors#not_found"
+  get "/422", to: "errors#unprocessable"
+  get "/500", to: "errors#internal_server"
 end

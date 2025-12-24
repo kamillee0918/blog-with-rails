@@ -1,0 +1,46 @@
+<% content_for :title, "Page Not Found | Kamil Lee의 개발 일기" %>
+
+<div class="ts-site-content ts-sidebar-disabled">
+  <div class="ts-container">
+    <div class="ts-main-content">
+      <div class="ts-content-area">
+        <!-- 404 페이지 헤더 -->
+        <div class="ts-page__header">
+          <span class="ts-page__subtitle">404 Not Found</span>
+          <h1 class="ts-page__title">There's been a glitch...</h1>
+        </div>
+
+        <!-- 404 콘텐츠 -->
+        <div class="ts-content-not-found">
+          <p>We're not quite sure what went wrong. The page you were looking for could not be found. It might have been removed, renamed, or did not exist in the first place. Perhaps searching can help.</p>
+
+          <!-- Search -->
+          <%= form_tag search_path(keyword: ''), method: :get, role: "search", class: "ts-search__form" do %>
+            <div class="ts-search__container">
+              <input required="" class="ts-search__input" type="search" value="" name="keyword" placeholder="Search posts...">
+              <button class="ts-search__submit">
+                <svg class="ts-icon ts-icon-search" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M21 21L16.7 16.7M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </button>
+            </div>
+          <% end %>
+
+          <!-- Tags -->
+          <% if @all_tags.any? %>
+            <section>
+              <br>
+              <h4>Explore by topic</h4>
+              <br>
+              <% @all_tags.each do |tag_name, count| %>
+                <%= link_to tag_posts_path(tag: tag_name), class: "ts-tag" do %>
+                  #<%= tag_name %> (<%= count %>)
+                <% end %>
+              <% end %>
+            </section>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

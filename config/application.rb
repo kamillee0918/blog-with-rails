@@ -30,5 +30,8 @@ module BlogWithRails
 
     # libvips 사용 (기본값, ImageMagick보다 빠름)
     config.active_storage.variant_processor = :vips
+
+    # 동적 오류 페이지 사용 (public/*.html 대신 컨트롤러/뷰 사용)
+    config.exceptions_app = self.routes
   end
 end
