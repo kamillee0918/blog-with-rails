@@ -4,6 +4,8 @@
   <% content_for :title, "#{@query} | Kamil Lee의 개발 일기" %>
 <% elsif @tag.present? %>
   <% content_for :title, "#{@tag} | Kamil Lee의 개발 일기" %>
+<% elsif @category.present? %>
+  <% content_for :title, "#{@category} | Kamil Lee의 개발 일기" %>
 <% else %>
   <% content_for :title, "Posts | Kamil Lee의 개발 일기" %>
 <% end %>
