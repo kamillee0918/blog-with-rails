@@ -16,7 +16,8 @@ class PostsController < ApplicationController
     # HTTP 캐싱: 최신 게시글 기준으로 캐시 유효성 검증
     latest_post = @posts.first
     cache_key = [ latest_post&.cache_key_with_version, params[:page], params[:category] ]
-    fresh_when(etag: cache_key, last_modified: latest_post&.updated_at, public: true)
+    fresh_when(etag: cache_key, last_modified: latest_post&.updated_at)
+    response.headers["Cache-Control"] = "public, no-cache"
 
     # 페이지 파라미터가 있거나(1페이지 포함) 카테고리가 있으면 show_all 레이아웃으로 표시
     if params[:page].present? || @category.present?
@@ -61,8 +62,8 @@ class PostsController < ApplicationController
       # 추천 게시글: 같은 태그를 가진 게시글 (최대 3개)
       @recommended_posts = @post.recommended_posts(limit: 3)
 
-      # Cloudflare 캐시 힌트 (선택적)
-      expires_in 1.hour, public: true
+      # 캐시 헤더: 항상 서버에 재검증 요청 (ETag 활용)
+      response.headers["Cache-Control"] = "public, no-cache"
     end
   end
 
