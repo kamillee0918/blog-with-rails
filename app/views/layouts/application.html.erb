@@ -48,6 +48,17 @@
 
     <%= javascript_importmap_tags %>
 
+    <%# Mermaid diagram %>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: false });
+      window.mermaid = mermaid;
+      
+      const renderMermaid = () => mermaid.run({ querySelector: 'pre.mermaid' });
+      document.addEventListener('turbo:load', renderMermaid);
+      document.addEventListener('DOMContentLoaded', renderMermaid);
+    </script>
+
     <%# TinyMCE editor %>
     <script src="https://cdn.tiny.cloud/1/<%= ENV['TINYMCE_API_KEY'] %>/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
     
@@ -59,6 +70,7 @@
     <%# PrismJS: 주요 언어 컴포넌트 로드 %>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-java.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-python.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-javascript.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-bash.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-ruby.min.js"></script>
     <%# PrismJS Custom Class Configuration %>
@@ -197,7 +209,7 @@
                         </li>
                       <% else %>
                         <li>
-                          <%= link_to "Login", login_path %>
+                          <%= link_to "Login", login_path, data: { turbo: false } %>
                         </li>
                       <% end %>
                     </ul>

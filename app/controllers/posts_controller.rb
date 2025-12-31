@@ -13,11 +13,10 @@ class PostsController < ApplicationController
 
     @posts = @posts.page(params[:page]).per(10)
 
-    # HTTP 캐싱: 최신 게시글 기준으로 캐시 유효성 검증
-    latest_post = @posts.first
-    cache_key = [ latest_post&.cache_key_with_version, params[:page], params[:category] ]
-    fresh_when(etag: cache_key, last_modified: latest_post&.updated_at)
-    response.headers["Cache-Control"] = "public, no-cache"
+    # HTTP 캐싱 비활성화 - 세션 상태 변경 시 항상 새로운 콘텐츠 제공
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, private"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
 
     # 페이지 파라미터가 있거나(1페이지 포함) 카테고리가 있으면 show_all 레이아웃으로 표시
     if params[:page].present? || @category.present?
@@ -48,23 +47,21 @@ class PostsController < ApplicationController
 
   # GET /posts/:id
   def show
-    # HTTP 캐싱: ETag/Last-Modified 기반 조건부 GET
-    # 게시글이 변경되지 않았으면 304 Not Modified 반환
-    if stale?(etag: @post, last_modified: @post.updated_at, public: true)
-      @recent_posts = Post.recent.limit(5)
-      @archives = Post.yearly_archive_counts
-      @caption = @post.cover_image_caption
+    @recent_posts = Post.recent.limit(5)
+    @archives = Post.yearly_archive_counts
+    @caption = @post.cover_image_caption
 
-      # 이전/다음 게시글 (published_at 기준)
-      @prev_post = @post.previous_post
-      @next_post = @post.next_post
+    # 이전/다음 게시글 (published_at 기준)
+    @prev_post = @post.previous_post
+    @next_post = @post.next_post
 
-      # 추천 게시글: 같은 태그를 가진 게시글 (최대 3개)
-      @recommended_posts = @post.recommended_posts(limit: 3)
+    # 추천 게시글: 같은 태그를 가진 게시글 (최대 3개)
+    @recommended_posts = @post.recommended_posts(limit: 3)
 
-      # 캐시 헤더: 항상 서버에 재검증 요청 (ETag 활용)
-      response.headers["Cache-Control"] = "public, no-cache"
-    end
+    # HTTP 캐싱 비활성화 - 세션 상태 변경 시 항상 새로운 콘텐츠 제공
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, private"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
   end
 
   # GET /posts/new
