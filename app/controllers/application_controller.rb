@@ -19,7 +19,7 @@ class ApplicationController < ActionController::Base
       directives = cache_control.split(",").map(&:strip)
       return if directives.include?("no-transform")
 
-      response.headers["Cache-Control"] = (directives + ["no-transform"]).join(", ")
+      response.headers["Cache-Control"] = (directives + [ "no-transform" ]).join(", ")
     else
       response.headers["Cache-Control"] = "no-transform"
     end
