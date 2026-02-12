@@ -63,7 +63,8 @@
     <script src="https://cdn.tiny.cloud/1/<%= ENV['TINYMCE_API_KEY'] %>/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
     
     <%# PrismJS (Core + Custom Class Plugin) %>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/prism.min.js"></script>
+    <%# data-manual: TinyMCE codesample 플러그인과 연동 시 필수 속성 %>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/prism.min.js" data-manual></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/custom-class/prism-custom-class.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/remove-initial-line-feed/prism-remove-initial-line-feed.min.js"></script>
 
@@ -73,6 +74,12 @@
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-javascript.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-bash.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-ruby.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-sql.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-diff.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-markup-templating.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-erb.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
     <%# PrismJS Custom Class Configuration %>
     <script>
       // Register 'plain' as empty grammar (no syntax highlighting)
