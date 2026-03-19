@@ -1,41 +1,52 @@
-# SQLite. Versions 3.8.0 and up are supported.
-#   gem install sqlite3
+# === Database Configuration ===
 #
-#   Ensure the SQLite 3 gem is defined in your Gemfile
-#   gem "sqlite3"
+# Development/Test: SQLite (fast, no setup required)
+# Production: Supabase PostgreSQL (managed cloud DB)
+# Solid Cache/Queue/Cable: Local SQLite in all environments
 #
-default: &default
+# 프로덕션 환경변수:
+#   SUPABASE_DB_HOST     — aws-0-[region].pooler.supabase.com
+#   SUPABASE_DB_USER     — postgres.[project-ref]
+#   SUPABASE_DB_PASSWORD — Supabase 프로젝트 DB 비밀번호
+#   SUPABASE_DB_PORT     — 6543 (pooler transaction mode)
+
+# === SQLite (Development / Test / Solid adapters) ===
+sqlite: &sqlite
   adapter: sqlite3
-  max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   timeout: 5000
 
 development:
-  <<: *default
-  database: storage/development.sqlite3
+  primary:
+    <<: *sqlite
+    database: storage/development.sqlite3
 
-# Warning: The database defined as "test" will be erased and
-# re-generated from your development database when you run "rake".
-# Do not set this db to the same as development or production.
 test:
-  <<: *default
-  database: storage/test.sqlite3
+  primary:
+    <<: *sqlite
+    database: storage/test.sqlite3
 
-
-# Store production database in the storage/ directory, which by default
-# is mounted as a persistent Docker volume in config/deploy.yml.
 production:
   primary:
-    <<: *default
-    database: storage/production.sqlite3
+    adapter: postgresql
+    encoding: unicode
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+    host: <%= ENV.fetch("SUPABASE_DB_HOST", "aws-0-ap-southeast-2.pooler.supabase.com") %>
+    port: <%= ENV.fetch("SUPABASE_DB_PORT", 6543) %>
+    database: postgres
+    username: <%= ENV.fetch("SUPABASE_DB_USER", "postgres.tqcmbdphezkdyqvjpkvy") %>
+    password: <%= ENV["SUPABASE_DB_PASSWORD"] %>
+    prepared_statements: false
+    sslmode: require
   cache:
-    <<: *default
+    <<: *sqlite
     database: storage/production_cache.sqlite3
     migrations_paths: db/cache_migrate
   queue:
-    <<: *default
+    <<: *sqlite
     database: storage/production_queue.sqlite3
     migrations_paths: db/queue_migrate
   cable:
-    <<: *default
+    <<: *sqlite
     database: storage/production_cable.sqlite3
     migrations_paths: db/cable_migrate
