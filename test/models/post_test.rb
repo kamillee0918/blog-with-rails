@@ -87,7 +87,7 @@ class PostTest < ActiveSupport::TestCase
 
   # === Instance Method Tests ===
   test "previous_post returns earlier post" do
-    # 과거 날짜를 사용하여 published scope 통과 + fixture 데이터 이후 날짜
+    # 과거 날짜를 사용 (.published 스코프가 미래 게시글을 제외하므로)
     older = Post.create!(title: "Older Nav", published_at: 3.days.ago, category: "Test")
     newer = Post.create!(title: "Newer Nav", published_at: 2.days.ago, category: "Test")
 
@@ -95,25 +95,25 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test "next_post returns later post" do
-    # 과거 날짜를 사용하여 published scope 통과 + fixture 데이터 이후 날짜
-    older = Post.create!(title: "Older Nav2", published_at: 1.day.ago, category: "Test")
-    newer = Post.create!(title: "Newer Nav2", published_at: Time.current, category: "Test")
+    # 과거 날짜를 사용 (.published 스코프가 미래 게시글을 제외하므로)
+    older = Post.create!(title: "Older Nav2", published_at: 4.days.ago, category: "Test")
+    newer = Post.create!(title: "Newer Nav2", published_at: 3.days.ago, category: "Test")
 
     assert_equal newer, older.next_post
   end
 
   test "recommended_posts returns posts with matching tags" do
+    ruby_tag = Tag.create!(name: "ruby")
+    rails_tag = Tag.create!(name: "rails")
+    python_tag = Tag.create!(name: "python")
+    js_tag = Tag.create!(name: "javascript")
+
     post1 = Post.create!(title: "Post 1", published_at: Time.current, category: "Test")
-    post1.tag_list = "ruby, rails"
-    post1.save!
-
+    post1.tags << ruby_tag << rails_tag
     post2 = Post.create!(title: "Post 2", published_at: Time.current, category: "Test")
-    post2.tag_list = "ruby, python"
-    post2.save!
-
+    post2.tags << ruby_tag << python_tag
     post3 = Post.create!(title: "Post 3", published_at: Time.current, category: "Test")
-    post3.tag_list = "javascript"
-    post3.save!
+    post3.tags << js_tag
 
     recommended = post1.recommended_posts
     assert_includes recommended, post2
@@ -123,5 +123,50 @@ class PostTest < ActiveSupport::TestCase
   test "recommended_posts returns empty when no tags" do
     post = Post.create!(title: "No Tags", published_at: Time.current, category: "Test")
     assert_empty post.recommended_posts
+  end
+
+  test "tag_list getter returns comma-separated names" do
+    post = Post.create!(title: "Tagged", published_at: Time.current, category: "Test")
+    post.tags << Tag.create!(name: "ruby") << Tag.create!(name: "rails")
+    assert_equal "ruby, rails", post.tag_list
+  end
+
+  test "tag_list setter creates and assigns tags" do
+    post = Post.create!(title: "Tagged2", published_at: Time.current, category: "Test")
+    post.tag_list = "ruby, rails, ruby"
+    assert_equal 2, post.tags.count
+    assert_equal %w[ruby rails], post.tags.pluck(:name).sort_by { |n| %w[ruby rails].index(n) }
+  end
+
+  test "read_time returns minimum 1 min for empty content" do
+    post = Post.create!(title: "Empty", published_at: Time.current, category: "Test")
+    assert_equal "1 min read", post.read_time
+  end
+
+  test "published scope excludes future posts" do
+    past = Post.create!(title: "Past", published_at: 1.day.ago, category: "Test")
+    future = Post.create!(title: "Future", published_at: 1.day.from_now, category: "Test")
+
+    results = Post.published
+    assert_includes results, past
+    assert_not_includes results, future
+  end
+
+  test "previous_post excludes unpublished future posts" do
+    past = Post.create!(title: "Past Nav", published_at: 5.days.ago, category: "Test")
+    current = Post.create!(title: "Current Nav", published_at: 3.days.ago, category: "Test")
+    future = Post.create!(title: "Future Nav", published_at: 1.day.from_now, category: "Test")
+
+    # future post should not appear as next_post for current
+    assert_nil current.next_post || (current.next_post != future ? nil : current.next_post)
+  end
+
+  test "by_tag scope finds posts by normalized tag" do
+    tag = Tag.create!(name: "ruby")
+    post = Post.create!(title: "Ruby Post", published_at: Time.current, category: "Test")
+    post.tags << tag
+
+    results = Post.by_tag("Ruby")
+    assert_includes results, post
   end
 end

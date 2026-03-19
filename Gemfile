@@ -4,7 +4,9 @@ source "https://rubygems.org"
 gem "rails", "~> 8.1.2"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
-# Use sqlite3 as the database for Active Record
+# Use PostgreSQL as the primary database for Active Record (Supabase)
+gem "pg", "~> 1.5"
+# Use sqlite3 for Solid Cache/Queue/Cable (local transient data)
 gem "sqlite3", ">= 2.1"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
@@ -14,9 +16,8 @@ gem "importmap-rails"
 gem "turbo-rails"
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
 gem "stimulus-rails"
-# Use Tailwind CSS [https://github.com/rails/tailwindcss-rails]
-# gem "tailwindcss-rails", "~> 3.3"
-gem "tailwindcss-rails"
+# Tailwind CSS removed — custom CSS used instead
+# gem "tailwindcss-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
@@ -53,6 +54,9 @@ gem "rails-i18n", "~> 8.1.0" # For Rails >= 8.0.0
 gem "minitest", "~> 6.0"
 
 group :development, :test do
+  # Load environment variables from .env file
+  gem "dotenv-rails"
+
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
 

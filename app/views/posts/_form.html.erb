@@ -3,10 +3,9 @@
     <div class="ts-entry__content-wrap">
       <div class="ts-single-post ts-wysiwyg">
         <% if post.errors.any? %>
-          <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+          <div id="error_explanation" style="background-color: #fef2f2; color: #ef4444; padding: 0.5rem 0.75rem; font-weight: 500; border-radius: 0.375rem; margin-top: 0.75rem;">
             <h2><%= pluralize(post.errors.count, "error") %> prohibited this post from being saved:</h2>
-
-            <ul class="list-disc ml-6">
+            <ul style="list-style-type: disc; margin-left: 1.5rem;">
               <% post.errors.each do |error| %>
                 <li><%= error.full_message %></li>
               <% end %>
@@ -56,9 +55,9 @@
 
         <!-- 게시글 태그 필드 -->
         <div class="ts-search__wrapper">
-          <%= form.label :tags %>
+          <%= form.label :tag_list, "Tags" %>
           <div class="ts-search__group" style="<%= post.errors[:tags].any? ? 'border-bottom: 1px solid var(--wp--preset--color--vivid-red)' : '' %>">
-            <%= form.text_field :tags, class: "ts-search__input", style: "border: none; outline: none;", onfocus: "this.parentElement.style.borderBottom = '1px solid var(--wp--preset--color--vivid-cyan-blue)'", onblur: "if (!this.classList.contains('error')) { this.parentElement.style.borderBottom = '' }" %>
+            <%= form.text_field :tag_list, class: "ts-search__input", style: "border: none; outline: none;", onfocus: "this.parentElement.style.borderBottom = '1px solid var(--wp--preset--color--vivid-cyan-blue)'", onblur: "if (!this.classList.contains('error')) { this.parentElement.style.borderBottom = '' }" %>
           </div>
         </div>
 
