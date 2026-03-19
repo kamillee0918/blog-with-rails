@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_30_051704) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_19_034444) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -51,18 +51,34 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_30_051704) do
 
   create_table "posts", force: :cascade do |t|
     t.string "author"
+    t.string "category"
     t.datetime "created_at", null: false
     t.datetime "published_at"
+    t.string "slug"
     t.text "summary"
-    t.string "tags"
     t.string "title"
     t.datetime "updated_at", null: false
-    t.string "slug"
-    t.string "category"
     t.index ["category"], name: "index_posts_on_category"
     t.index ["slug"], name: "index_posts_on_slug", unique: true
   end
 
+  create_table "posts_tags", id: false, force: :cascade do |t|
+    t.integer "post_id", null: false
+    t.integer "tag_id", null: false
+    t.index ["post_id", "tag_id"], name: "index_posts_tags_on_post_id_and_tag_id", unique: true
+    t.index ["post_id"], name: "index_posts_tags_on_post_id"
+    t.index ["tag_id"], name: "index_posts_tags_on_tag_id"
+  end
+
+  create_table "tags", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_tags_on_name", unique: true
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "posts_tags", "posts"
+  add_foreign_key "posts_tags", "tags"
 end

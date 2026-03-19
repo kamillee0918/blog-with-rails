@@ -1,4 +1,5 @@
 class Post < ApplicationRecord
+  has_and_belongs_to_many :tags
   has_rich_text :content
   has_one_attached :cover_image do |attachable|
     # 미리 생성할 variant 정의 (on-demand로 생성됨)
@@ -22,14 +23,21 @@ class Post < ApplicationRecord
   scope :published, -> { where("published_at <= ?", Time.current) }
   scope :by_category, ->(category) { where(category: category) }
   scope :recent, -> { order(published_at: :desc) }
-  scope :by_year, ->(year) { where("strftime('%Y', published_at) = ?", year.to_s) }
+  scope :by_year, ->(year) {
+    start_date = Date.new(year.to_i, 1, 1).beginning_of_day
+    end_date = Date.new(year.to_i, 12, 31).end_of_day
+    where(published_at: start_date..end_date)
+  }
   scope :search, ->(query) {
     return none if query.blank?
-    where("title LIKE :q OR summary LIKE :q OR tags LIKE :q", q: "%#{query}%")
+    sanitized = "%#{sanitize_sql_like(query)}%"
+    left_joins(:tags)
+      .where("LOWER(posts.title) LIKE LOWER(:q) OR LOWER(posts.summary) LIKE LOWER(:q) OR LOWER(tags.name) LIKE LOWER(:q)", q: sanitized)
+      .distinct
   }
   scope :by_tag, ->(tag) {
     return none if tag.blank?
-    where("tags LIKE ?", "%#{tag}%")
+    joins(:tags).where("LOWER(tags.name) = LOWER(?)", tag.strip).distinct
   }
 
   # === URL에 사용할 파라미터 ===
@@ -54,38 +62,76 @@ class Post < ApplicationRecord
 
   # 연도별 게시글 수 (archive 사이드바용)
   def self.yearly_archive_counts
-    group("strftime('%Y', published_at)").count
+    pluck(:published_at).compact.group_by { |date| date.year.to_s }.transform_values(&:count)
   end
 
   # === Instance Methods ===
 
   # 이전 게시글 (published_at 기준)
   def previous_post
-    Post.where("published_at < ?", published_at).recent.first
+    Post.published.where("published_at < ?", published_at).recent.first
   end
 
   # 다음 게시글 (published_at 기준)
   def next_post
-    Post.where("published_at > ?", published_at).order(published_at: :asc).first
+    Post.published.where("published_at > ?", published_at).order(published_at: :asc).first
   end
 
   # 추천 게시글: 같은 태그를 가진 게시글
   def recommended_posts(limit: 3)
-    return [] if tags.blank?
+    my_tag_ids = tags.pluck(:id)
+    return [] if my_tag_ids.empty?
 
-    my_tags = tags.split(",").map(&:strip)
-    Post.where.not(id: id)
-        .where("tags IS NOT NULL AND tags != ''")
-        .select { |p| (p.tags.split(",").map(&:strip) & my_tags).any? }
-        .first(limit)
+    Post.joins("INNER JOIN posts_tags ON posts_tags.post_id = posts.id")
+        .where("posts_tags.tag_id IN (?)", my_tag_ids)
+        .where.not(id: id)
+        .distinct
+        .limit(limit)
+  end
+
+  # 폼 호환용: 쉼표 구분 문자열 ↔ Tag associations
+  def tag_list
+    tags.pluck(:name).join(", ")
+  end
+
+  def tag_list=(names)
+    self.tags = names.split(",").map(&:strip).reject(&:blank?).uniq.map do |name|
+      Tag.find_or_create_by_name(name)
+    end
   end
 
   def read_time
     words_per_minute = 180
     text_content = content.to_plain_text
     word_count = text_content.split.size
-    minutes = (word_count / words_per_minute).ceil
+    minutes = [ 1, (word_count / words_per_minute.to_f).ceil ].max
     "#{minutes} min read"
+  end
+
+  # 코드 블록 내용을 복원하여 표시용 콘텐츠 반환
+  # Base64 인코딩된 코드 블록 → 원래 HTML 엔티티로 디코딩
+  # 기존 ⟦ERB_*⟧ placeholder 게시글도 폴백으로 지원 (하위 호환)
+  def rendered_content
+    return content if content.body.blank?
+
+    html = content.body.to_s
+
+    # Base64 인코딩된 코드 블록 디코딩
+    html = html.gsub(%r{(<pre[^>]*>\s*<code[^>]*>)\s*BASE64:([\w+/=]+)\s*(</code>\s*</pre>)}mi) do
+      open_tags = $1
+      encoded = $2
+      close_tags = $3
+      decoded = Base64.strict_decode64(encoded).force_encoding("UTF-8")
+      "#{open_tags}#{decoded}#{close_tags}"
+    end
+
+    # 기존 ⟦ERB_*⟧ placeholder 폴백 (하위 호환)
+    html = html.gsub("⟦ERB_EQ⟧", "&lt;%=")
+    html = html.gsub("⟦ERB_HASH⟧", "&lt;%#")
+    html = html.gsub("⟦ERB_OPEN⟧", "&lt;%")
+    html = html.gsub("⟦ERB_CLOSE⟧", "%&gt;")
+
+    html.html_safe
   end
 
   # 커버 이미지 캡션 반환
