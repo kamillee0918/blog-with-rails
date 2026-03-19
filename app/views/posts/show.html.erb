@@ -53,7 +53,7 @@
               <%= render "posts/sidebar" , recent_posts: @recent_posts, archives: @archives %>
                 <div class="ts-entry__content-wrap">
                   <div class="ts-single-post ts-wysiwyg">
-                    <%= @post.content %>
+                    <%= @post.rendered_content %>
                       <!--
                   TODO: 하단에 'action-link'가 존재하면 아래의 샘플 코드와 같이 표시되도록 로직 수정
                     1. @post.content에서 'action-link'가 존재하는지 확인
