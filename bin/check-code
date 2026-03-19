@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
+# Suppress Ruby warnings (bundler/rubygems constant redefinition)
+export RUBYOPT="-W0"
+
 echo "🔍 Running code quality checks..."
 
 echo "1️⃣  Scan Ruby..."
