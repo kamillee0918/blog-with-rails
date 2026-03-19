@@ -3,6 +3,69 @@
 // ========================================
 
 // TinyMCE 초기화 모듈
+
+// ========================================
+// 코드 블록 보존 유틸리티 (Base64)
+// ========================================
+// ActionText(Nokogiri)가 <pre><code> 내부의 HTML 엔티티를 실제 HTML로 해석하는 문제를 해결
+// 저장 시 (서버): 코드 블록 내용 전체를 Base64 인코딩
+// 로드 시 (클라이언트): Base64 디코딩 → HTML 엔티티 복원
+
+// Base64 디코딩 후 코드 블록에 안전하게 삽입하기 위한 헬퍼
+// Base64 디코딩 결과는 이미 TinyMCE <code> 블록이 기대하는 엔티티 형태
+function decodeBase64CodeBlock(encoded) {
+  try {
+    // Base64 → 원본 HTML 엔티티 문자열 (UTF-8 지원)
+    const decoded = decodeURIComponent(
+      atob(encoded)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join(""),
+    );
+    // Base64 디코딩 결과는 이미 엔티티 형태 (&lt;div&gt;)
+    // TinyMCE <code> 블록이 기대하는 형식과 일치하므로 추가 인코딩 불필요
+    return decoded;
+  } catch (e) {
+    console.warn("Base64 code block decode failed:", e);
+    return encoded;
+  }
+}
+
+// raw HTML을 HTML 엔티티로 변환 (레거시 콘텐츠용)
+// textarea.value는 브라우저가 엔티티를 디코딩하므로 <div> 같은 raw HTML이 들어옴
+// 이를 &lt;div&gt; 로 변환하여 TinyMCE <code> 블록에 삽입
+function encodeRawHtmlForTinyMCE(raw) {
+  // textarea.value는 브라우저가 엔티티를 디코딩한 raw 텍스트
+  // 단일 인코딩만 필요: TinyMCE 파서가 한 레벨 디코딩하여 원래 텍스트로 복원
+  let encoded = raw.replace(/&/g, "&amp;");
+  encoded = encoded.replace(/</g, "&lt;");
+  encoded = encoded.replace(/>/g, "&gt;");
+  return encoded;
+}
+
+// 기존 ⟦ERB_*⟧ placeholder 폴백 디코딩 (하위 호환)
+// textarea.value에는 raw HTML + ERB placeholder가 혼재됨
+function decodeLegacyErbPlaceholders(codeContent) {
+  // 1단계: ERB placeholder를 임시 토큰으로 변환 (raw HTML 인코딩 시 간섭 방지)
+  let decoded = codeContent;
+  decoded = decoded.replace(/⟦ERB_EQ⟧/g, "\x00ERB_EQ\x00");
+  decoded = decoded.replace(/⟦ERB_HASH⟧/g, "\x00ERB_HASH\x00");
+  decoded = decoded.replace(/⟦ERB_OPEN⟧/g, "\x00ERB_OPEN\x00");
+  decoded = decoded.replace(/⟦ERB_CLOSE⟧/g, "\x00ERB_CLOSE\x00");
+
+  // 2단계: raw HTML을 엔티티로 변환 (단일 인코딩)
+  decoded = encodeRawHtmlForTinyMCE(decoded);
+
+  // 3단계: 임시 토큰을 ERB 엔티티로 복원
+  // encodeRawHtmlForTinyMCE가 단일 인코딩하므로 여기도 단일 레벨
+  decoded = decoded.replace(/\x00ERB_EQ\x00/g, "&lt;%=");
+  decoded = decoded.replace(/\x00ERB_HASH\x00/g, "&lt;%#");
+  decoded = decoded.replace(/\x00ERB_OPEN\x00/g, "&lt;%");
+  decoded = decoded.replace(/\x00ERB_CLOSE\x00/g, "%&gt;");
+
+  return decoded;
+}
+
 function initTinyMCE() {
   const textarea = document.getElementById("post_content");
   if (!textarea) return null;
@@ -82,7 +145,7 @@ function initTinyMCE() {
     entity_encoding: "raw",
     // 유효한 요소 확장 (pre, code 태그 및 class 속성 허용)
     extended_valid_elements:
-      "pre[class],code[class],script[*],template[*],turbo-stream[action|target]",
+      "pre[class],code[class],template[id],turbo-stream[action|target]",
     // 커스텀 요소 허용
     custom_elements: "turbo-stream,template",
 
@@ -191,6 +254,33 @@ function initTinyMCE() {
         });
       };
 
+      // 코드 블록 복원 (에디터 로드 시)
+      // Base64 인코딩된 코드 블록 → 디코딩 → 이중 인코딩으로 TinyMCE 파서 우회
+      // 기존 ⟦ERB_*⟧ placeholder도 폴백으로 지원
+      editor.on("BeforeSetContent", function (e) {
+        if (!e.content) return;
+
+        e.content = e.content.replace(
+          /(<pre[^>]*>\s*<code[^>]*>)([\s\S]*?)(<\/code>\s*<\/pre>)/gi,
+          function (match, openTags, codeContent, closeTags) {
+            let processed = codeContent.trim();
+
+            if (processed.startsWith("BASE64:")) {
+              // Base64 인코딩된 코드 블록 디코딩
+              processed = decodeBase64CodeBlock(processed.substring(7));
+            } else if (processed.includes("⟦ERB_")) {
+              // 기존 ⟦ERB_*⟧ placeholder 폴백 (하위 호환)
+              processed = decodeLegacyErbPlaceholders(processed);
+            } else {
+              // placeholder 없는 일반 코드 블록: raw HTML을 엔티티로 변환 + 이중 인코딩
+              processed = encodeRawHtmlForTinyMCE(codeContent);
+            }
+
+            return openTags + processed + closeTags;
+          },
+        );
+      });
+
       editor.on("BeforeGetContent", function () {
         ensureTurboFalseLinks();
       });
@@ -198,6 +288,16 @@ function initTinyMCE() {
       editor.on("change", function () {
         ensureTurboFalseLinks();
         editor.save();
+      });
+
+      // 폼 제출 전 에디터 내용을 textarea에 동기화
+      editor.on("init", function () {
+        const form = editor.getElement().closest("form");
+        if (form) {
+          form.addEventListener("submit", function () {
+            editor.save();
+          });
+        }
       });
     },
   });
