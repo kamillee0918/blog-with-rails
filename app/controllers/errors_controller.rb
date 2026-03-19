@@ -2,7 +2,7 @@
 
 class ErrorsController < ApplicationController
   def not_found
-    @all_tags = Post.pluck(:tags).compact.flat_map { |t| t.split(",").map(&:strip) }.reject(&:blank?).tally.sort_by { |_, count| -count }
+    @all_tags = Tag.popular_with_counts(10)
     render status: :not_found
   end
 

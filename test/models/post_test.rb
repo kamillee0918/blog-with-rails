@@ -87,25 +87,33 @@ class PostTest < ActiveSupport::TestCase
 
   # === Instance Method Tests ===
   test "previous_post returns earlier post" do
-    # 미래 날짜를 사용하여 fixture 데이터와 충돌 방지
-    older = Post.create!(title: "Older Nav", published_at: 10.days.from_now, category: "Test")
-    newer = Post.create!(title: "Newer Nav", published_at: 11.days.from_now, category: "Test")
+    # 과거 날짜를 사용하여 published scope 통과 + fixture 데이터 이후 날짜
+    older = Post.create!(title: "Older Nav", published_at: 3.days.ago, category: "Test")
+    newer = Post.create!(title: "Newer Nav", published_at: 2.days.ago, category: "Test")
 
     assert_equal older, newer.previous_post
   end
 
   test "next_post returns later post" do
-    # 미래 날짜를 사용하여 fixture 데이터와 충돌 방지
-    older = Post.create!(title: "Older Nav2", published_at: 20.days.from_now, category: "Test")
-    newer = Post.create!(title: "Newer Nav2", published_at: 21.days.from_now, category: "Test")
+    # 과거 날짜를 사용하여 published scope 통과 + fixture 데이터 이후 날짜
+    older = Post.create!(title: "Older Nav2", published_at: 1.day.ago, category: "Test")
+    newer = Post.create!(title: "Newer Nav2", published_at: Time.current, category: "Test")
 
     assert_equal newer, older.next_post
   end
 
   test "recommended_posts returns posts with matching tags" do
-    post1 = Post.create!(title: "Post 1", tags: "ruby, rails", published_at: Time.current, category: "Test")
-    post2 = Post.create!(title: "Post 2", tags: "ruby, python", published_at: Time.current, category: "Test")
-    post3 = Post.create!(title: "Post 3", tags: "javascript", published_at: Time.current, category: "Test")
+    post1 = Post.create!(title: "Post 1", published_at: Time.current, category: "Test")
+    post1.tag_list = "ruby, rails"
+    post1.save!
+
+    post2 = Post.create!(title: "Post 2", published_at: Time.current, category: "Test")
+    post2.tag_list = "ruby, python"
+    post2.save!
+
+    post3 = Post.create!(title: "Post 3", published_at: Time.current, category: "Test")
+    post3.tag_list = "javascript"
+    post3.save!
 
     recommended = post1.recommended_posts
     assert_includes recommended, post2
