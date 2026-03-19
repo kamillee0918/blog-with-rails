@@ -2,6 +2,10 @@
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
+if Rails.env.production?
+  abort "ERROR: seeds.rb should not be run in production! It will destroy all posts."
+end
+
 puts "Cleaning up existing posts..."
 Post.destroy_all
 
@@ -110,7 +114,7 @@ credits = [
     title: titles[i],
     summary: summaries[i],
     author: "Kamil Lee",
-    tags: tags_list[i],
+    tag_list: tags_list[i],
     category: categories[i],
     content: "<p>This is the main content for <strong>#{titles[i]}</strong>.</p><p>#{summaries[i]}</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
     published_at: Time.current - i.days
@@ -127,7 +131,7 @@ credits = [
       io: File.open(image_path),
       filename: image_file,
       content_type: "image/png",
-      metadata: { credit: caption }
+      metadata: { caption: caption }
     )
     puts "  Attached #{image_file} to '#{titles[i]}'"
   else
