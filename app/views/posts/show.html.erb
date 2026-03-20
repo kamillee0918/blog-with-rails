@@ -56,11 +56,11 @@
                     <%= @post.rendered_content %>
                   </div>
                   <!-- 태그 -->
-                  <% if @post.tags.present? %>
+                  <% if @post.tags.any? %>
                     <div class="ts-tags-section">
-                      <% @post.tags.split(',').each do |tag| %>
+                      <% @post.tags.each do |tag| %>
                         <span class="ts-tag">
-                          #<%= link_to tag.strip, tag_posts_path(tag: tag.strip), rel: "tag" , data: { turbo: false } %>
+                          #<%= link_to tag.name, tag_posts_path(tag: tag.name), rel: "tag" , data: { turbo: false } %>
                         </span>
                         <% end %>
                     </div>

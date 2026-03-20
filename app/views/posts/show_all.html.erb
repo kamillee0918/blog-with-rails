@@ -1,130 +1,151 @@
 <% if @year.present? %>
   <% content_for :title, "Kamil Lee의 개발 일기" %>
-<% elsif @query.present? %>
-  <% content_for :title, "#{@query} | Kamil Lee의 개발 일기" %>
-<% elsif @tag.present? %>
-  <% content_for :title, "#{@tag} | Kamil Lee의 개발 일기" %>
-<% elsif @category.present? %>
-  <% content_for :title, "#{@category} | Kamil Lee의 개발 일기" %>
-<% else %>
-  <% content_for :title, "Posts | Kamil Lee의 개발 일기" %>
-<% end %>
+    <% elsif @query.present? %>
+      <% content_for :title, "#{@query} | Kamil Lee의 개발 일기" %>
+        <% elsif @tag.present? %>
+          <% content_for :title, "#{@tag} | Kamil Lee의 개발 일기" %>
+            <% elsif @category.present? %>
+              <% content_for :title, "#{@category} | Kamil Lee의 개발 일기" %>
+                <% else %>
+                  <% content_for :title, "Posts | Kamil Lee의 개발 일기" %>
+                    <% end %>
 
-<div class="ts-site-content ts-sidebar-disabled">
-  <div class="ts-container">
-    <div class="ts-main-content">
-      <div class="ts-content-area">
-        <!-- 게시글 목록 헤더 시작 -->
-        <div class="ts-page__header">
-          <% if @year.present? %>
-            <h1 class="ts-page__title">#<%= @year %></h1>
-          <% elsif @query.present? %>
-            <span class="ts-page__subtitle">Search Results</span>
-            <h1 class="ts-page__title"><%= @query %></h1>
-          <% elsif @tag.present? %>
-            <h1 class="ts-page__title">#<%= @tag %></h1>
-          <% elsif @category.present? %>
-            <span class="ts-page__subtitle">Category</span>
-            <h1 class="ts-page__title"><%= @category %></h1>
-          <% else %>
-            <span class="ts-page__subtitle"><%= @posts.total_count %> posts</span>
-            <h1 class="ts-page__title">Explore all posts</h1>
-          <% end %>
-        </div>
-        <!-- 게시글 목록 헤더 끝 -->
-        <!-- 게시글 목록 시작 -->
-        <% if @query.present? && @posts.empty? %>
-          <!-- 검색 결과 없음 -->
-          <div class="ts-content-not-found">
-            <p>It seems we cannot find what you are looking for. Perhaps searching can help.</p>
-            <!-- Search -->
-            <%= form_tag search_path(keyword: ''), method: :get, role: "search", class: "ts-search__form" do %>
-              <div class="ts-search__container">
-                <input required="" class="ts-search__input" type="search" value="<%= @query %>" name="keyword" placeholder="">
-                <button class="ts-search__submit">
-                  <svg class="ts-icon ts-icon-search" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M21 21L16.7 16.7M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                  </svg>
-                </button>
-              </div>
-            <% end %>
-            <!-- Tags -->
-            <% all_tags = Post.pluck(:tags).compact.flat_map { |t| t.split(',').map(&:strip) }.reject(&:blank?).tally.sort_by { |_, count| -count } %>
-            <% if all_tags.any? %>
-              <section>
-                <br>
-                <h4>Explore by topic</h4>
-                <br>
-                <% all_tags.first(10).each do |tag_name, count| %>
-                  <%= link_to tag_posts_path(tag: tag_name), class: "ts-tag" do %>
-                    #<%= tag_name %> (<%= count %>)
-                  <% end %>
-                <% end %>
-              </section>
-            <% end %>
-          </div>
-        <% else %>
-        <div class="ts-posts-area">
-          <div class="ts-posts-area__main ts-posts-list">
-            <% @posts.each do |post| %>
-              <article class="post type-post status-publish format-standard has-post-thumbnail category-uncategorized ts-entry">
-                <div class="ts-entry__outer">
-                  <div class="ts-entry__inner ts-entry__inner-left">
-                    <div class="ts-entry__post-meta">
-                      <div class="ts-meta-date"><%= post.published_at.strftime("%B %-d, %Y") %></div>
-                      <div class="ts-meta-reading-time"><%= post.read_time rescue "0 min read" %></div>
-                    </div>
-                    <span class="ts-mention">@<%= post.author %></span>
-                  </div>
-                  <div class="ts-entry__inner ts-entry__content">
-                    <% if post.category.present? %>
-                      <div class="ts-meta-category">
-                        <%= link_to post.category, category_posts_path(category: post.category), class: "ts-category-link" %>
-                      </div>
-                    <% end %>
-                    <h2 class="ts-entry__title">
-                      <%= link_to post.title, post, data: {turbo: false} %>
-                    </h2>
-                    <p class="ts-entry__excerpt"><%= truncate(post.summary, length: 150) %></p>
-                    <% if post.tags.present? %>
-                      <div class="ts-tags-section" style="margin-top: 0.5rem;">
-                        <% post.tags.split(',').each do |tag| %>
-                          <span class="ts-tag" style="font-size: 0.75rem;">
-                            #<%= link_to tag.strip, tag_posts_path(tag: tag.strip), rel: "tag" %>
-                          </span>
-                        <% end %>
-                      </div>
-                    <% end %>
-                  </div>
-                  <div class="ts-entry__inner ts-entry__inner-right">
-                    <div class="ts-entry__gallery">
-                      <div class="ts-entry__thumbnail ts-ratio-square">
-                        <div class="ts-overlay-background">
-                          <% if post.cover_image.attached? %>
-                            <%# 썸네일 이미지: WebP 변환 + 반응형 srcset (Lazy Loading 비활성화) %>
-                            <%= responsive_image_tag post.cover_image,
-                                class: "attachment-post-thumbnail size-post-thumbnail wp-post-image",
-                                alt: post.title,
-                                lazy: false %>
-                          <% end %>
+                      <div class="ts-site-content ts-sidebar-disabled">
+                        <div class="ts-container">
+                          <div class="ts-main-content">
+                            <div class="ts-content-area">
+                              <!-- 게시글 목록 헤더 시작 -->
+                              <div class="ts-page__header">
+                                <% if @year.present? %>
+                                  <h1 class="ts-page__title">#<%= @year %>
+                                  </h1>
+                                  <% elsif @query.present? %>
+                                    <span class="ts-page__subtitle">Search Results</span>
+                                    <h1 class="ts-page__title">
+                                      <%= @query %>
+                                    </h1>
+                                    <% elsif @tag.present? %>
+                                      <h1 class="ts-page__title">#<%= @tag %>
+                                      </h1>
+                                      <% elsif @category.present? %>
+                                        <span class="ts-page__subtitle">Category</span>
+                                        <h1 class="ts-page__title">
+                                          <%= @category %>
+                                        </h1>
+                                        <% else %>
+                                          <span class="ts-page__subtitle">
+                                            <%= @posts.total_count %> posts
+                                          </span>
+                                          <h1 class="ts-page__title">Explore all posts</h1>
+                                          <% end %>
+                              </div>
+                              <!-- 게시글 목록 헤더 끝 -->
+                              <!-- 게시글 목록 시작 -->
+                              <% if @query.present? && @posts.empty? %>
+                                <!-- 검색 결과 없음 -->
+                                <div class="ts-content-not-found">
+                                  <p>It seems we cannot find what you are looking for. Perhaps searching can help.</p>
+                                  <!-- Search -->
+                                  <%= form_tag search_path(keyword: '' ), method: :get, role: "search" ,
+                                    class: "ts-search__form" do %>
+                                    <div class="ts-search__container">
+                                      <input required="" class="ts-search__input" type="search" value="<%= @query %>"
+                                        name="keyword" placeholder="">
+                                      <button class="ts-search__submit">
+                                        <svg class="ts-icon ts-icon-search" width="16" height="16" viewBox="0 0 24 24"
+                                          fill="none" xmlns="http://www.w3.org/2000/svg">
+                                          <path
+                                            d="M21 21L16.7 16.7M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round"></path>
+                                        </svg>
+                                      </button>
+                                    </div>
+                                    <% end %>
+                                      <!-- Tags -->
+                                        <% all_tags=Tag.joins(:posts).group(:name).order('COUNT(*) DESC').limit(10).count %>
+                                        <% if all_tags.any? %>
+                                          <section>
+                                            <br>
+                                            <h4>Explore by topic</h4>
+                                            <br>
+                                            <% all_tags.each do |tag_name, count| %>
+                                              <%= link_to tag_posts_path(tag: tag_name), class: "ts-tag" do %>
+                                                #<%= tag_name %> (<%= count %>)
+                                                    <% end %>
+                                                      <% end %>
+                                          </section>
+                                          <% end %>
+                                </div>
+                                <% else %>
+                                  <div class="ts-posts-area">
+                                    <div class="ts-posts-area__main ts-posts-list">
+                                      <% @posts.each do |post| %>
+                                        <article
+                                          class="post type-post status-publish format-standard has-post-thumbnail category-uncategorized ts-entry">
+                                          <div class="ts-entry__outer">
+                                            <div class="ts-entry__inner ts-entry__inner-left">
+                                              <div class="ts-entry__post-meta">
+                                                <div class="ts-meta-date">
+                                                  <%= post.published_at.strftime("%B %-d, %Y") %>
+                                                </div>
+                                                <div class="ts-meta-reading-time">
+                                                  <%= post.read_time rescue "0 min read" %>
+                                                </div>
+                                              </div>
+                                              <span class="ts-mention">@<%= post.author %></span>
+                                            </div>
+                                            <div class="ts-entry__inner ts-entry__content">
+                                              <% if post.category.present? %>
+                                                <div class="ts-meta-category">
+                                                  <%= link_to post.category, category_posts_path(category:
+                                                    post.category), class: "ts-category-link" %>
+                                                </div>
+                                                <% end %>
+                                                  <h2 class="ts-entry__title">
+                                                    <%= link_to post.title, post, data: {turbo: false} %>
+                                                  </h2>
+                                                  <p class="ts-entry__excerpt">
+                                                    <%= truncate(post.summary, length: 150) %>
+                                                  </p>
+                                                  <% if post.tags.any? %>
+                                                    <div class="ts-tags-section" style="margin-top: 0.5rem;">
+                                                      <% post.tags.each do |tag| %>
+                                                        <span class="ts-tag" style="font-size: 0.75rem;">
+                                                          #<%= link_to tag.name, tag_posts_path(tag: tag.name),
+                                                            rel: "tag" %>
+                                                        </span>
+                                                        <% end %>
+                                                    </div>
+                                                    <% end %>
+                                            </div>
+                                            <div class="ts-entry__inner ts-entry__inner-right">
+                                              <div class="ts-entry__gallery">
+                                                <div class="ts-entry__thumbnail ts-ratio-square">
+                                                  <div class="ts-overlay-background">
+                                                    <% if post.cover_image.attached? %>
+                                                      <%# 썸네일 이미지: WebP 변환 + 반응형 srcset (Lazy Loading 비활성화) %>
+                                                        <%= responsive_image_tag post.cover_image,
+                                                          class: "attachment-post-thumbnail size-post-thumbnail wp-post-image",
+                                                          alt: post.title, lazy: false %>
+                                                          <% end %>
+                                                  </div>
+                                                  <%= link_to "" , post_path(post), class: "ts-overlay-link" , data:
+                                                    {turbo: false} %>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </article>
+                                        <% end %>
+                                    </div>
+                                  </div>
+                                  <!-- 게시글 목록 끝 -->
+                                  <!-- 게시글 목록 페이지네이션 시작 -->
+                                  <%= paginate @posts %>
+                                    <!-- 게시글 목록 페이지네이션 끝 -->
+                                    <% end %>
+                            </div>
+                          </div>
                         </div>
-                        <%= link_to "", post_path(post), class: "ts-overlay-link", data: {turbo: false} %>
                       </div>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            <% end %>
-          </div>
-        </div>
-        <!-- 게시글 목록 끝 -->
-        <!-- 게시글 목록 페이지네이션 시작 -->
-        <%= paginate @posts %>
-        <!-- 게시글 목록 페이지네이션 끝 -->
-        <% end %>
-      </div>
-    </div>
-  </div>
-</div>
-
-
