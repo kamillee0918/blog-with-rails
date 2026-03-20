@@ -5,10 +5,10 @@
 # Solid Cache/Queue/Cable: Local SQLite in all environments
 #
 # 프로덕션 환경변수:
-#   SUPABASE_DB_HOST     — aws-0-[region].pooler.supabase.com
-#   SUPABASE_DB_USER     — postgres.[project-ref]
+#   SUPABASE_DB_HOST     — db.[project-ref].supabase.co (direct connection)
+#   SUPABASE_DB_USER     — postgres
 #   SUPABASE_DB_PASSWORD — Supabase 프로젝트 DB 비밀번호
-#   SUPABASE_DB_PORT     — 6543 (pooler transaction mode)
+#   SUPABASE_DB_PORT     — 5432 (direct connection)
 
 # === SQLite (Development / Test / Solid adapters) ===
 sqlite: &sqlite
@@ -31,12 +31,11 @@ production:
     adapter: postgresql
     encoding: unicode
     pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-    host: <%= ENV.fetch("SUPABASE_DB_HOST", "aws-0-ap-southeast-2.pooler.supabase.com") %>
-    port: <%= ENV.fetch("SUPABASE_DB_PORT", 6543) %>
+    host: <%= ENV.fetch("SUPABASE_DB_HOST", "db.tqcmbdphezkdyqvjpkvy.supabase.co") %>
+    port: <%= ENV.fetch("SUPABASE_DB_PORT", 5432) %>
     database: postgres
-    username: <%= ENV.fetch("SUPABASE_DB_USER", "postgres.tqcmbdphezkdyqvjpkvy") %>
+    username: <%= ENV.fetch("SUPABASE_DB_USER", "postgres") %>
     password: <%= ENV["SUPABASE_DB_PASSWORD"] %>
-    prepared_statements: false
     sslmode: require
   cache:
     <<: *sqlite

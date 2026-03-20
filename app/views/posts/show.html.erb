@@ -54,15 +54,6 @@
                 <div class="ts-entry__content-wrap">
                   <div class="ts-single-post ts-wysiwyg">
                     <%= @post.rendered_content %>
-                      <!--
-                  TODO: 하단에 'action-link'가 존재하면 아래의 샘플 코드와 같이 표시되도록 로직 수정
-                    1. @post.content에서 'action-link'가 존재하는지 확인
-                    2. 존재한다면 아래 코드를 표시
-                    3. svg 및 a 태그, img 태그는 글 작성자가 커스터마이징할 수 있어야 함
-                    4. 이러한 로직을 어떻게 구현하는게 최선인지 고민
-                -->
-                      <!-- 아래는 샘플 코드임 -->
-
                   </div>
                   <!-- 태그 -->
                   <% if @post.tags.present? %>
