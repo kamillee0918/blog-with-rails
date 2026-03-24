@@ -20,26 +20,21 @@ class SessionsController < ApplicationController
       return
     end
 
-    admin_password = resolve_admin_password
+    admin = Admin.find_by(email: params[:email])
 
-    if admin_password.nil?
-      flash.now[:alert] = "Admin password is not configured. Please set ADMIN_PASSWORD environment variable."
-      render :new, status: :service_unavailable
-      return
-    end
-
-    if ActiveSupport::SecurityUtils.secure_compare(params[:password].to_s, admin_password)
+    if admin&.authenticate(params[:password].to_s)
       # 로그인 성공: 시도 횟수 초기화
       reset_login_attempts
       reset_session  # 세션 고정 공격 방지
-      session[:admin_id] = "admin"
+      session[:admin_id] = admin.id
+      session[:admin_logged_in_at] = Time.current.to_i
       redirect_to root_path, notice: "Logged in successfully."
     else
       # 로그인 실패: 시도 횟수 증가
       increment_login_attempts
       attempts_left = MAX_LOGIN_ATTEMPTS - login_attempt_count
       if attempts_left > 0
-        flash.now[:alert] = "Invalid password. #{attempts_left} attempt(s) remaining."
+        flash.now[:alert] = "Invalid email or password. #{attempts_left} attempt(s) remaining."
       else
         flash.now[:alert] = "Too many failed attempts. Account locked for #{(LOCKOUT_DURATION / 60).to_i} minutes."
       end
@@ -48,28 +43,11 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    session[:admin_id] = nil
+    reset_session
     redirect_to root_path, notice: "Logged out."
   end
 
   private
-
-  # 프로덕션에서는 환경변수 필수, 개발/테스트에서는 fallback 허용
-  def resolve_admin_password
-    env_password = ENV["ADMIN_PASSWORD"]
-
-    if Rails.env.production?
-      # 프로덕션에서는 환경변수가 반드시 설정되어 있어야 함
-      if env_password.blank?
-        Rails.logger.error("[SECURITY] ADMIN_PASSWORD environment variable is not set in production!")
-        return nil
-      end
-      env_password
-    else
-      # 개발/테스트 환경에서만 fallback 허용
-      env_password || "password"
-    end
-  end
 
   # === Brute Force Protection (세션 기반) ===
 

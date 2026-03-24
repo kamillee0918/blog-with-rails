@@ -2,8 +2,20 @@
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
+# === Admin 계정 시드 (모든 환경) ===
+admin_email = ENV.fetch("ADMIN_EMAIL", "admin@example.com")
+admin_password = ENV.fetch("ADMIN_PASSWORD", "password")
+
+if Admin.find_by(email: admin_email)
+  puts "Admin '#{admin_email}' already exists. Skipping."
+else
+  Admin.create!(email: admin_email, password: admin_password)
+  puts "Created admin account: #{admin_email}"
+end
+
 if Rails.env.production?
-  abort "ERROR: seeds.rb should not be run in production! It will destroy all posts."
+  puts "Production environment — skipping sample post data."
+  return
 end
 
 puts "Cleaning up existing posts..."

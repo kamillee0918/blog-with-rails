@@ -25,8 +25,19 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  SESSION_TIMEOUT = 12.hours
+
   def admin_signed_in?
-    session[:admin_id] == "admin"
+    return false unless session[:admin_id]
+
+    # 세션 타임아웃 확인
+    if session[:admin_logged_in_at] &&
+       Time.current.to_i - session[:admin_logged_in_at] > SESSION_TIMEOUT.to_i
+      reset_session
+      return false
+    end
+
+    Admin.exists?(id: session[:admin_id])
   end
 
   def authenticate_admin!
