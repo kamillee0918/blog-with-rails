@@ -3,8 +3,9 @@ require "test_helper"
 class PostsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @post = posts(:one)
+    @admin = admins(:one)
     # Mock admin login
-    post login_url, params: { password: (ENV["ADMIN_PASSWORD"] || "password") }
+    post login_url, params: { email: @admin.email, password: "password" }
     assert_response :redirect
   end
 
