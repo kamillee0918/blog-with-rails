@@ -28,6 +28,10 @@
           'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
     })(window, document, 'script', 'dataLayer', 'GTM-W96N4S8G');</script>
   <!-- End Google Tag Manager -->
+
+  <!-- Turbo.js -->
+  <%= javascript_include_tag "turbo", type: "module" %>
+
   <%# TinyMCE API Key (선택사항 - 무료 tier에서는 no-api-key 사용 가능) %>
     <meta name="tinymce-api-key" content="<%= ENV['TINYMCE_API_KEY'] %>">
     <%= csrf_meta_tags %>
@@ -572,7 +576,7 @@ end %>
                           </li>
                           <% end %>
                             <li>
-                              <%= link_to "Logout" , logout_path, data: { turbo_method: :delete, turbo: false } %>
+                              <%= button_to "Logout" , logout_path, method: :delete, data: { turbo: false } %>
                             </li>
                             <% else %>
                               <li>
