@@ -21,6 +21,14 @@
           </div>
         </div>
 
+        <!-- 게시글 Slug 필드 (사용자 직접 입력) -->
+        <div class="ts-search__wrapper">
+          <%= form.label :slug, "Slug" %>
+          <div class="ts-search__group" style="<%= post.errors[:slug].any? ? 'border-bottom: 1px solid var(--wp--preset--color--vivid-red)' : '' %>">
+            <%= form.text_field :slug, class: "ts-search__input", style: "border: none; outline: none;", placeholder: "비워두면 영어 제목 기반으로 자동 생성", onfocus: "this.parentElement.style.borderBottom = '1px solid var(--wp--preset--color--vivid-cyan-blue)'", onblur: "if (!this.classList.contains('error')) { this.parentElement.style.borderBottom = '' }" %>
+          </div>
+        </div>
+
         <!-- 게시글 요약 필드 -->
         <div class="ts-search__wrapper">
           <%= form.label :summary %>
