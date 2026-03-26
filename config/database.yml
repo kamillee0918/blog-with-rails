@@ -8,7 +8,7 @@
 #   SUPABASE_DB_HOST     — aws-1-ap-southeast-2.pooler.supabase.com (session pooler, IPv4)
 #   SUPABASE_DB_USER     — postgres.[project-ref]
 #   SUPABASE_DB_PASSWORD — Supabase 프로젝트 DB 비밀번호
-#   SUPABASE_DB_PORT     — 5432 (session pooler)
+#   SUPABASE_DB_PORT     — 6543 (transaction pooler)
 
 # === SQLite (Development / Test / Solid adapters) ===
 sqlite: &sqlite
@@ -32,7 +32,7 @@ production:
     encoding: unicode
     pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
     host: <%= ENV.fetch("SUPABASE_DB_HOST", "aws-1-ap-southeast-2.pooler.supabase.com") %>
-    port: <%= ENV.fetch("SUPABASE_DB_PORT", 5432) %>
+    port: <%= ENV.fetch("SUPABASE_DB_PORT", 6543) %>
     database: postgres
     username: <%= ENV.fetch("SUPABASE_DB_USER", "postgres.tqcmbdphezkdyqvjpkvy") %>
     password: <%= ENV["SUPABASE_DB_PASSWORD"] %>
