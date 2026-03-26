@@ -6071,6 +6071,7 @@ img.emoji {
   }
 
   @font-face {
+    font-display: swap;
     font-family: Lato;
     font-style: normal;
     font-weight: 300;
@@ -6079,6 +6080,7 @@ img.emoji {
   }
 
   @font-face {
+    font-display: swap;
     font-family: Lato;
     font-style: normal;
     font-weight: 400;
@@ -6087,6 +6089,7 @@ img.emoji {
   }
 
   @font-face {
+    font-display: swap;
     font-family: Lato;
     font-style: normal;
     font-weight: 700;
@@ -6095,6 +6098,7 @@ img.emoji {
   }
 
   @font-face {
+    font-display: swap;
     font-family: Lato;
     font-style: normal;
     font-weight: 900;
@@ -6103,6 +6107,7 @@ img.emoji {
   }
 
   @font-face {
+    font-display: swap;
     font-family: Lato;
     font-style: italic;
     font-weight: 300;
@@ -6111,6 +6116,7 @@ img.emoji {
   }
 
   @font-face {
+    font-display: swap;
     font-family: Lato;
     font-style: italic;
     font-weight: 400;
@@ -6119,6 +6125,7 @@ img.emoji {
   }
 
   @font-face {
+    font-display: swap;
     font-family: Lato;
     font-style: italic;
     font-weight: 700;
@@ -6127,6 +6134,7 @@ img.emoji {
   }
 
   @font-face {
+    font-display: swap;
     font-family: Lato;
     font-style: italic;
     font-weight: 900;

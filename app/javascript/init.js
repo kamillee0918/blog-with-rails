@@ -70,14 +70,15 @@ function initTinyMCE() {
   const textarea = document.getElementById("post_content");
   if (!textarea) return null;
 
+  // TinyMCE가 로드되지 않은 환경에서는 초기화 건너뜀 (비관리자 페이지)
+  if (typeof tinymce === "undefined") return null;
+
   // 이미 초기화되었는지 확인 (중복 방지)
   if (textarea.dataset.tinymceInitialized) return null;
   textarea.dataset.tinymceInitialized = "true";
 
   // 기존 TinyMCE 인스턴스 제거 (Turbo 네비게이션 대응)
-  if (typeof tinymce !== "undefined") {
-    tinymce.remove("#post_content");
-  }
+  tinymce.remove("#post_content");
 
   // CSRF 토큰 가져오기
   const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
