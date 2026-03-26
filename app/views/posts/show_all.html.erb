@@ -130,7 +130,7 @@
                                                           alt: post.title, lazy: false %>
                                                           <% end %>
                                                   </div>
-                                                  <%= link_to "" , post_path(post), class: "ts-overlay-link" , data:
+                                                  <%= link_to "" , post_path(post), class: "ts-overlay-link", "aria-label": post.title, data:
                                                     {turbo: false} %>
                                                 </div>
                                               </div>
