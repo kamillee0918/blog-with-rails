@@ -17,7 +17,7 @@
                         alt: post.title %>
                   <% end %>
                 </div>
-                <%= link_to "", post_path(post), class: "ts-overlay-link", data: { turbo: false } %>
+                <%= link_to "", post_path(post), class: "ts-overlay-link", "aria-label": post.title, data: { turbo: false } %>
               </div>
               <div class="ts-entry__inner ts-entry__content">
                 <%= render "posts/post_meta", post: post, show_category: false %>
