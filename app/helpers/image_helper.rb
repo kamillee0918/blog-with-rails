@@ -30,6 +30,8 @@ module ImageHelper
     default_options = {
       alt: options.delete(:alt) || "",
       class: options.delete(:class) || "",
+      width: dimensions[:width],
+      height: dimensions[:height],
       decoding: "async"
     }
 
@@ -86,6 +88,8 @@ module ImageHelper
       )
 
       default_options[:srcset] = srcset
+      default_options[:width] = 1024
+      default_options[:height] = 688
       image_tag(default_variant, **default_options.merge(options))
 
     elsif source.is_a?(String) && source.start_with?("thumbnail/")
