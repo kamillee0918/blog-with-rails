@@ -6,6 +6,7 @@
     <%= content_for :title || "Kamil Lee의 개발 일기" %>
   </title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="<%= content_for?(:description) ? content_for(:description) : "Kamil Lee의 개발 블로그 — 소프트웨어 개발, 알고리즘, 프로그래밍 관련 글을 공유합니다." %>">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="application-name" content="Blog With Rails">
   <meta name="mobile-web-app-capable" content="yes">
