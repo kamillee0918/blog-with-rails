@@ -127,7 +127,9 @@
                                                       <%# 썸네일 이미지: WebP 변환 + 반응형 srcset (Lazy Loading 비활성화) %>
                                                         <%= responsive_image_tag post.cover_image,
                                                           class: "attachment-post-thumbnail size-post-thumbnail wp-post-image",
-                                                          alt: post.title, lazy: false %>
+                                                          alt: post.title,
+                                                          sizes_attr: "(max-width: 768px) 33vw, 215px",
+                                                          lazy: false %>
                                                           <% end %>
                                                   </div>
                                                   <%= link_to "" , post_path(post), class: "ts-overlay-link" , data:
