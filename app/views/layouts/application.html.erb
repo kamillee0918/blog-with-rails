@@ -516,7 +516,7 @@ end %>
                 <form class="ts-search__nav-form" onsubmit="return handleSearchSubmit(event)">
                   <div class="ts-search__group">
                     <input id="search-input" class="ts-search__input" type="search" required
-                      value="<%= params[:keyword] %>" placeholder="What are you looking for?">
+                      value="<%= params[:keyword] %>" placeholder="What are you looking for?" aria-label="검색어 입력">
                     <button class="ts-search__submit" type="submit">Search</button>
                   </div>
                 </form>
