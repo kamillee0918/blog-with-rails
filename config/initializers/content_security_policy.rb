@@ -16,6 +16,7 @@ Rails.application.configure do
                        "https://sp.tinymce.com",          # TinyMCE telemetry
                        "https://www.googletagmanager.com", # Google Tag Manager
                        "https://www.google-analytics.com", # Google Analytics
+                       "https://static.cloudflareinsights.com", # Cloudflare Web Analytics
                        :unsafe_inline,                     # 인라인 스크립트 (GA, MathJax config 등)
                        :unsafe_eval                        # TinyMCE 내부 eval 필요
     policy.style_src   :self,
@@ -29,7 +30,8 @@ Rails.application.configure do
                        "https://sp.tinymce.com",
                        "https://www.googletagmanager.com",
                        "https://www.google-analytics.com",
-                       "https://analytics.google.com"
+                       "https://analytics.google.com",
+                       "https://static.cloudflareinsights.com" # Cloudflare Web Analytics RUM
     policy.frame_src   :self, "https://www.googletagmanager.com"
     policy.worker_src  :self, :blob
     policy.child_src   :self, :blob
