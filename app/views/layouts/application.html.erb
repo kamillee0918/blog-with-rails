@@ -10,14 +10,16 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="application-name" content="Blog With Rails">
   <meta name="mobile-web-app-capable" content="yes">
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-M7X8Q0CN8R"></script>
+  <!-- Google Consent Mode v2 (서드파티 쿠키 대응) -->
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-
-    gtag('config', 'G-M7X8Q0CN8R');
+    gtag('consent', 'default', {
+      'analytics_storage': 'granted',
+      'ad_storage': 'denied',
+      'ad_user_data': 'denied',
+      'ad_personalization': 'denied'
+    });
   </script>
   <!-- Google Tag Manager -->
   <script>(function (w, d, s, l, i) {
