@@ -516,7 +516,7 @@ end %>
                 <form class="ts-search__nav-form" onsubmit="return handleSearchSubmit(event)">
                   <div class="ts-search__group">
                     <input id="search-input" class="ts-search__input" type="search" required
-                      value="<%= params[:keyword] %>" placeholder="What are you looking for?">
+                      value="<%= params[:keyword] %>" placeholder="What are you looking for?" aria-label="검색어 입력">
                     <button class="ts-search__submit" type="submit">Search</button>
                   </div>
                 </form>
@@ -538,7 +538,7 @@ end %>
               <div class="ts-footer__inner">
                 <div class="ts-logo">
                   <%= link_to root_path, class: "ts-footer__logo" , data: { turbo: false } do %>
-                    <img src="<%= asset_url 'brand.png' %>" alt="Kamil Lee의 개발 일기">Kamil Lee의 개발 일기
+                    <img src="<%= asset_url 'brand.png' %>" alt="Kamil Lee의 개발 일기" width="250" height="250">Kamil Lee의 개발 일기
                     <% end %>
                 </div>
               </div>
@@ -579,7 +579,7 @@ end %>
             <div class="ts-footer__col ts-col-right">
               <div class="ts-footer__inner">
                 <span>
-                  <a href="https://github.com/kamillee0918" target="_blank" class="ts-share-buttons-github">
+                  <a href="https://github.com/kamillee0918" target="_blank" class="ts-share-buttons-github" aria-label="GitHub 프로필">
                     <svg width="21" height="21" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
                         d="M 10.46875 0 C 4.679688 0 0 4.582031 0 10.253906 C 0 14.785156 3 18.621094 7.160156 19.980469 C 7.679688 20.082031 7.867188 19.761719 7.867188 19.488281 C 7.867188 19.25 7.851562 18.4375 7.851562 17.585938 C 4.941406 18.199219 4.332031 16.363281 4.332031 16.363281 C 3.863281 15.175781 3.171875 14.871094 3.171875 14.871094 C 2.21875 14.242188 3.242188 14.242188 3.242188 14.242188 C 4.296875 14.3125 4.851562 15.296875 4.851562 15.296875 C 5.789062 16.855469 7.296875 16.414062 7.902344 16.144531 C 7.988281 15.480469 8.265625 15.023438 8.5625 14.769531 C 6.238281 14.53125 3.796875 13.648438 3.796875 9.710938 C 3.796875 8.589844 4.210938 7.671875 4.871094 6.960938 C 4.765625 6.707031 4.402344 5.652344 4.972656 4.242188 C 4.972656 4.242188 5.859375 3.972656 7.851562 5.296875 C 8.703125 5.070312 9.585938 4.957031 10.46875 4.957031 C 11.351562 4.957031 12.253906 5.074219 13.085938 5.296875 C 15.078125 3.972656 15.964844 4.242188 15.964844 4.242188 C 16.535156 5.652344 16.171875 6.707031 16.066406 6.960938 C 16.742188 7.671875 17.140625 8.589844 17.140625 9.710938 C 17.140625 13.648438 14.699219 14.515625 12.359375 14.769531 C 12.738281 15.089844 13.070312 15.703125 13.070312 16.671875 C 13.070312 18.046875 13.050781 19.148438 13.050781 19.488281 C 13.050781 19.761719 13.242188 20.082031 13.761719 19.980469 C 17.921875 18.621094 20.921875 14.785156 20.921875 10.253906 C 20.9375 4.582031 16.242188 0 10.46875 0 Z M 10.46875 0"

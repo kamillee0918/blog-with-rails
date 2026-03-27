@@ -877,7 +877,7 @@ div.code-toolbar>.toolbar>.toolbar-item>span:hover {
     --ts-color-primary: #032d60;
     --ts-color-highlight: #1264a3;
     --ts-color-text: #141414;
-    --ts-color-secondary: #a1a1a1;
+    --ts-color-secondary: #767676;
     --ts-color-neutral-light: #e9ecef;
     --ts-color-neutral-dark: #6c757d;
     --ts-font-family-heading: 'Salesforce-Avant-Garde', sans-serif;
@@ -1483,7 +1483,7 @@ div.code-toolbar>.toolbar>.toolbar-item>span:hover {
     border: 1px solid rgba(29, 28, 29, .13);
     border-radius: 3px;
     background-color: rgba(29, 28, 29, .04);
-    color: #e01e5a;
+    color: #c9184a;
     font-family: Monaco, Menlo, Consolas, 'Courier New', monospace !important;
     font-size: 1rem;
     line-height: 1.50001;
