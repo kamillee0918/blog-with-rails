@@ -1474,7 +1474,7 @@ div.code-toolbar>.toolbar>.toolbar-item>span:hover {
 
   img {
     max-width: 100%;
-    height: auto
+    height: -webkit-fill-available;
   }
 
   code {
@@ -3126,7 +3126,7 @@ body {
 
 @media screen and (width>=760px) {
   .ts-scroll-to-top {
-    display: block
+    display: flex
   }
 }
 
@@ -3156,7 +3156,7 @@ body {
 .ts-scroll-to-top.is-active {
   opacity: 1;
   left: auto;
-  right: 2rem
+  right: -3rem
 }
 
 @media screen and (width>=1020px) {
