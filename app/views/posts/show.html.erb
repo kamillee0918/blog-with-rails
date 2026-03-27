@@ -1,4 +1,5 @@
 <% content_for :title, @post.title + " | Kamil Lee의 개발 일기" %>
+<% content_for :description, truncate(@post.summary.presence || @post.title, length: 160) %>
 
   <div class="ts-site-content ts-sidebar-enabled ts-singular-thumbnail-enabled">
     <div class="ts-container">
