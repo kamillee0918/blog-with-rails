@@ -32,9 +32,6 @@
     })(window, document, 'script', 'dataLayer', 'GTM-W96N4S8G');</script>
   <!-- End Google Tag Manager -->
 
-  <!-- Turbo.js -->
-  <%= javascript_include_tag "turbo", type: "module" %>
-
   <% if admin_signed_in? %>
     <%# TinyMCE API Key (선택사항 - 무료 tier에서는 no-api-key 사용 가능) %>
     <meta name="tinymce-api-key" content="<%= ENV['TINYMCE_API_KEY'] %>">
