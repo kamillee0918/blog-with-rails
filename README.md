@@ -36,7 +36,7 @@ Rails 8 기반의 모던 블로그 애플리케이션입니다.
 
 [![Ruby Version Badge](https://img.shields.io/badge/Ruby_INSTALLATION-3.4.5-CC342D?style=for-the-badge&labelColor=black&logo=ruby&logoColor=CC342D)](https://www.ruby-lang.org/ko/documentation/installation/)
 
-[![Rails Version Badge](https://img.shields.io/badge/Rails_INSTALLATION-8.1.2-D30001?style=for-the-badge&labelColor=black&logo=rubyonrails&logoColor=D30001)](https://rails.insomenia.com/install_ruby_on_rails)
+[![Rails Version Badge](https://img.shields.io/badge/Rails_INSTALLATION-8.1.3-D30001?style=for-the-badge&labelColor=black&logo=rubyonrails&logoColor=D30001)](https://rails.insomenia.com/install_ruby_on_rails)
 
 ### 설치
 
@@ -165,8 +165,8 @@ kamal deploy
 [![Ruby Reference Badge](https://img.shields.io/badge/Ruby_REFERENCE-3.4.5-CC342D?style=for-the-badge&labelColor=black&logo=rubyonrails&logoColor=CC342D)](https://www.ruby-lang.org/ko/documentation/)
 [![Ruby API Badge](https://img.shields.io/badge/Ruby_API-3.4.5-CC342D?style=for-the-badge&labelColor=black&logo=rubyonrails&logoColor=CC342D)](https://docs.ruby-lang.org/en/3.4/)
 
-[![Rails Reference Badge](https://img.shields.io/badge/Rails_REFERENCE-8.1.2-D30001?style=for-the-badge&labelColor=black&logo=rubyonrails&logoColor=D30001)](https://rails.insomenia.com/)
-[![Rails API Badge](https://img.shields.io/badge/Rails_API-8.1.2-D30001?style=for-the-badge&labelColor=black&logo=rubyonrails&logoColor=D30001)](https://api.rubyonrails.org/)
+[![Rails Reference Badge](https://img.shields.io/badge/Rails_REFERENCE-8.1.3-D30001?style=for-the-badge&labelColor=black&logo=rubyonrails&logoColor=D30001)](https://rails.insomenia.com/)
+[![Rails API Badge](https://img.shields.io/badge/Rails_API-8.1.3-D30001?style=for-the-badge&labelColor=black&logo=rubyonrails&logoColor=D30001)](https://api.rubyonrails.org/)
 
 ## 📄 라이선스
 
