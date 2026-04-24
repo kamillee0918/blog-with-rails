@@ -40,3 +40,9 @@
 # Personal Files
 /personal/*
 /docs/*
+
+# SimpleCov 커버리지 산출물
+/coverage/
+
+# 외부 AI 스킬 카탈로그 (로컬 참고용)
+/skills/
