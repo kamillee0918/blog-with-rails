@@ -85,6 +85,8 @@ class Post < ApplicationRecord
     return [] if my_tag_ids.empty?
 
     Post.published
+        .with_attached_cover_image
+        .includes(:rich_text_content)
         .joins("INNER JOIN posts_tags ON posts_tags.post_id = posts.id")
         .where("posts_tags.tag_id IN (?)", my_tag_ids)
         .where.not(id: id)
