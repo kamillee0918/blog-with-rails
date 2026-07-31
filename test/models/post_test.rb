@@ -178,6 +178,22 @@ class PostTest < ActiveSupport::TestCase
     assert_nil Post.published.find_by_slug_or_id("scoped-future")
   end
 
+  # === Active Storage variant Tests ===
+  # 이미지 백엔드 젬(ruby-vips) 누락 같은 회귀는 정적 분석으로 잡히지 않으므로
+  # 실제로 variant를 생성해 확인한다.
+  test "cover_image variant를 실제로 생성할 수 있다" do
+    post = Post.create!(title: "With Cover", published_at: Time.current, category: "Test")
+    post.cover_image.attach(
+      io: file_fixture("test_image.png").open,
+      filename: "test_image.png",
+      content_type: "image/png"
+    )
+
+    processed = post.cover_image.variant(resize_to_limit: [ 32, 32 ], format: :webp).processed
+
+    assert_operator processed.image.blob.byte_size, :>, 0
+  end
+
   test "by_tag scope finds posts by normalized tag" do
     tag = Tag.create!(name: "ruby")
     post = Post.create!(title: "Ruby Post", published_at: Time.current, category: "Test")
