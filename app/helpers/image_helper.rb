@@ -49,7 +49,9 @@ module ImageHelper
   # @param source [ActiveStorage::Attached, String] ActiveStorage 첨부 이미지 또는 static 이미지 경로
   # @param sizes_attr [String] sizes 속성 값
   # @param options [Hash] 추가 옵션
-  def responsive_image_tag(source, sizes_attr: "(max-width: 1024px) 100vw, 1024px", lazy: true, fetchpriority: true, **options)
+  # fetchpriority는 기본 false다. 페이지마다 LCP 요소는 하나뿐이므로,
+  # 모든 이미지에 high를 주면 브라우저의 우선순위 판단이 무력화되어 오히려 느려진다.
+  def responsive_image_tag(source, sizes_attr: "(max-width: 1024px) 100vw, 1024px", lazy: true, fetchpriority: false, **options)
     return nil if source.blank?
 
     default_options = {
@@ -59,9 +61,7 @@ module ImageHelper
       sizes: sizes_attr
     }
 
-    if lazy
-      default_options[:loading] = "lazy"
-    end
+    default_options[:loading] = lazy ? "lazy" : "eager"
 
     if fetchpriority
       default_options[:fetchpriority] = "high"
