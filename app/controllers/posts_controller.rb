@@ -4,8 +4,7 @@ class PostsController < ApplicationController
 
   # GET /posts
   def index
-    @posts = Post.includes(:tags).order(published_at: :desc)
-    @posts = @posts.published unless admin_signed_in?
+    @posts = listing_scope.order(published_at: :desc)
 
     if params[:category].present?
       @category = params[:category]
@@ -29,24 +28,21 @@ class PostsController < ApplicationController
   # GET /search/:keyword
   def search
     @query = params[:keyword]
-    base = admin_signed_in? ? Post : Post.published
-    @posts = base.includes(:tags).search(@query).recent.page(params[:page]).per(8)
+    @posts = listing_scope.search(@query).recent.page(params[:page]).per(8)
     render :show_all
   end
 
   # GET /posts/archive/:year
   def archive
     @year = params[:year].to_i
-    base = admin_signed_in? ? Post : Post.published
-    @posts = base.includes(:tags).by_year(@year).recent.page(params[:page]).per(8)
+    @posts = listing_scope.by_year(@year).recent.page(params[:page]).per(8)
     render :show_all
   end
 
   # GET /posts/tag/:tag
   def tag
     @tag = params[:tag]
-    base = admin_signed_in? ? Post : Post.published
-    @posts = base.includes(:tags).by_tag(@tag).recent.page(params[:page]).per(8)
+    @posts = listing_scope.by_tag(@tag).recent.page(params[:page]).per(8)
     render :show_all
   end
 
@@ -58,8 +54,8 @@ class PostsController < ApplicationController
       return unless stale?(@post)
     end
 
-    @recent_posts = Post.recent.limit(5)
-    @archives = Post.yearly_archive_counts
+    @recent_posts = post_scope.includes(:rich_text_content).recent.limit(5)
+    @archives = post_scope.yearly_archive_counts
     @caption = @post.cover_image_caption
 
     # 이전/다음 게시글 (published_at 기준)
@@ -109,7 +105,20 @@ class PostsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     # slug 또는 id로 Post 조회 (영어 제목은 slug, 한국어 제목은 id)
     def set_post
-      @post = Post.find_by_slug_or_id!(params[:id])
+      @post = post_scope.find_by_slug_or_id!(params[:id])
+    end
+
+    # 미공개(예약) 게시글은 관리자에게만 보인다.
+    def post_scope
+      admin_signed_in? ? Post.all : Post.published
+    end
+
+    # 목록 카드가 쓰는 연관을 한 번에 로드해 N+1을 제거한다.
+    # - tags:              태그 배지
+    # - rich_text_content: read_time (본문 → plain text 변환)
+    # - cover_image:       썸네일 variant URL 생성
+    def listing_scope
+      post_scope.includes(:tags, :rich_text_content).with_attached_cover_image
     end
 
     def set_no_cache_headers

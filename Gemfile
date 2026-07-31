@@ -43,6 +43,9 @@ gem "thruster", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 2.0"
+# image_processing 2.0부터 이미지 백엔드가 선택적 의존성으로 분리되어 직접 명시해야 함
+# (config.active_storage.variant_processor = :vips 및 ThumbnailsController에서 사용)
+gem "ruby-vips", "~> 2.0"
 
 # A Scope & Engine based, clean, powerful, customizable and sophisticated paginator for modern web app frameworks and ORMs
 gem "kaminari"

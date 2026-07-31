@@ -3,6 +3,13 @@
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
 # === Admin 계정 시드 (모든 환경) ===
+# 프로덕션에서는 기본 자격증명(admin@example.com / password)으로 관리자 계정이
+# 생성되지 않도록 차단한다. 신규 DB에 db:prepare가 돌면 시드도 함께 실행되므로
+# 환경변수 누락은 곧 공개된 기본 비밀번호를 가진 관리자 계정을 의미한다.
+if Rails.env.production? && (ENV["ADMIN_EMAIL"].blank? || ENV["ADMIN_PASSWORD"].blank?)
+  raise "프로덕션에서는 ADMIN_EMAIL과 ADMIN_PASSWORD 환경변수를 반드시 설정해야 합니다."
+end
+
 admin_email = ENV.fetch("ADMIN_EMAIL", "admin@example.com")
 admin_password = ENV.fetch("ADMIN_PASSWORD", "password")
 

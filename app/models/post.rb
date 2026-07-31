@@ -47,12 +47,14 @@ class Post < ApplicationRecord
   end
 
   # === ID 또는 slug로 레코드 찾기 ===
+  # `all`을 경유하므로 Post.published.find_by_slug_or_id!(...) 처럼
+  # 현재 스코프를 유지한 채 호출할 수 있다 (미공개 글 노출 방지).
   def self.find_by_slug_or_id(param)
     # 숫자로만 구성되면 id로 찾기, 아니면 slug로 찾기
     if param.to_s.match?(/\A\d+\z/)
-      find_by(id: param) || find_by(slug: param)
+      all.find_by(id: param) || all.find_by(slug: param)
     else
-      find_by(slug: param) || find_by(id: param)
+      all.find_by(slug: param) || all.find_by(id: param)
     end
   end
 
@@ -77,12 +79,15 @@ class Post < ApplicationRecord
     Post.published.where("published_at > ?", published_at).order(published_at: :asc).first
   end
 
-  # 추천 게시글: 같은 태그를 가진 게시글
+  # 추천 게시글: 같은 태그를 가진 게시글 (공개된 글만 노출)
   def recommended_posts(limit: 3)
     my_tag_ids = tags.pluck(:id)
     return [] if my_tag_ids.empty?
 
-    Post.joins("INNER JOIN posts_tags ON posts_tags.post_id = posts.id")
+    Post.published
+        .with_attached_cover_image
+        .includes(:rich_text_content)
+        .joins("INNER JOIN posts_tags ON posts_tags.post_id = posts.id")
         .where("posts_tags.tag_id IN (?)", my_tag_ids)
         .where.not(id: id)
         .distinct

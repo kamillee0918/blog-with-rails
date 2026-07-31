@@ -35,8 +35,10 @@
               <!-- 커버 이미지 -->
               <figure class="ts-entry__post-media post-media">
                 <% if @post.cover_image.attached? %>
+                  <%# 상세 페이지 커버 이미지가 이 페이지의 LCP 요소 %>
                   <%= responsive_image_tag @post.cover_image,
-                    class: "attachment-post-thumbnail size-post-thumbnail wp-post-image" , alt: @post.title, lazy: false
+                    class: "attachment-post-thumbnail size-post-thumbnail wp-post-image" , alt: @post.title, lazy: false,
+                    fetchpriority: true
                     %>
                     <% end %>
               </figure>

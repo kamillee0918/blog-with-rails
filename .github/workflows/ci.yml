@@ -25,6 +25,25 @@ jobs:
       - name: Scan for common Rails security vulnerabilities using static analysis
         run: bin/brakeman --no-pager
 
+  audit_dependencies:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Set execute permissions for bin files
+        run: chmod +x bin/*
+
+      - name: Audit gems for known security vulnerabilities
+        run: bin/bundler-audit check --update
+
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -53,8 +72,10 @@ jobs:
     #      - 6379:6379
     #    options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
+      # libvips: ruby-vips가 FFI로 libvips.so.42를 직접 로드하므로 시스템 라이브러리가 필요하다.
+      # 없으면 앱 부팅 단계에서 Bundler::GemRequireError로 실패한다(Dockerfile도 동일 패키지를 설치).
       - name: Install packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y build-essential git libyaml-dev pkg-config google-chrome-stable
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y build-essential git libvips libyaml-dev pkg-config google-chrome-stable
 
       - name: Checkout code
         uses: actions/checkout@v6
