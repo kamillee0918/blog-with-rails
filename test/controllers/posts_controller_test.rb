@@ -50,6 +50,31 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to posts_url
   end
 
+  test "관리자는 미공개(예약) 게시글을 볼 수 있다" do
+    scheduled = Post.create!(title: "Scheduled Admin View", published_at: 1.day.from_now, category: "Test")
+
+    get post_url(scheduled)
+    assert_response :success
+  end
+
+  test "비로그인 방문자는 미공개(예약) 게시글에 접근할 수 없다" do
+    delete logout_url
+    scheduled = Post.create!(title: "Scheduled Post", published_at: 1.day.from_now, category: "Test")
+
+    get post_url(scheduled)
+    assert_response :not_found
+  end
+
+  test "비로그인 방문자의 사이드바에 미공개 게시글이 노출되지 않는다" do
+    delete logout_url
+    Post.create!(title: "Secret Upcoming Post", published_at: 1.day.from_now, category: "Test")
+    visible = Post.create!(title: "Visible Post", published_at: 1.day.ago, category: "Test")
+
+    get post_url(visible)
+    assert_response :success
+    assert_no_match(/Secret Upcoming Post/, response.body)
+  end
+
   test "should filter by category" do
     get posts_url(category: "Tech")
     assert_response :success

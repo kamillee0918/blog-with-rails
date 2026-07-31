@@ -161,6 +161,23 @@ class PostTest < ActiveSupport::TestCase
     assert_nil current.next_post || (current.next_post != future ? nil : current.next_post)
   end
 
+  test "recommended_posts excludes unpublished posts" do
+    shared = Tag.create!(name: "shared-topic")
+    base = Post.create!(title: "Rec Base", published_at: 2.days.ago, category: "Test")
+    base.tags << shared
+    future = Post.create!(title: "Rec Future", published_at: 1.day.from_now, category: "Test")
+    future.tags << shared
+
+    assert_not_includes base.recommended_posts, future
+  end
+
+  test "find_by_slug_or_id respects the current scope" do
+    future = Post.create!(title: "Scoped Future", published_at: 1.day.from_now, category: "Test")
+
+    assert_equal future, Post.find_by_slug_or_id("scoped-future")
+    assert_nil Post.published.find_by_slug_or_id("scoped-future")
+  end
+
   test "by_tag scope finds posts by normalized tag" do
     tag = Tag.create!(name: "ruby")
     post = Post.create!(title: "Ruby Post", published_at: Time.current, category: "Test")
