@@ -3,7 +3,7 @@
 
 <head>
   <title>
-    <%= content_for :title || "Kamil Lee의 개발 일기" %>
+    <%= content_for?(:title) ? content_for(:title) : "Kamil Lee의 개발 일기" %>
   </title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="<%= content_for?(:description) ? content_for(:description) : "Kamil Lee의 개발 블로그 — 소프트웨어 개발, 알고리즘, 프로그래밍 관련 글을 공유합니다." %>">
@@ -40,8 +40,6 @@
       <%= csp_meta_tag %>
 
         <%= yield :head %>
-
-          <%= stylesheet_link_tag "style.min", "data-turbo-track": "reload" %>
 
             <style id="classic-theme-styles-inline-css">
               /*! This file is auto-generated */
@@ -392,16 +390,22 @@
 
                 <%= javascript_importmap_tags %>
 
-                  <%# Mermaid diagram %>
+                  <%# Mermaid diagram — 본문에 pre.mermaid가 있는 페이지에서만 로드 %>
+                  <% if content_library?(:mermaid) %>
                     <script type="module">
                       import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
                       mermaid.initialize({ startOnLoad: false });
                       window.mermaid = mermaid;
 
                       const renderMermaid = () => mermaid.run({ querySelector: 'pre.mermaid' });
+                      // 조건부 로딩이라 이 모듈이 turbo:load 이후에 실행될 수 있다.
+                      // 그 경우 아래 리스너는 이미 지난 이벤트를 기다리게 되므로 즉시 한 번 그린다.
+                      // (mermaid.run 은 처리된 노드를 건너뛰므로 중복 호출은 안전하다)
+                      renderMermaid();
                       document.addEventListener('turbo:load', renderMermaid);
                       document.addEventListener('DOMContentLoaded', renderMermaid);
                     </script>
+                  <% end %>
 
                     <% if admin_signed_in? %>
                     <%# TinyMCE editor %>
@@ -411,6 +415,8 @@
 
                       <%# PrismJS (Core + Plugins) — 언어 컴포넌트는 Autoloader가 온디맨드 로드 %>
                         <%# data-manual: TinyMCE codesample 플러그인과 연동 시 필수 속성 %>
+                        <%# 코드 블록이 있는 본문과 관리자 에디터에서만 로드 %>
+                        <% if content_library?(:prism) %>
                           <script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/prism.min.js" data-manual></script>
                           <script defer
                             src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/custom-class/prism-custom-class.min.js"></script>
@@ -433,6 +439,7 @@
                               <%# PrismJS: BibTeX (서드파티 패키지 — Autoloader 미지원) %>
                                 <script defer
                                   src="https://cdn.jsdelivr.net/npm/prismjs-bibtex@2.1.0/prism-bibtex.min.js"></script>
+                        <% end %>
 </head>
 
 <%# 페이지별 body 클래스 설정 %>
@@ -616,7 +623,8 @@ end %>
     </noscript>
     <!-- End Google Tag Manager (noscript) -->
 
-    <%# MathJax v4: 수식 렌더링 %>
+    <%# MathJax v4: 수식 렌더링 — 본문에 $…$ / $$…$$ 가 있는 페이지에서만 로드 %>
+    <% if content_library?(:mathjax) %>
       <script>
         MathJax = {
           tex: {
@@ -627,6 +635,7 @@ end %>
       </script>
       <%= javascript_include_tag "https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js" , id: "MathJax-script" ,
         async: true, defer: true %>
+    <% end %>
   </body>
 
 </html>

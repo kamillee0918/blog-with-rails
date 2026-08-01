@@ -1,5 +1,11 @@
-<%# 게시글 메타 정보 (날짜, 읽기시간) %>
+<%# 게시글 메타 정보 (카테고리, 날짜, 읽기시간) %>
+<%# show_category 는 상세 페이지에서만 true. 목록 카드는 카드 자체가 카테고리를 따로 보여준다. %>
 <div class="ts-entry__post-meta">
+  <% if local_assigns.fetch(:show_category, false) && post.category.present? %>
+    <div class="ts-meta-category">
+      <%= link_to post.category, category_posts_path(category: post.category), class: "ts-category-link" %>
+    </div>
+  <% end %>
   <div class="ts-meta-date"><%= post.published_at.strftime("%B %-d, %Y") %></div>
   <div class="ts-meta-reading-time"><%= post.read_time rescue "0 min read" %></div>
 </div>

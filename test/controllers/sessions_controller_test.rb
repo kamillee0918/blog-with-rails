@@ -10,6 +10,13 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  # 로그인 화면은 content_for :title 을 설정하지 않는 유일한 뷰라
+  # 레이아웃의 기본 제목 폴백이 실제로 동작하는지 확인할 수 있는 자리다.
+  test "login page falls back to the default title" do
+    get login_url
+    assert_select "title", text: /Kamil Lee/
+  end
+
   test "should redirect to root when already logged in" do
     post login_url, params: { email: @admin.email, password: "password" }
     get login_url
