@@ -1354,9 +1354,37 @@ div.code-toolbar>.toolbar>.toolbar-item>span:hover {
     display: none !important
   }
 
+  /* 시각적으로만 감추고 스크린 리더에는 남긴다. display:none 이면 접근성 트리에서도
+     사라진다. style.min.css 를 걷어내기 전에는 그 파일의 언레이어드 규칙이
+     이 reboot 레이어를 이겨서 아래 동작을 하고 있었다. */
   .screen-reader-text,
   .sr-only {
-    display: none
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    border: 0;
+    word-wrap: normal !important
+  }
+
+  .screen-reader-text:focus,
+  .sr-only:focus {
+    background-color: #ddd;
+    clip-path: none;
+    color: #444;
+    display: block;
+    font-size: 1em;
+    height: auto;
+    left: 5px;
+    line-height: normal;
+    padding: 15px 23px 14px;
+    text-decoration: none;
+    top: 5px;
+    width: auto;
+    z-index: 100000
   }
 }
 
