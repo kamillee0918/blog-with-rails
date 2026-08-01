@@ -68,6 +68,32 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :too_many_requests
   end
 
+  # 실패만 세야 한다. 모든 요청을 세면 계정이 하나뿐인 이 사이트에서
+  # 소유자가 정상 로그인을 반복하는 것만으로 자기 사이트에서 잠긴다.
+  test "successful sign-ins never count toward the limit" do
+    (SessionsController::MAX_LOGIN_ATTEMPTS + 2).times do
+      post login_url, params: { email: @admin.email, password: "password" }
+      assert_response :redirect
+      delete logout_url
+    end
+  end
+
+  test "a successful sign-in clears the failures that came before it" do
+    (SessionsController::MAX_LOGIN_ATTEMPTS - 1).times do
+      post login_url, params: { email: @admin.email, password: "wrong" }
+    end
+
+    post login_url, params: { email: @admin.email, password: "password" }
+    assert_redirected_to root_path
+    delete logout_url
+
+    # 카운터가 지워졌으니 한도만큼 다시 시도할 수 있어야 한다.
+    (SessionsController::MAX_LOGIN_ATTEMPTS - 1).times do
+      post login_url, params: { email: @admin.email, password: "wrong" }
+      assert_response :unprocessable_entity
+    end
+  end
+
   # 스로틀에 걸린 뒤에도 올바른 비밀번호면 통과해 버리면 의미가 없다.
   test "throttling blocks even a valid password once the limit is hit" do
     SessionsController::MAX_LOGIN_ATTEMPTS.times do
