@@ -16,10 +16,15 @@ class PostsController < ApplicationController
     if admin_signed_in?
       set_no_cache_headers
     else
-      # last_modified 를 따로 계산하지 않는다. @posts 는 페이지네이션된 relation 이라
-      # maximum(:updated_at) 에 LIMIT/OFFSET 이 그대로 붙어 2페이지부터는 결과가 없어
-      # nil 을 돌려주고, 헤더가 아예 빠진다. relation ETag 만으로 충분하다.
-      fresh_when etag: @posts
+      # relation 을 그대로 etag 로 넘기면 안 된다. Relation#cache_key 는 to_sql 의
+      # 다이제스트를 포함하는데, published 스코프가 문자열 조건이라 Time.current 가
+      # SQL 에 마이크로초까지 리터럴로 박힌다. 그러면 내용이 그대로여도 요청마다
+      # ETag 가 달라져 304 가 영영 나오지 않는다.
+      # cache_version(레코드 수 + 최신 updated_at)과 응답을 가르는 파라미터만 쓴다.
+      # last_modified 는 함께 보내지 않는다. 두 검증자를 모두 주면 둘 다 일치해야
+      # 304 가 되는데, 페이지네이션된 relation 의 maximum(:updated_at)은 LIMIT/OFFSET
+      # 때문에 2페이지부터 nil 이라 헤더가 빠진다.
+      fresh_when etag: [ @posts.cache_version, params[:category], params[:page] ]
     end
 
     # 페이지 파라미터가 있거나(1페이지 포함) 카테고리가 있으면 show_all 레이아웃으로 표시

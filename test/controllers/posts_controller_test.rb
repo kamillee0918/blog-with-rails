@@ -61,6 +61,33 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil response.headers["ETag"]
   end
 
+  # 조건부 GET 이 실제로 동작한다는 증거는 두 번째 요청이 304 를 받는 것뿐이다.
+  # relation 을 그대로 etag 로 넘기면 published 스코프의 Time.current 가 to_sql 에
+  # 박혀 매 요청 ETag 가 달라지고, 이 테스트가 실패한다.
+  test "index answers 304 when nothing changed" do
+    delete logout_url
+    get posts_url
+    assert_response :success
+    etag = response.headers["ETag"]
+    assert_not_nil etag
+
+    get posts_url, headers: { "If-None-Match" => etag }
+    assert_response :not_modified
+  end
+
+  test "index ETag changes once a post is edited" do
+    delete logout_url
+    get posts_url
+    etag = response.headers["ETag"]
+
+    travel 1.second do
+      posts(:one).update!(title: "Edited after the first render")
+    end
+
+    get posts_url, headers: { "If-None-Match" => etag }
+    assert_response :success
+  end
+
   test "show renders a link to the post's category" do
     get post_url(@post)
     assert_select "a.ts-category-link[href=?]", category_posts_path(category: @post.category),
