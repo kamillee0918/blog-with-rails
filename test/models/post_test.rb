@@ -169,6 +169,34 @@ class PostTest < ActiveSupport::TestCase
     assert_equal "1 min read", post.read_time
   end
 
+  test "word_count is stored on save so read_time never parses the body" do
+    post = Post.create!(title: "Counted", published_at: Time.current, category: "Test",
+                        content: "<div>#{Array.new(360) { 'word' }.join(' ')}</div>")
+
+    assert_equal 360, post.reload.word_count
+    assert_equal "2 min read", post.read_time
+  end
+
+  test "word_count follows edits to the body" do
+    post = Post.create!(title: "Recount", published_at: Time.current, category: "Test",
+                        content: "<div>one two three</div>")
+    assert_equal 3, post.reload.word_count
+
+    post.update!(content: "<div>#{Array.new(200) { 'word' }.join(' ')}</div>")
+    assert_equal 200, post.reload.word_count
+  end
+
+  # 목록 카드가 본문을 건드리지 않아야 listing_scope 에서 rich text 를 뺀 의미가 있다.
+  test "read_time does not load the rich text association" do
+    Post.create!(title: "No body load", published_at: Time.current, category: "Test",
+                 content: "<div>one two three</div>")
+    post = Post.where(title: "No body load").first
+
+    post.read_time
+
+    assert_not post.association(:rich_text_content).loaded?
+  end
+
   test "published scope excludes future posts" do
     past = Post.create!(title: "Past", published_at: 1.day.ago, category: "Test")
     future = Post.create!(title: "Future", published_at: 1.day.from_now, category: "Test")

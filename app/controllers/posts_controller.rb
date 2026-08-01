@@ -57,7 +57,7 @@ class PostsController < ApplicationController
       return unless stale?(@post)
     end
 
-    @recent_posts = post_scope.includes(:rich_text_content).recent.limit(5)
+    @recent_posts = post_scope.recent.limit(5)
     @archives = post_scope.yearly_archive_counts
     @caption = @post.cover_image_caption
 
@@ -117,11 +117,13 @@ class PostsController < ApplicationController
     end
 
     # 목록 카드가 쓰는 연관을 한 번에 로드해 N+1을 제거한다.
-    # - tags:              태그 배지
-    # - rich_text_content: read_time (본문 → plain text 변환)
-    # - cover_image:       썸네일 variant URL 생성
+    # - tags:        태그 배지
+    # - cover_image: 썸네일 variant URL 생성
+    # 본문(rich_text_content)은 더 이상 적재하지 않는다. 카드가 본문에서 쓰던 값은
+    # read_time 뿐이었는데 이제 posts.word_count 로 대체돼, 목록 한 페이지마다
+    # 본문 수백 KB를 끌어오던 비용이 사라졌다.
     def listing_scope
-      post_scope.includes(:tags, :rich_text_content).with_attached_cover_image
+      post_scope.includes(:tags).with_attached_cover_image
     end
 
     def set_no_cache_headers

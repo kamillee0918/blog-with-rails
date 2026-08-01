@@ -18,6 +18,7 @@ class Post < ApplicationRecord
 
   # === Callbacks ===
   before_validation :generate_slug
+  before_save :sync_word_count
 
   # === Scopes ===
   scope :published, -> { where("published_at <= ?", Time.current) }
@@ -70,13 +71,15 @@ class Post < ApplicationRecord
   # === Instance Methods ===
 
   # 이전 게시글 (published_at 기준)
+  # 카드가 커버 이미지를 그리므로 첨부를 함께 적재한다. 빠뜨리면 카드 한 장당
+  # attachment/blob 조회가 두 번씩 더 붙는다.
   def previous_post
-    Post.published.where("published_at < ?", published_at).recent.first
+    Post.published.with_attached_cover_image.where("published_at < ?", published_at).recent.first
   end
 
   # 다음 게시글 (published_at 기준)
   def next_post
-    Post.published.where("published_at > ?", published_at).order(published_at: :asc).first
+    Post.published.with_attached_cover_image.where("published_at > ?", published_at).order(published_at: :asc).first
   end
 
   # 추천 게시글: 같은 태그를 가진 게시글 (공개된 글만 노출)
@@ -86,7 +89,6 @@ class Post < ApplicationRecord
 
     Post.published
         .with_attached_cover_image
-        .includes(:rich_text_content)
         .joins("INNER JOIN posts_tags ON posts_tags.post_id = posts.id")
         .where("posts_tags.tag_id IN (?)", my_tag_ids)
         .where.not(id: id)
@@ -113,11 +115,11 @@ class Post < ApplicationRecord
     touch if persisted?
   end
 
+  # 저장 시점에 세어 둔 word_count 를 쓴다. 목록 카드마다 본문을 파싱하던 것을
+  # 없애기 위한 것이므로, 여기서 content 를 건드리면 의미가 사라진다.
   def read_time
     words_per_minute = 180
-    text_content = content.to_plain_text
-    word_count = text_content.split.size
-    minutes = [ 1, (word_count / words_per_minute.to_f).ceil ].max
+    minutes = [ 1, (word_count.to_i / words_per_minute.to_f).ceil ].max
     "#{minutes} min read"
   end
 
@@ -155,6 +157,13 @@ class Post < ApplicationRecord
   end
 
   private
+
+  # read_time 이 쓸 단어 수를 저장 시점에 한 번만 센다.
+  # Action Text 본문은 posts 컬럼이 아니라서 게시글 자체는 dirty 로 표시되지 않지만,
+  # before_save 는 변경이 없어도 실행되므로 여기서 다시 세어 두면 항상 최신이다.
+  def sync_word_count
+    self.word_count = content.to_plain_text.to_s.split.size
+  end
 
   # 영어 제목은 자동 slug 생성, 한국어 제목은 slug 비워둠 (ID로 접근)
   def generate_slug
