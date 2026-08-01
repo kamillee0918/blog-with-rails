@@ -1500,9 +1500,12 @@ div.code-toolbar>.toolbar>.toolbar-item>span:hover {
     text-align: left
   }
 
+  /* -webkit-fill-available 은 Firefox 가 지원하지 않아 선언이 버려지고 대신
+     width/height 속성의 presentational hint 가 적용돼 브라우저마다 다르게 그려졌다.
+     auto 여야 width/height 속성이 aspect-ratio 힌트로 동작해 CLS 를 막는다. */
   img {
     max-width: 100%;
-    height: -webkit-fill-available;
+    height: auto;
   }
 
   code {

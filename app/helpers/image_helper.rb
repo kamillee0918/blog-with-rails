@@ -30,10 +30,8 @@ module ImageHelper
     default_options = {
       alt: options.delete(:alt) || "",
       class: options.delete(:class) || "",
-      width: dimensions[:width],
-      height: dimensions[:height],
       decoding: "async"
-    }
+    }.merge(intrinsic_dimensions(attachment, max_width: dimensions[:width], max_height: dimensions[:height]))
 
     # Lazy loading 설정 (Hero 이미지는 제외)
     if lazy
@@ -88,8 +86,7 @@ module ImageHelper
       )
 
       default_options[:srcset] = srcset
-      default_options[:width] = 1024
-      default_options[:height] = 688
+      default_options.merge!(intrinsic_dimensions(source, max_width: 1024))
       image_tag(default_variant, **default_options.merge(options))
 
     elsif source.is_a?(String) && source.start_with?("thumbnail/")
@@ -144,5 +141,32 @@ module ImageHelper
       concat tag(:source, type: "image/webp", srcset: url_for(webp_variant))
       concat image_tag(fallback_variant, alt: alt_text, class: css_class, decoding: "async", **options.except(:alt, :class))
     end
+  end
+
+  private
+
+  # variant 가 실제로 갖게 될 표시 크기를 blob 메타데이터에서 계산한다.
+  #
+  # width/height 속성은 브라우저가 이미지 로드 전 자리를 잡는 aspect-ratio 힌트로
+  # 쓰이고, 로드 후에도 그 비율이 박스를 지배한다. 따라서 값이 실제와 다르면
+  # object-fit 이 없는 곳에서는 이미지가 그 비율로 늘어난다.
+  #
+  # 크기를 알 수 없으면 틀린 값을 쓰느니 속성을 생략한다. 레이아웃이 한 번
+  # 흔들리는 편이 영구적으로 왜곡되는 것보다 낫다. (Active Storage 가 첨부 직후
+  # 분석 잡을 큐에 넣으므로 이 경우는 분석 완료 전 짧은 순간에만 해당한다.)
+  def intrinsic_dimensions(attachment, max_width:, max_height: nil)
+    metadata = attachment.blob.metadata
+    natural_width = metadata["width"].to_i
+    natural_height = metadata["height"].to_i
+    return {} unless natural_width.positive? && natural_height.positive?
+
+    # resize_to_limit 은 축소만 하고 확대하지 않으므로 원본보다 커질 수 없다.
+    scale = [ max_width.to_f / natural_width, 1.0 ].min
+    scale = [ scale, max_height.to_f / natural_height ].min if max_height
+
+    {
+      width: (natural_width * scale).round,
+      height: (natural_height * scale).round
+    }
   end
 end
