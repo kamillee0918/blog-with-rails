@@ -13,9 +13,7 @@
             <div class="ts-entry__header-inner">
               <div class="ts-entry__header-info">
                 <div class="ts-entry__post-meta-wrapper">
-                  <%= render "posts/post_meta" , post: @post, show_category: true do %>
-                    <%= link_to @post.category, posts_path(category: @post.category), class: "ts-category-link" %>
-                      <% end %>
+                  <%= render "posts/post_meta", post: @post, show_category: true %>
                 </div>
                 <h1 class="ts-jumbo"><span>
                     <%= @post.title %>
@@ -99,7 +97,7 @@
                           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                       </svg>
                     </a>
-                    <span class="ts-share-notification">Copied!</span>
+                    <span class="ts-share-notification" data-share-notification>Copied!</span>
                   </div>
                 </div>
               </div>

@@ -32,6 +32,19 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "show renders a link to the post's category" do
+    get post_url(@post)
+    assert_select "a.ts-category-link[href=?]", category_posts_path(category: @post.category),
+                  text: @post.category
+  end
+
+  # 클립보드 스크립트가 이 훅으로 알림을 찾는다. 클래스만 있고 속성이 없으면
+  # 복사는 되지만 "Copied!" 가 뜨지 않는다.
+  test "show exposes the share notification hook" do
+    get post_url(@post)
+    assert_select "[data-share-notification]"
+  end
+
   test "should get edit" do
     get edit_post_url(@post)
     assert_response :success
