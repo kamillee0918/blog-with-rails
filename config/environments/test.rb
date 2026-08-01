@@ -22,8 +22,7 @@ Rails.application.configure do
   config.consider_all_requests_local = true
   # rate_limit 은 캐시에 시도 횟수를 센다. null_store 는 아무것도 저장하지 않아
   # 로그인 스로틀링이 테스트에서 영영 발동하지 않으므로 실제로 세는 스토어를 쓴다.
-  # 요청이 모두 127.0.0.1 에서 오는 만큼 카운터가 테스트 간에 새지 않도록
-  # SessionsControllerTest 는 setup 에서 캐시를 비운다.
+  # 캐시가 테스트 간에 새지 않도록 test_helper 가 매 테스트마다 비운다.
   config.cache_store = :memory_store
 
   # Render exception templates for rescuable exceptions and raise for other exceptions.

@@ -3,9 +3,6 @@ require "test_helper"
 class SessionsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @admin = admins(:one)
-    # rate_limit 카운터는 캐시에 IP 별로 쌓인다. 테스트 요청이 모두 127.0.0.1
-    # 에서 오므로 비워 두지 않으면 앞선 테스트의 실패 시도가 다음 테스트를 429 로 만든다.
-    Rails.cache.clear
   end
 
   test "should get login page" do

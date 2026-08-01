@@ -39,6 +39,13 @@ module ActiveSupport
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
 
+    # 테스트 환경은 rate_limit 을 검증할 수 있도록 :memory_store 를 쓴다.
+    # 그 대가로 캐시가 테스트 간에 살아남으므로 매번 비운다. 특히 로그인
+    # rate_limit 은 성공·실패를 가리지 않고 IP 별로 세는데 테스트 요청이 모두
+    # 127.0.0.1 이라, 비우지 않으면 setup 에서 로그인하는 테스트들이 서로를
+    # 한도 너머로 밀어내 429 를 받는다.
+    setup { Rails.cache.clear }
+
     # Add more helper methods to be used by all tests here...
 
     # Helper: sign in as admin for controller tests.
