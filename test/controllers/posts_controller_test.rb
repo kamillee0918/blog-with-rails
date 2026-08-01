@@ -66,7 +66,10 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   # 박혀 매 요청 ETag 가 달라지고, 이 테스트가 실패한다.
   test "index answers 304 when nothing changed" do
     delete logout_url
-    get posts_url # 로그아웃 flash 를 소비시켜 두 번째부터 본문이 같아지도록 한다
+    # ActionController::EtagWithFlash 가 flash 를 ETag 에 섞는다. 로그아웃 직후
+    # 응답에는 "Logged out." 이 실려 있어 ETag 가 다를 수밖에 없으므로,
+    # 여기서 한 번 소비시켜 flash 없는 상태에서 비교한다.
+    get posts_url
 
     get posts_url
     assert_response :success
@@ -79,23 +82,6 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
     get posts_url, headers: { "If-None-Match" => etag }
     assert_response :not_modified
-  end
-
-  # fresh_when 의 validator 가 실제로 ETag 를 만드는지 가른다.
-  # 게시글은 그대로고 본문만 달라지는(로그아웃 flash) 두 응답의 ETag 가 같아야
-  # validator 기반이고, 그래야 304 일 때 렌더링 자체를 건너뛴다.
-  # 다르다면 Rack::ETag 가 본문 다이제스트로 만들고 있다는 뜻이라,
-  # 대역폭만 아끼고 렌더링 비용은 그대로 낸다.
-  test "index ETag is derived from the posts, not the rendered body" do
-    delete logout_url
-
-    get posts_url # 로그아웃 flash 가 본문에 들어간다
-    with_flash = response.headers["ETag"]
-
-    get posts_url # flash 없음
-    without_flash = response.headers["ETag"]
-
-    assert_equal with_flash, without_flash
   end
 
   test "index ETag changes once a post is edited" do
