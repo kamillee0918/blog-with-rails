@@ -1,5 +1,8 @@
 <% content_for :title, @post.title + " | Kamil Lee의 개발 일기" %>
 <% content_for :description, truncate(@post.summary.presence || @post.title, length: 160) %>
+<%# 본문 디코딩은 비용이 있으므로 한 번만 수행해 라이브러리 판별과 렌더링에 함께 쓴다. %>
+<% post_body = @post.rendered_content %>
+<% require_content_libraries content_libraries_for(post_body) %>
 
   <div class="ts-site-content ts-sidebar-enabled ts-singular-thumbnail-enabled">
     <div class="ts-container">
@@ -56,7 +59,7 @@
               <%= render "posts/sidebar" , recent_posts: @recent_posts, archives: @archives %>
                 <div class="ts-entry__content-wrap">
                   <div class="ts-single-post ts-wysiwyg">
-                    <%= @post.rendered_content %>
+                    <%= post_body %>
                   </div>
                   <!-- 태그 -->
                   <% if @post.tags.any? %>
