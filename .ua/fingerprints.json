@@ -1,0 +1,2820 @@
+{
+  "version": "1.0.0",
+  "gitCommitHash": "f970d0e415dd1cf628297524f798dd7c433230de",
+  "generatedAt": "2026-08-01T10:14:01.595Z",
+  "files": {
+    ".dockerignore": {
+      "filePath": ".dockerignore",
+      "contentHash": "70a7387d6d99a8fe06a771a2ccecc2694cfbfe720c1a28c8b0392d4b72d1705e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 52,
+      "hasStructuralAnalysis": false
+    },
+    ".gitattributes": {
+      "filePath": ".gitattributes",
+      "contentHash": "002cee769356794268645fef7b98fef17706af82bbed067b97d203444cb89f0d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 15,
+      "hasStructuralAnalysis": false
+    },
+    ".github/dependabot.yml": {
+      "filePath": ".github/dependabot.yml",
+      "contentHash": "30452891f92d2312a4f8eb9eb16f3932245222c448d99c1d0228d1bd6f6cdb28",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 13,
+      "hasStructuralAnalysis": true
+    },
+    ".github/workflows/ci.yml": {
+      "filePath": ".github/workflows/ci.yml",
+      "contentHash": "781cde542c2019a037e527c8675d7dfe0451e89498f48a2a6a4a086a9c695006",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 105,
+      "hasStructuralAnalysis": true
+    },
+    ".kamal/hooks/docker-setup.sample": {
+      "filePath": ".kamal/hooks/docker-setup.sample",
+      "contentHash": "70e52ccba04b0b8d99517e73fbdd167149113bf94732af0419d81584e99cfc88",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": false
+    },
+    ".kamal/hooks/post-app-boot.sample": {
+      "filePath": ".kamal/hooks/post-app-boot.sample",
+      "contentHash": "b0b621995f20a44643ee5da40e329cae8a4b947fb20fe17b0159ebbbc2e738d6",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": false
+    },
+    ".kamal/hooks/post-deploy.sample": {
+      "filePath": ".kamal/hooks/post-deploy.sample",
+      "contentHash": "fdaf8360710c8493f8bb4f949f094b3e99c77881c23ce4d2ed9fa1d9df66fc36",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 15,
+      "hasStructuralAnalysis": false
+    },
+    ".kamal/hooks/post-proxy-reboot.sample": {
+      "filePath": ".kamal/hooks/post-proxy-reboot.sample",
+      "contentHash": "a5c808cb346134cd564f048d04bde11425a923c198b7739ed1aab2660fbc6831",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": false
+    },
+    ".kamal/hooks/pre-app-boot.sample": {
+      "filePath": ".kamal/hooks/pre-app-boot.sample",
+      "contentHash": "fe9f00f8ce30a7b2caa2c5c336b75bbe9973eca58fc2d1f25199cdbae819cc9b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": false
+    },
+    ".kamal/hooks/pre-build.sample": {
+      "filePath": ".kamal/hooks/pre-build.sample",
+      "contentHash": "f34022a731dc4377784b1198fea70286a199801c78d127b4e1b554f625820b78",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 52,
+      "hasStructuralAnalysis": false
+    },
+    ".kamal/hooks/pre-connect.sample": {
+      "filePath": ".kamal/hooks/pre-connect.sample",
+      "contentHash": "cc9367b2512b7637704de8d123c229993f594d1dbf95f0e2953659deab729150",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 48,
+      "hasStructuralAnalysis": false
+    },
+    ".kamal/hooks/pre-deploy.sample": {
+      "filePath": ".kamal/hooks/pre-deploy.sample",
+      "contentHash": "e234139637a828afe3c7efe1d7f3a1eeb7187a38cb8203b82ab2b8d8ca3fec34",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 123,
+      "hasStructuralAnalysis": false
+    },
+    ".kamal/hooks/pre-proxy-reboot.sample": {
+      "filePath": ".kamal/hooks/pre-proxy-reboot.sample",
+      "contentHash": "ed473bb8d046cc14f2da7315fc1b5aa538b4666340b99f2def072312f3931503",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": false
+    },
+    ".kamal/secrets": {
+      "filePath": ".kamal/secrets",
+      "contentHash": "67325e6cc9625d8b45388a0f7cf818bd180789af3487ff3aea9ee77c4a6b4107",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 30,
+      "hasStructuralAnalysis": false
+    },
+    ".rubocop.yml": {
+      "filePath": ".rubocop.yml",
+      "contentHash": "86cb7c2ecf4755789497ce5942816dc96fa1298ee509edec3c5f4ebca11bfbd0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": true
+    },
+    ".ruby-version": {
+      "filePath": ".ruby-version",
+      "contentHash": "e216936881cf70499888c8169b6c9925d2d2ff824458c336cf9d058a89c1bac5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": false
+    },
+    "CLAUDE.md": {
+      "filePath": "CLAUDE.md",
+      "contentHash": "4fd051a5b1328d4209d295ca9697019bda4996f8a6e4148cc1f2aa693c74b7e8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 85,
+      "hasStructuralAnalysis": true
+    },
+    "Dockerfile": {
+      "filePath": "Dockerfile",
+      "contentHash": "f6b242d39b15fe81c5f81b9abce0225c59ea854ce996830943295dec2b0fb8cd",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 79,
+      "hasStructuralAnalysis": true
+    },
+    "Gemfile": {
+      "filePath": "Gemfile",
+      "contentHash": "434c9a37f6babb8459b23bcf37e8834bab54b9f5898adecfeeac28414921120d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 89,
+      "hasStructuralAnalysis": false
+    },
+    "Procfile.dev": {
+      "filePath": "Procfile.dev",
+      "contentHash": "6ce61f352053b48db306a38a997e07a087a91d6e28dfb9c38218d452b710fcdc",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": false
+    },
+    "README.md": {
+      "filePath": "README.md",
+      "contentHash": "676a90c44388f6a6fd993b52ff5f192828cdc213f6122b495af90b6e3216a6ea",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 180,
+      "hasStructuralAnalysis": true
+    },
+    "Rakefile": {
+      "filePath": "Rakefile",
+      "contentHash": "480894efa76250e783bb958034eb09a12cfc81da41ffbc30ba2aa7a5872807b4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 7,
+      "hasStructuralAnalysis": false
+    },
+    "app/assets/images/.keep": {
+      "filePath": "app/assets/images/.keep",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "app/assets/stylesheets/site.css": {
+      "filePath": "app/assets/stylesheets/site.css",
+      "contentHash": "a03da3fbbde14b80699ca32d240b71f75a93416074420b19d468acc104907f90",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 6175,
+      "hasStructuralAnalysis": false
+    },
+    "app/controllers/application_controller.rb": {
+      "filePath": "app/controllers/application_controller.rb",
+      "contentHash": "09493efcd197a0ac32cb752da43614b1a0918ffb9b3ec57e6ff9094aacb49927",
+      "functions": [
+        {
+          "name": "set_no_transform_cache_control",
+          "params": [],
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "admin_signed_in?",
+          "params": [],
+          "exported": false,
+          "lineCount": 12
+        },
+        {
+          "name": "authenticate_admin!",
+          "params": [],
+          "exported": false,
+          "lineCount": 5
+        }
+      ],
+      "classes": [
+        {
+          "name": "ApplicationController",
+          "methods": [
+            "set_no_transform_cache_control",
+            "admin_signed_in?",
+            "authenticate_admin!"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 53
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "ApplicationController"
+      ],
+      "totalLines": 54,
+      "hasStructuralAnalysis": true
+    },
+    "app/controllers/concerns/.keep": {
+      "filePath": "app/controllers/concerns/.keep",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "app/controllers/errors_controller.rb": {
+      "filePath": "app/controllers/errors_controller.rb",
+      "contentHash": "a136c87706f70bf86197b173aab58032f41152d2c3492ebff5463aae9736eb28",
+      "functions": [
+        {
+          "name": "not_found",
+          "params": [],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "unprocessable",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "internal_server",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        }
+      ],
+      "classes": [
+        {
+          "name": "ErrorsController",
+          "methods": [
+            "not_found",
+            "unprocessable",
+            "internal_server"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 14
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "ErrorsController"
+      ],
+      "totalLines": 17,
+      "hasStructuralAnalysis": true
+    },
+    "app/controllers/posts_controller.rb": {
+      "filePath": "app/controllers/posts_controller.rb",
+      "contentHash": "63b179d3713b3bbad517004e97094be0a1f76400f43919d88cb7cc696287cf0f",
+      "functions": [
+        {
+          "name": "index",
+          "params": [],
+          "exported": false,
+          "lineCount": 29
+        },
+        {
+          "name": "search",
+          "params": [],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "archive",
+          "params": [],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "tag",
+          "params": [],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "show",
+          "params": [],
+          "exported": false,
+          "lineCount": 18
+        },
+        {
+          "name": "new",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "edit",
+          "params": [],
+          "exported": false,
+          "lineCount": 2
+        },
+        {
+          "name": "create",
+          "params": [],
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "update",
+          "params": [],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "destroy",
+          "params": [],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "set_post",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "post_scope",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "listing_scope",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "set_no_cache_headers",
+          "params": [],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "post_params",
+          "params": [],
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "encode_code_blocks",
+          "params": [
+            "html"
+          ],
+          "exported": false,
+          "lineCount": 12
+        }
+      ],
+      "classes": [
+        {
+          "name": "PostsController",
+          "methods": [
+            "index",
+            "search",
+            "archive",
+            "tag",
+            "show",
+            "new",
+            "edit",
+            "create",
+            "update",
+            "destroy",
+            "set_post",
+            "post_scope",
+            "listing_scope",
+            "set_no_cache_headers",
+            "post_params",
+            "encode_code_blocks"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 167
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "PostsController"
+      ],
+      "totalLines": 168,
+      "hasStructuralAnalysis": true
+    },
+    "app/controllers/sessions_controller.rb": {
+      "filePath": "app/controllers/sessions_controller.rb",
+      "contentHash": "a96852dfbcec31aa9c1bfd0a7b41eb19c38085ef331ccc482049086dde2bb097",
+      "functions": [
+        {
+          "name": "new",
+          "params": [],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "create",
+          "params": [],
+          "exported": false,
+          "lineCount": 15
+        },
+        {
+          "name": "destroy",
+          "params": [],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "reject_when_throttled",
+          "params": [],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "throttle_key",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "failed_attempts",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "record_failed_attempt",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "clear_failed_attempts",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        }
+      ],
+      "classes": [
+        {
+          "name": "SessionsController",
+          "methods": [
+            "new",
+            "create",
+            "destroy",
+            "reject_when_throttled",
+            "throttle_key",
+            "failed_attempts",
+            "record_failed_attempt",
+            "clear_failed_attempts"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 74
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "SessionsController"
+      ],
+      "totalLines": 77,
+      "hasStructuralAnalysis": true
+    },
+    "app/controllers/uploads_controller.rb": {
+      "filePath": "app/controllers/uploads_controller.rb",
+      "contentHash": "1ade4bc4316a6f5d3e040e69e85dacb41b0d1e980af7d87df49a5db945e09e1f",
+      "functions": [
+        {
+          "name": "image",
+          "params": [],
+          "exported": false,
+          "lineCount": 63
+        },
+        {
+          "name": "destroy_image",
+          "params": [],
+          "exported": false,
+          "lineCount": 20
+        }
+      ],
+      "classes": [
+        {
+          "name": "UploadsController",
+          "methods": [
+            "image",
+            "destroy_image"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 95
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "UploadsController"
+      ],
+      "totalLines": 100,
+      "hasStructuralAnalysis": true
+    },
+    "app/helpers/application_helper.rb": {
+      "filePath": "app/helpers/application_helper.rb",
+      "contentHash": "a6432111ce6275f1bb9d37fd6e3d8744411bec3cfdeb47c145732d45205f234e",
+      "functions": [
+        {
+          "name": "require_content_libraries",
+          "params": [
+            "*libraries"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "content_library?",
+          "params": [
+            "library"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "content_libraries_for",
+          "params": [
+            "html"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "math_delimiters?",
+          "params": [
+            "html"
+          ],
+          "exported": false,
+          "lineCount": 4
+        }
+      ],
+      "classes": [
+        {
+          "name": "ApplicationHelper",
+          "methods": [
+            "require_content_libraries",
+            "content_library?",
+            "content_libraries_for",
+            "math_delimiters?"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 34
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "ApplicationHelper"
+      ],
+      "totalLines": 35,
+      "hasStructuralAnalysis": true
+    },
+    "app/helpers/image_helper.rb": {
+      "filePath": "app/helpers/image_helper.rb",
+      "contentHash": "95d09c78e2b5db8873827d5d66a45ba8695427290f3cb1fcd71e4ad30439a295",
+      "functions": [
+        {
+          "name": "optimized_image_tag",
+          "params": [
+            "attachment",
+            "**options"
+          ],
+          "exported": false,
+          "lineCount": 28
+        },
+        {
+          "name": "responsive_image_tag",
+          "params": [
+            "source",
+            "**options"
+          ],
+          "exported": false,
+          "lineCount": 45
+        },
+        {
+          "name": "picture_tag",
+          "params": [
+            "attachment",
+            "**options"
+          ],
+          "exported": false,
+          "lineCount": 26
+        },
+        {
+          "name": "intrinsic_dimensions",
+          "params": [
+            "attachment"
+          ],
+          "exported": false,
+          "lineCount": 15
+        }
+      ],
+      "classes": [
+        {
+          "name": "ImageHelper",
+          "methods": [
+            "optimized_image_tag",
+            "responsive_image_tag",
+            "picture_tag",
+            "intrinsic_dimensions"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 153
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "ImageHelper"
+      ],
+      "totalLines": 156,
+      "hasStructuralAnalysis": true
+    },
+    "app/helpers/posts_helper.rb": {
+      "filePath": "app/helpers/posts_helper.rb",
+      "contentHash": "953aa03fcd62025bf607c29a8a34f87b0882b09624458f6edd10b2cc6372f2f7",
+      "functions": [],
+      "classes": [
+        {
+          "name": "PostsHelper",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "PostsHelper"
+      ],
+      "totalLines": 3,
+      "hasStructuralAnalysis": true
+    },
+    "app/javascript/application.js": {
+      "filePath": "app/javascript/application.js",
+      "contentHash": "f09f39a77543cc014af0f3c6cd181db882eb5032f484b88ef9c682c547561228",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@hotwired/turbo-rails",
+          "specifiers": []
+        },
+        {
+          "source": "controllers",
+          "specifiers": []
+        },
+        {
+          "source": "init",
+          "specifiers": []
+        }
+      ],
+      "exports": [],
+      "totalLines": 5,
+      "hasStructuralAnalysis": true
+    },
+    "app/javascript/controllers/application.js": {
+      "filePath": "app/javascript/controllers/application.js",
+      "contentHash": "bd316d985f1cef3633dafd928bae33b599e7ca6353b30777c933e0ed10cfc2ed",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@hotwired/stimulus",
+          "specifiers": [
+            "Application"
+          ]
+        }
+      ],
+      "exports": [
+        "application"
+      ],
+      "totalLines": 10,
+      "hasStructuralAnalysis": true
+    },
+    "app/javascript/controllers/index.js": {
+      "filePath": "app/javascript/controllers/index.js",
+      "contentHash": "fd70b0cc4067227e4319714be1f77a3b075bc112ac140da0cc49b777477c49dc",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "controllers/application",
+          "specifiers": [
+            "application"
+          ]
+        },
+        {
+          "source": "@hotwired/stimulus-loading",
+          "specifiers": [
+            "eagerLoadControllersFrom"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 5,
+      "hasStructuralAnalysis": true
+    },
+    "app/javascript/controllers/search_controller.js": {
+      "filePath": "app/javascript/controllers/search_controller.js",
+      "contentHash": "25f923a11db24c6300afae7b244ff535720b1c01679214ebdd9157f3c88d7347",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@hotwired/stimulus",
+          "specifiers": [
+            "Controller"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 73,
+      "hasStructuralAnalysis": true
+    },
+    "app/javascript/init.js": {
+      "filePath": "app/javascript/init.js",
+      "contentHash": "e460b4c83d140c65a99fa50599681df52392e33e45672bae2424f2fbe1d4efd9",
+      "functions": [
+        {
+          "name": "decodeBase64CodeBlock",
+          "params": [
+            "encoded"
+          ],
+          "exported": false,
+          "lineCount": 17
+        },
+        {
+          "name": "encodeRawHtmlForTinyMCE",
+          "params": [
+            "raw"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "decodeLegacyErbPlaceholders",
+          "params": [
+            "codeContent"
+          ],
+          "exported": false,
+          "lineCount": 20
+        },
+        {
+          "name": "initTinyMCE",
+          "params": [],
+          "exported": false,
+          "lineCount": 237
+        },
+        {
+          "name": "handleSearchSubmit",
+          "params": [
+            "event"
+          ],
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "handleCopyLink",
+          "params": [
+            "event"
+          ],
+          "exported": false,
+          "lineCount": 26
+        },
+        {
+          "name": "initializePage",
+          "params": [],
+          "exported": false,
+          "lineCount": 49
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 423,
+      "hasStructuralAnalysis": true
+    },
+    "app/jobs/application_job.rb": {
+      "filePath": "app/jobs/application_job.rb",
+      "contentHash": "13c5bcd3f749cbbceeb6412545ea0f6610407f39f9915e4a86f8ff4ded46e563",
+      "functions": [],
+      "classes": [
+        {
+          "name": "ApplicationJob",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "ApplicationJob"
+      ],
+      "totalLines": 8,
+      "hasStructuralAnalysis": true
+    },
+    "app/mailers/application_mailer.rb": {
+      "filePath": "app/mailers/application_mailer.rb",
+      "contentHash": "4752aebb60054c79345c6ce39b3430d3c6525842bc291b37d6f051880b6634f8",
+      "functions": [],
+      "classes": [
+        {
+          "name": "ApplicationMailer",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "ApplicationMailer"
+      ],
+      "totalLines": 5,
+      "hasStructuralAnalysis": true
+    },
+    "app/models/admin.rb": {
+      "filePath": "app/models/admin.rb",
+      "contentHash": "8c9f70639e2770faf1df0ce8674f777e038cd53564a07c6e423839722d7b774a",
+      "functions": [],
+      "classes": [
+        {
+          "name": "Admin",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "Admin"
+      ],
+      "totalLines": 12,
+      "hasStructuralAnalysis": true
+    },
+    "app/models/application_record.rb": {
+      "filePath": "app/models/application_record.rb",
+      "contentHash": "99c3903a5324009bd797ff179342542e17bfdffa73a651c1a5dfcb78d528f8dd",
+      "functions": [],
+      "classes": [
+        {
+          "name": "ApplicationRecord",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "ApplicationRecord"
+      ],
+      "totalLines": 4,
+      "hasStructuralAnalysis": true
+    },
+    "app/models/concerns/.keep": {
+      "filePath": "app/models/concerns/.keep",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "app/models/post.rb": {
+      "filePath": "app/models/post.rb",
+      "contentHash": "8390164f06ec98cf6f7643f30dd36d333f1862f39593e0078a1e658cc84d8557",
+      "functions": [
+        {
+          "name": "to_param",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "self.find_by_slug_or_id",
+          "params": [
+            "param"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "self.find_by_slug_or_id!",
+          "params": [
+            "param"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "self.yearly_archive_counts",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "previous_post",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "next_post",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "recommended_posts",
+          "params": [],
+          "exported": false,
+          "lineCount": 12
+        },
+        {
+          "name": "tag_list",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "tag_list=",
+          "params": [
+            "names"
+          ],
+          "exported": false,
+          "lineCount": 13
+        },
+        {
+          "name": "read_time",
+          "params": [],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "rendered_content",
+          "params": [],
+          "exported": false,
+          "lineCount": 36
+        },
+        {
+          "name": "cover_image_caption",
+          "params": [],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "sync_word_count",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "generate_slug",
+          "params": [],
+          "exported": false,
+          "lineCount": 9
+        }
+      ],
+      "classes": [
+        {
+          "name": "Post",
+          "methods": [
+            "to_param",
+            "self.find_by_slug_or_id",
+            "self.find_by_slug_or_id!",
+            "self.yearly_archive_counts",
+            "previous_post",
+            "next_post",
+            "recommended_posts",
+            "tag_list",
+            "tag_list=",
+            "read_time",
+            "rendered_content",
+            "cover_image_caption",
+            "sync_word_count",
+            "generate_slug"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 192
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "Post"
+      ],
+      "totalLines": 193,
+      "hasStructuralAnalysis": true
+    },
+    "app/models/tag.rb": {
+      "filePath": "app/models/tag.rb",
+      "contentHash": "362328a395964b2082acc5d6d7682cfc01079ba3a9874765b917636ab542c6c3",
+      "functions": [
+        {
+          "name": "self.popular_with_counts",
+          "params": [
+            "limit"
+          ],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "self.find_or_create_by_name",
+          "params": [
+            "name"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "normalize_name",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        }
+      ],
+      "classes": [
+        {
+          "name": "Tag",
+          "methods": [
+            "self.popular_with_counts",
+            "self.find_or_create_by_name",
+            "normalize_name"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 29
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "Tag"
+      ],
+      "totalLines": 30,
+      "hasStructuralAnalysis": true
+    },
+    "app/views/active_storage/blobs/_blob.html.erb": {
+      "filePath": "app/views/active_storage/blobs/_blob.html.erb",
+      "contentHash": "f389a156e8704ee8d35aa58dbefd3e0257f235e630a7090c4d17dd05aad598ff",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 15,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/errors/internal_server.html.erb": {
+      "filePath": "app/views/errors/internal_server.html.erb",
+      "contentHash": "37ba04060960377b65f5db71845ed69e9b9b4f9bcf69a94b4ca54b7192bbe67b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 21,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/errors/not_found.html.erb": {
+      "filePath": "app/views/errors/not_found.html.erb",
+      "contentHash": "90230f7ab0c5676cb73347eccd94c0dad41da87b4a147e284eb18babf2dddda3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 47,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/errors/unprocessable.html.erb": {
+      "filePath": "app/views/errors/unprocessable.html.erb",
+      "contentHash": "be17c53cfef74f0904faed23df2ccb10a42490b787d9005d4d4d20d359d29f19",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 21,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/kaminari/_gap.html.erb": {
+      "filePath": "app/views/kaminari/_gap.html.erb",
+      "contentHash": "9ca454ed35bea570456848d73c65eeb293187317e8179cb17ed221b451f4d407",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/kaminari/_next_page.html.erb": {
+      "filePath": "app/views/kaminari/_next_page.html.erb",
+      "contentHash": "eefd8fe2cf6e5841e2a1abe95dcd80a6e91cb2d45f2734ee8cc0ddfda390bb7c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 21,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/kaminari/_page.html.erb": {
+      "filePath": "app/views/kaminari/_page.html.erb",
+      "contentHash": "0eba7ab2915373448ef7a349a81a39b723dcf4367a7dda0c7e614a2693fa6cc9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 21,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/kaminari/_paginator.html.erb": {
+      "filePath": "app/views/kaminari/_paginator.html.erb",
+      "contentHash": "e1592c503cadb480c55aff573726f0d7025739956b2459a5656fe3d4d8930ecc",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 29,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/kaminari/_prev_page.html.erb": {
+      "filePath": "app/views/kaminari/_prev_page.html.erb",
+      "contentHash": "b44c540b6d820c9c5c5fefb84c4c09ab63e3813f07fefa095ead4dfe26d89dae",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 21,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/layouts/action_text/contents/_content.html.erb": {
+      "filePath": "app/views/layouts/action_text/contents/_content.html.erb",
+      "contentHash": "af61b8c14053c29fba0aeaf9ea9afc014332cfa4d1f4a4b2bafcbb84aa8e48e2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/layouts/application.html.erb": {
+      "filePath": "app/views/layouts/application.html.erb",
+      "contentHash": "3815308b9b773a78fd6b58d860fd5c816c982e802adf7955bb81cebeda4a33de",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 641,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/layouts/mailer.html.erb": {
+      "filePath": "app/views/layouts/mailer.html.erb",
+      "contentHash": "cb817d2717f100add8c62ed77a37fdf3af5c0bd73c80b445bf815c200370e407",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 14,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/layouts/mailer.text.erb": {
+      "filePath": "app/views/layouts/mailer.text.erb",
+      "contentHash": "9c6055817eeee9a1e6a3baff4670ccd7f1a081f88e1c4a648be9a02efcfb275e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/posts/_form.html.erb": {
+      "filePath": "app/views/posts/_form.html.erb",
+      "contentHash": "d1167fc5964118a5c088f9e023ae6e50b02837763610559e57efc6e1008de147",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 97,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/posts/_post.html.erb": {
+      "filePath": "app/views/posts/_post.html.erb",
+      "contentHash": "92f83d63001307defdcfaf5d0accc3a71f7093cea87ce9a5295aaa38128ae267",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 15,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/posts/_post_card.html.erb": {
+      "filePath": "app/views/posts/_post_card.html.erb",
+      "contentHash": "cc65ba79a76f6709c9a3a1ed7cd48b29316412b9f866e3a89c3a87bff9d69d07",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 24,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/posts/_post_meta.html.erb": {
+      "filePath": "app/views/posts/_post_meta.html.erb",
+      "contentHash": "3b61c31776b120064abc013ff32dbdee226938fbc714d87bad9c8d24ec532939",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 12,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/posts/_post_navigation.html.erb": {
+      "filePath": "app/views/posts/_post_navigation.html.erb",
+      "contentHash": "a4d11e16fa003289a83af84c8fb722ed37640818f0c8f27b4509f1c2fe1a8e2e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 27,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/posts/_recommended_posts.html.erb": {
+      "filePath": "app/views/posts/_recommended_posts.html.erb",
+      "contentHash": "d7d60ab663eb887146467538760849fdf14194d3934d59998c575c2d0ea5efcf",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 38,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/posts/_sidebar.html.erb": {
+      "filePath": "app/views/posts/_sidebar.html.erb",
+      "contentHash": "632df0c4a4f9297808ecc31f89e77caca0ba9d39161a94cf5b2c992e2822326e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 57,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/posts/edit.html.erb": {
+      "filePath": "app/views/posts/edit.html.erb",
+      "contentHash": "f952f6d09b68c8038c470582acb1183a077f7e643047a3c10cc6f8412766f3a0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 19,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/posts/index.html.erb": {
+      "filePath": "app/views/posts/index.html.erb",
+      "contentHash": "45ba8932d22ffd2ef49d237217a43e871d56cfdac523ccbb19477016b6320eb9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 210,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/posts/new.html.erb": {
+      "filePath": "app/views/posts/new.html.erb",
+      "contentHash": "60a68b9e9ea1ec3b63e31faa460e9669d60ce7a3c9d12a7df2a84f60ae0dd311",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 19,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/posts/show.html.erb": {
+      "filePath": "app/views/posts/show.html.erb",
+      "contentHash": "fdb046c0c71328f52725c45cc041199590257f725fd888d59740f6ba4169332d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 122,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/posts/show_all.html.erb": {
+      "filePath": "app/views/posts/show_all.html.erb",
+      "contentHash": "96e11562ea2d59aa813a551627f55370067c44186bd505cc288133870df72db1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 152,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/pwa/manifest.json.erb": {
+      "filePath": "app/views/pwa/manifest.json.erb",
+      "contentHash": "3bef0a9a066b438435087d0d867c5416f1facc46820323508c6718e0fa23fae6",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 23,
+      "hasStructuralAnalysis": false
+    },
+    "app/views/pwa/service-worker.js": {
+      "filePath": "app/views/pwa/service-worker.js",
+      "contentHash": "0426be172770a4cd4ac523a616f22c8d3e2c7b457ffd6e9f0e5a6808c6a15791",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 27,
+      "hasStructuralAnalysis": true
+    },
+    "app/views/sessions/new.html.erb": {
+      "filePath": "app/views/sessions/new.html.erb",
+      "contentHash": "14c805ee577961ac84dc6bcba9fe3be8127ea5a1ff2f010df39fdffb8165f204",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 39,
+      "hasStructuralAnalysis": false
+    },
+    "bin/brakeman": {
+      "filePath": "bin/brakeman",
+      "contentHash": "7825743df15f32a7a7a36b2098aec1dd56767031af0181d288f8a563c2c225b0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 8,
+      "hasStructuralAnalysis": false
+    },
+    "bin/bundler-audit": {
+      "filePath": "bin/bundler-audit",
+      "contentHash": "484ba9033e36465898620184f12f427b014bf91ac61a423d302447ea99cf378d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 7,
+      "hasStructuralAnalysis": false
+    },
+    "bin/check-code": {
+      "filePath": "bin/check-code",
+      "contentHash": "0d3163674d8a279a24eb2f78c937237586d5718ce8e9d0d636b74d85d627bebc",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 28,
+      "hasStructuralAnalysis": false
+    },
+    "bin/ci": {
+      "filePath": "bin/ci",
+      "contentHash": "ee240fa535e83197c3b79489f56454ec9e1b24f9b7db15eb26c35fc858e12c02",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 7,
+      "hasStructuralAnalysis": false
+    },
+    "bin/dev": {
+      "filePath": "bin/dev",
+      "contentHash": "7a30cf45206be40b4446525717a7eff0099a3fdf2f7dc0ba4472b6815833e038",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 17,
+      "hasStructuralAnalysis": false
+    },
+    "bin/docker-entrypoint": {
+      "filePath": "bin/docker-entrypoint",
+      "contentHash": "e6f4e69ab211df5b889469d1768a86d1f176a6b3861c20704bf1fcab79578d56",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": false
+    },
+    "bin/importmap": {
+      "filePath": "bin/importmap",
+      "contentHash": "aaaf65c0637afc4a2cd13b04660761cfaee83d7f6e81446986a3e3aaafb84da5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 5,
+      "hasStructuralAnalysis": false
+    },
+    "bin/jobs": {
+      "filePath": "bin/jobs",
+      "contentHash": "7b51c14b8871a220d4227a09c87634c5f20d574c5ea3cdfaeb32fa62e35fc988",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 7,
+      "hasStructuralAnalysis": false
+    },
+    "bin/kamal": {
+      "filePath": "bin/kamal",
+      "contentHash": "9d9795dd6ef45db91f28a71e185555485aab41c09e9bad44014a2a9df27b0c4c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 28,
+      "hasStructuralAnalysis": false
+    },
+    "bin/rails": {
+      "filePath": "bin/rails",
+      "contentHash": "0862d7bc09d5ed61785d677ef2dba10ce285387d4d5d9e3d90d97630e3f69ab6",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 5,
+      "hasStructuralAnalysis": false
+    },
+    "bin/rake": {
+      "filePath": "bin/rake",
+      "contentHash": "5943c3811dc345727b5f330b599c4c6c45abc04816dd8f4201aeed88cf268cb3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 5,
+      "hasStructuralAnalysis": false
+    },
+    "bin/rubocop": {
+      "filePath": "bin/rubocop",
+      "contentHash": "62c9fd75681308e1d161f75e96b6af1a837a2f56c9fc9ddf641f1cebf0d7f717",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": false
+    },
+    "bin/setup": {
+      "filePath": "bin/setup",
+      "contentHash": "0f5b139524ceb07af2e32cca242a2817f4df26f0ecf96c64cec402ebcfaa7294",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 36,
+      "hasStructuralAnalysis": false
+    },
+    "bin/thrust": {
+      "filePath": "bin/thrust",
+      "contentHash": "ed1176b4df355db4b2a67ee37b45ca5c6d7118255d28a07dcdcb6d0fe4ae5c4f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 6,
+      "hasStructuralAnalysis": false
+    },
+    "config.ru": {
+      "filePath": "config.ru",
+      "contentHash": "c96fa63843d7367dd76d3afc6525ff20e499a32680510b5d88559efede4b44bb",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 7,
+      "hasStructuralAnalysis": false
+    },
+    "config/application.rb": {
+      "filePath": "config/application.rb",
+      "contentHash": "1d5b184d82a3b5ecc6c352d368096364768ee9aefecc39fcd5ba7b95c071afff",
+      "functions": [],
+      "classes": [
+        {
+          "name": "BlogWithRails",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 36
+        }
+      ],
+      "imports": [
+        {
+          "source": "boot",
+          "specifiers": [
+            "boot"
+          ]
+        },
+        {
+          "source": "rails/all",
+          "specifiers": [
+            "rails/all"
+          ]
+        }
+      ],
+      "exports": [
+        "BlogWithRails"
+      ],
+      "totalLines": 45,
+      "hasStructuralAnalysis": true
+    },
+    "config/boot.rb": {
+      "filePath": "config/boot.rb",
+      "contentHash": "80d2a15db036c064d8a402dca17a3f68b9b3f30bdcbd3771919352e01acbac41",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "bundler/setup",
+          "specifiers": [
+            "bundler/setup"
+          ]
+        },
+        {
+          "source": "bootsnap/setup",
+          "specifiers": [
+            "bootsnap/setup"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 5,
+      "hasStructuralAnalysis": true
+    },
+    "config/brakeman.ignore": {
+      "filePath": "config/brakeman.ignore",
+      "contentHash": "85f477a6756ba6f16411da46fc683c6ab05529bea59f50afbc7e20ed43840225",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 8,
+      "hasStructuralAnalysis": false
+    },
+    "config/bundler-audit.yml": {
+      "filePath": "config/bundler-audit.yml",
+      "contentHash": "66a183a7527771deb7f6c385bbd19cf5a1f49c59339e5fd91b5d49ac5dbefb11",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    "config/cable.yml": {
+      "filePath": "config/cable.yml",
+      "contentHash": "02aaf0022d9e349a835a95bcc0c77b504a6e64e2e4af4ce3e61c906ef7e75435",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 18,
+      "hasStructuralAnalysis": true
+    },
+    "config/cache.yml": {
+      "filePath": "config/cache.yml",
+      "contentHash": "bf30bab9f56b2e4dfde078a79c9a31662cd11b24d7ddca7c66e150994d71b9c0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 17,
+      "hasStructuralAnalysis": true
+    },
+    "config/ci.rb": {
+      "filePath": "config/ci.rb",
+      "contentHash": "5c7e60f203dc14613bc74c99c1a27f904c8b92c74d158a37a909b95a1226cdf3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 24,
+      "hasStructuralAnalysis": true
+    },
+    "config/credentials.yml.enc": {
+      "filePath": "config/credentials.yml.enc",
+      "contentHash": "2d303ee8997d30c40d5b08128fd4bf3bfe5e5610a7daeaa14daeed7d111ad34a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "config/database.yml": {
+      "filePath": "config/database.yml",
+      "contentHash": "da9298aca3b94afe63ce23259763d048e360ca31053d4fc9da923a203c7895b0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 53,
+      "hasStructuralAnalysis": true
+    },
+    "config/deploy.yml": {
+      "filePath": "config/deploy.yml",
+      "contentHash": "6478b2dfcfb567edf8ce14633b4d1cc5dfe84bea0b38079acddbfbe1eb4233e3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 130,
+      "hasStructuralAnalysis": true
+    },
+    "config/environment.rb": {
+      "filePath": "config/environment.rb",
+      "contentHash": "4ef42176e9a5230e58dd45866b910a4df0be191d461d271b554573ea6155f12e",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "application",
+          "specifiers": [
+            "application"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    "config/environments/development.rb": {
+      "filePath": "config/environments/development.rb",
+      "contentHash": "0a3d4b06df2a91ae34b17939de948b39c08ffc4897f282dc761aa5a4c286d901",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "active_support/core_ext/integer/time",
+          "specifiers": [
+            "active_support/core_ext/integer/time"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 79,
+      "hasStructuralAnalysis": true
+    },
+    "config/environments/production.rb": {
+      "filePath": "config/environments/production.rb",
+      "contentHash": "ecaa36e8090f660b981a180314c1446c6c21a607b11e3a439851e533e9ed4152",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "active_support/core_ext/integer/time",
+          "specifiers": [
+            "active_support/core_ext/integer/time"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 104,
+      "hasStructuralAnalysis": true
+    },
+    "config/environments/test.rb": {
+      "filePath": "config/environments/test.rb",
+      "contentHash": "94e8b064bc56013c197bfed1ba6d0db41cccd24e0b12917820a0bcc86163338a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 57,
+      "hasStructuralAnalysis": true
+    },
+    "config/importmap.rb": {
+      "filePath": "config/importmap.rb",
+      "contentHash": "22740ed39af24b1bd89f47b60b012a36dd5dae8a6eaa7d41f8e2ecf12bc6c901",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 11,
+      "hasStructuralAnalysis": true
+    },
+    "config/initializers/action_text.rb": {
+      "filePath": "config/initializers/action_text.rb",
+      "contentHash": "67b02a78eefabe75d3d594c6d95801c72a953ea29d2763bc1c1f6448fb90ed97",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 64,
+      "hasStructuralAnalysis": true
+    },
+    "config/initializers/assets.rb": {
+      "filePath": "config/initializers/assets.rb",
+      "contentHash": "973dc4c824d9fa050e0818b43744c792bec31b34df045f59520cd0fe5b40eb37",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 8,
+      "hasStructuralAnalysis": true
+    },
+    "config/initializers/cloudflare.rb": {
+      "filePath": "config/initializers/cloudflare.rb",
+      "contentHash": "70a722d150684e467bc33e393cc9f4a68f91a816845be1aa59bdbb96d4d069ed",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 43,
+      "hasStructuralAnalysis": true
+    },
+    "config/initializers/content_security_policy.rb": {
+      "filePath": "config/initializers/content_security_policy.rb",
+      "contentHash": "c6f1107bb6ab5cd3b35bfd0e1a8f25905276b4f9e7deb76ef280b94c4f16c444",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 47,
+      "hasStructuralAnalysis": true
+    },
+    "config/initializers/filter_parameter_logging.rb": {
+      "filePath": "config/initializers/filter_parameter_logging.rb",
+      "contentHash": "950ed0d189d7ca69dbc81d3b0fd9ceab545b9f3fa09a25b47374309cd37f081d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": true
+    },
+    "config/initializers/inflections.rb": {
+      "filePath": "config/initializers/inflections.rb",
+      "contentHash": "c3ffd0cf930e98b860e3e59cd3e63b311a07d25aeaa5fee3d3d1582dae7a8268",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 17,
+      "hasStructuralAnalysis": true
+    },
+    "config/initializers/kaminari_config.rb": {
+      "filePath": "config/initializers/kaminari_config.rb",
+      "contentHash": "d4ee8ba1dbcafcaa33218c5723ed7f208bbc76879b13fbbc62cb6de1e4fba011",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 15,
+      "hasStructuralAnalysis": true
+    },
+    "config/initializers/security_headers.rb": {
+      "filePath": "config/initializers/security_headers.rb",
+      "contentHash": "8babd08d9f9c85f73d3d68af3b0cd044a0dd6c3b69d87c6b798438c589d253bc",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 28,
+      "hasStructuralAnalysis": true
+    },
+    "config/locales/en.yml": {
+      "filePath": "config/locales/en.yml",
+      "contentHash": "0715f7ac843016f6aa8cd490a8ea166d4551f0b29c65d1ed49d4ca5330fcf6a8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 32,
+      "hasStructuralAnalysis": true
+    },
+    "config/puma.rb": {
+      "filePath": "config/puma.rb",
+      "contentHash": "4083d00c5e00e8e56cbce630ff791e69c2f380bd717e92a205717f989ed3bdf6",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 74,
+      "hasStructuralAnalysis": true
+    },
+    "config/queue.yml": {
+      "filePath": "config/queue.yml",
+      "contentHash": "b13c0b565957f214811ab44c699edc83d2f0f04b62b3f5c4291e6ccfd663e830",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 19,
+      "hasStructuralAnalysis": true
+    },
+    "config/recurring.yml": {
+      "filePath": "config/recurring.yml",
+      "contentHash": "606a4aa81f16d045de31960c845e378b65a9a6b511fcda3514cf858efe3a52c9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 16,
+      "hasStructuralAnalysis": true
+    },
+    "config/routes.rb": {
+      "filePath": "config/routes.rb",
+      "contentHash": "10ca5ed6bc94567eda0b1328012fbfac7c9355ab6c5b5bc1cece03742e905e52",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 40,
+      "hasStructuralAnalysis": true
+    },
+    "config/storage.yml": {
+      "filePath": "config/storage.yml",
+      "contentHash": "ad83c27112557372849e6a753590986f74c9fa210e8628cc119a57b78216c17f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 28,
+      "hasStructuralAnalysis": true
+    },
+    "db/cable_schema.rb": {
+      "filePath": "db/cable_schema.rb",
+      "contentHash": "f2187116262bbf19c747bb45d3f4249e7de1cc935ca3276c6f09b737ce2c98d4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 12,
+      "hasStructuralAnalysis": true
+    },
+    "db/cache_schema.rb": {
+      "filePath": "db/cache_schema.rb",
+      "contentHash": "6632c0da3211564872a8f276f3b4566ff83917bc7e8d7f9bb2359f31bd26fd46",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 13,
+      "hasStructuralAnalysis": true
+    },
+    "db/migrate/20251122082531_create_posts.rb": {
+      "filePath": "db/migrate/20251122082531_create_posts.rb",
+      "contentHash": "8b2b6b043ab0970c9e566124bb8e9f1fa29ffaaec8ee32b727becd46a2baaf57",
+      "functions": [
+        {
+          "name": "change",
+          "params": [],
+          "exported": false,
+          "lineCount": 10
+        }
+      ],
+      "classes": [
+        {
+          "name": "CreatePosts",
+          "methods": [
+            "change"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "CreatePosts"
+      ],
+      "totalLines": 13,
+      "hasStructuralAnalysis": true
+    },
+    "db/migrate/20251122082559_create_active_storage_tables.active_storage.rb": {
+      "filePath": "db/migrate/20251122082559_create_active_storage_tables.active_storage.rb",
+      "contentHash": "3f915dfa8cdc99a1e2ff635a51a263e9c46f99b7eb6fcc5b242bce25d88b6e40",
+      "functions": [
+        {
+          "name": "change",
+          "params": [],
+          "exported": false,
+          "lineCount": 45
+        },
+        {
+          "name": "primary_and_foreign_key_types",
+          "params": [],
+          "exported": false,
+          "lineCount": 7
+        }
+      ],
+      "classes": [
+        {
+          "name": "CreateActiveStorageTables",
+          "methods": [
+            "change",
+            "primary_and_foreign_key_types"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 56
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "CreateActiveStorageTables"
+      ],
+      "totalLines": 58,
+      "hasStructuralAnalysis": true
+    },
+    "db/migrate/20251122082560_create_action_text_tables.action_text.rb": {
+      "filePath": "db/migrate/20251122082560_create_action_text_tables.action_text.rb",
+      "contentHash": "71060d6807747c55badba1b01826fd03bbd5ff78b5a2afd11471a2323b6c70b5",
+      "functions": [
+        {
+          "name": "change",
+          "params": [],
+          "exported": false,
+          "lineCount": 14
+        },
+        {
+          "name": "primary_and_foreign_key_types",
+          "params": [],
+          "exported": false,
+          "lineCount": 7
+        }
+      ],
+      "classes": [
+        {
+          "name": "CreateActionTextTables",
+          "methods": [
+            "change",
+            "primary_and_foreign_key_types"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 25
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "CreateActionTextTables"
+      ],
+      "totalLines": 27,
+      "hasStructuralAnalysis": true
+    },
+    "db/migrate/20251125033932_add_tags_to_posts.rb": {
+      "filePath": "db/migrate/20251125033932_add_tags_to_posts.rb",
+      "contentHash": "b76692abcd846a9e841ad7bef35df33b8957e943c8a12cb0dc92691fdee6bd49",
+      "functions": [
+        {
+          "name": "change",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        }
+      ],
+      "classes": [
+        {
+          "name": "AddTagsToPosts",
+          "methods": [
+            "change"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "AddTagsToPosts"
+      ],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    "db/migrate/20251130051704_add_slug_and_category_to_posts.rb": {
+      "filePath": "db/migrate/20251130051704_add_slug_and_category_to_posts.rb",
+      "contentHash": "f7b248f9ae8151fbebaffe449ac111d2fce86180fc8e9578d99771c28864eb5d",
+      "functions": [
+        {
+          "name": "change",
+          "params": [],
+          "exported": false,
+          "lineCount": 6
+        }
+      ],
+      "classes": [
+        {
+          "name": "AddSlugAndCategoryToPosts",
+          "methods": [
+            "change"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "AddSlugAndCategoryToPosts"
+      ],
+      "totalLines": 9,
+      "hasStructuralAnalysis": true
+    },
+    "db/migrate/20260319025507_create_tags_and_posts_tags.rb": {
+      "filePath": "db/migrate/20260319025507_create_tags_and_posts_tags.rb",
+      "contentHash": "850af85bf528be9f9c714911fd39952b8cedfa3a920b840b906126acf754c487",
+      "functions": [
+        {
+          "name": "change",
+          "params": [],
+          "exported": false,
+          "lineCount": 13
+        }
+      ],
+      "classes": [
+        {
+          "name": "CreateTagsAndPostsTags",
+          "methods": [
+            "change"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 15
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "CreateTagsAndPostsTags"
+      ],
+      "totalLines": 16,
+      "hasStructuralAnalysis": true
+    },
+    "db/migrate/20260319034444_remove_tags_string_from_posts.rb": {
+      "filePath": "db/migrate/20260319034444_remove_tags_string_from_posts.rb",
+      "contentHash": "16089304a10a40817ec398091cc14425bfd3ea8410bb2ba2b816c1e4757a38f6",
+      "functions": [
+        {
+          "name": "change",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        }
+      ],
+      "classes": [
+        {
+          "name": "RemoveTagsStringFromPosts",
+          "methods": [
+            "change"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "RemoveTagsStringFromPosts"
+      ],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    "db/migrate/20260324033356_create_admins.rb": {
+      "filePath": "db/migrate/20260324033356_create_admins.rb",
+      "contentHash": "4fa68ddb8e5410463566fec02bae4f6b24a5b55d82fa9b9c246fa6a3edd5db5e",
+      "functions": [
+        {
+          "name": "change",
+          "params": [],
+          "exported": false,
+          "lineCount": 10
+        }
+      ],
+      "classes": [
+        {
+          "name": "CreateAdmins",
+          "methods": [
+            "change"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "CreateAdmins"
+      ],
+      "totalLines": 13,
+      "hasStructuralAnalysis": true
+    },
+    "db/migrate/20260731120000_add_published_at_index_to_posts.rb": {
+      "filePath": "db/migrate/20260731120000_add_published_at_index_to_posts.rb",
+      "contentHash": "018bdcc51c1febac0cc857ada9f429210d14fa67490d710813144813ad32365b",
+      "functions": [
+        {
+          "name": "change",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        }
+      ],
+      "classes": [
+        {
+          "name": "AddPublishedAtIndexToPosts",
+          "methods": [
+            "change"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "AddPublishedAtIndexToPosts"
+      ],
+      "totalLines": 8,
+      "hasStructuralAnalysis": true
+    },
+    "db/migrate/20260801060000_add_word_count_to_posts.rb": {
+      "filePath": "db/migrate/20260801060000_add_word_count_to_posts.rb",
+      "contentHash": "fd25d26048f1fa4709622db060ea9d3fb3d6ffd38ef140c2511fb09b20850bf4",
+      "functions": [
+        {
+          "name": "up",
+          "params": [],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "down",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        }
+      ],
+      "classes": [
+        {
+          "name": "AddWordCountToPosts",
+          "methods": [
+            "up",
+            "down"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 17
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "AddWordCountToPosts"
+      ],
+      "totalLines": 18,
+      "hasStructuralAnalysis": true
+    },
+    "db/queue_schema.rb": {
+      "filePath": "db/queue_schema.rb",
+      "contentHash": "41a8a513e9e587f0f44a24e352e5a81470a7bb908b1ea86b960decef31db86b6",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 130,
+      "hasStructuralAnalysis": true
+    },
+    "db/schema.rb": {
+      "filePath": "db/schema.rb",
+      "contentHash": "1f7f50d7b86651a5fa36ee287cb7eaaafecdb2322239e6604757bfccb6c5ef03",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 95,
+      "hasStructuralAnalysis": true
+    },
+    "db/seeds.rb": {
+      "filePath": "db/seeds.rb",
+      "contentHash": "a0cd5b656428ba5fc4a7bdd3eb73045459268be28f38fc79760108baa2a4f818",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 162,
+      "hasStructuralAnalysis": true
+    },
+    "lib/tasks/.keep": {
+      "filePath": "lib/tasks/.keep",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "lib/tasks/import_from_sqlite.rake": {
+      "filePath": "lib/tasks/import_from_sqlite.rake",
+      "contentHash": "da8e7d07edf56d21db00861a36acd4e7d4f529ca7fc65cf670602e93869d0c1c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 207,
+      "hasStructuralAnalysis": true
+    },
+    "lib/tasks/migrate_tags.rake": {
+      "filePath": "lib/tasks/migrate_tags.rake",
+      "contentHash": "c2eea0d4f2702915c6c35a1e4235a5a29665e01ae6f218d6e4e6ba28013373e0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 68,
+      "hasStructuralAnalysis": true
+    },
+    "public/400.html": {
+      "filePath": "public/400.html",
+      "contentHash": "5648fd0558e301917c88dc3059cf3a19272d515bf7d7c0f46d9de28a228417a3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 136,
+      "hasStructuralAnalysis": false
+    },
+    "public/404.html": {
+      "filePath": "public/404.html",
+      "contentHash": "47511df094501e3ba9b85a41e76cc2bf5c1d9aae192c6fd3ad839710c74f237b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 136,
+      "hasStructuralAnalysis": false
+    },
+    "public/406-unsupported-browser.html": {
+      "filePath": "public/406-unsupported-browser.html",
+      "contentHash": "3ecfd9e83d13a0b9b0baeef31b69d726f5381c9220d88d486e629ac51a2c1a14",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 136,
+      "hasStructuralAnalysis": false
+    },
+    "public/422.html": {
+      "filePath": "public/422.html",
+      "contentHash": "75e647fa04b4a4d6633427b03694b9fd9d24388fc2fb31e73b35c0fd52bf55f3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 136,
+      "hasStructuralAnalysis": false
+    },
+    "public/500.html": {
+      "filePath": "public/500.html",
+      "contentHash": "26a261e185277a829432fbee5ea168ce332287abe9a464b420661650ecd2bbe7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 136,
+      "hasStructuralAnalysis": false
+    },
+    "public/robots.txt": {
+      "filePath": "public/robots.txt",
+      "contentHash": "7df2841af8bb1d02a48c14aa641c54f2157a61de7a8a355adef94bbb37ca9be7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": false
+    },
+    "script/.keep": {
+      "filePath": "script/.keep",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "script/subset_fonts.py": {
+      "filePath": "script/subset_fonts.py",
+      "contentHash": "ea0f20d94dfb2d56723a44f1ff5154f0e9ad8122b430c194af3dac07ab9057fd",
+      "functions": [
+        {
+          "name": "site_codepoints",
+          "params": [],
+          "returnType": "set[int]",
+          "exported": true,
+          "lineCount": 31
+        },
+        {
+          "name": "main",
+          "params": [],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 61
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "glob",
+          "specifiers": [
+            "glob"
+          ]
+        },
+        {
+          "source": "html",
+          "specifiers": [
+            "html"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "sqlite3",
+          "specifiers": [
+            "sqlite3"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        }
+      ],
+      "exports": [
+        "site_codepoints",
+        "main"
+      ],
+      "totalLines": 152,
+      "hasStructuralAnalysis": true
+    },
+    "test/application_system_test_case.rb": {
+      "filePath": "test/application_system_test_case.rb",
+      "contentHash": "d034ff7cfef1e165d71a28612f312c946d76e89b00902ee4bc10b242430db65f",
+      "functions": [],
+      "classes": [
+        {
+          "name": "ApplicationSystemTestCase",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "imports": [
+        {
+          "source": "test_helper",
+          "specifiers": [
+            "test_helper"
+          ]
+        }
+      ],
+      "exports": [
+        "ApplicationSystemTestCase"
+      ],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    "test/controllers/.keep": {
+      "filePath": "test/controllers/.keep",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "test/controllers/errors_controller_test.rb": {
+      "filePath": "test/controllers/errors_controller_test.rb",
+      "contentHash": "776496b17f43ed6dd2481aa8eaba54bae95b1fb1de7f699f51669faac92c4f47",
+      "functions": [],
+      "classes": [
+        {
+          "name": "ErrorsControllerTest",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 25
+        }
+      ],
+      "imports": [
+        {
+          "source": "test_helper",
+          "specifiers": [
+            "test_helper"
+          ]
+        }
+      ],
+      "exports": [
+        "ErrorsControllerTest"
+      ],
+      "totalLines": 28,
+      "hasStructuralAnalysis": true
+    },
+    "test/controllers/posts_controller_test.rb": {
+      "filePath": "test/controllers/posts_controller_test.rb",
+      "contentHash": "b232687c6661aedc409098bd4d570411e54c958aac6b14f14cbc6832ce23a296",
+      "functions": [],
+      "classes": [
+        {
+          "name": "PostsControllerTest",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 160
+        }
+      ],
+      "imports": [
+        {
+          "source": "test_helper",
+          "specifiers": [
+            "test_helper"
+          ]
+        }
+      ],
+      "exports": [
+        "PostsControllerTest"
+      ],
+      "totalLines": 163,
+      "hasStructuralAnalysis": true
+    },
+    "test/controllers/sessions_controller_test.rb": {
+      "filePath": "test/controllers/sessions_controller_test.rb",
+      "contentHash": "89722ef78442b0e0110183a70b68e01ee703004f911e820b8498c88cefdf717a",
+      "functions": [],
+      "classes": [
+        {
+          "name": "SessionsControllerTest",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 112
+        }
+      ],
+      "imports": [
+        {
+          "source": "test_helper",
+          "specifiers": [
+            "test_helper"
+          ]
+        }
+      ],
+      "exports": [
+        "SessionsControllerTest"
+      ],
+      "totalLines": 115,
+      "hasStructuralAnalysis": true
+    },
+    "test/controllers/uploads_controller_test.rb": {
+      "filePath": "test/controllers/uploads_controller_test.rb",
+      "contentHash": "f980962a4df71a5aba7a11abbd0b17b89c4e5eb2fc9d4839f12467aa084fe1f8",
+      "functions": [
+        {
+          "name": "png_upload",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        }
+      ],
+      "classes": [
+        {
+          "name": "UploadsControllerTest",
+          "methods": [
+            "png_upload"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 74
+        }
+      ],
+      "imports": [
+        {
+          "source": "test_helper",
+          "specifiers": [
+            "test_helper"
+          ]
+        }
+      ],
+      "exports": [
+        "UploadsControllerTest"
+      ],
+      "totalLines": 77,
+      "hasStructuralAnalysis": true
+    },
+    "test/fixtures/action_text/rich_texts.yml": {
+      "filePath": "test/fixtures/action_text/rich_texts.yml",
+      "contentHash": "f57600c950d4d56cf6b1f06271d4493742a5e83350316d236ac2d5424bd73e53",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 5,
+      "hasStructuralAnalysis": true
+    },
+    "test/fixtures/admins.yml": {
+      "filePath": "test/fixtures/admins.yml",
+      "contentHash": "517580ad06cdf2d19841fd5056f3c0673807a49ac0ea061d70f71911017d1bf7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": true
+    },
+    "test/fixtures/files/.keep": {
+      "filePath": "test/fixtures/files/.keep",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "test/fixtures/posts.yml": {
+      "filePath": "test/fixtures/posts.yml",
+      "contentHash": "5a05a8ebcc0c10693f85250404961533e6abec9552c489d8c1c7b44191cd9e5d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 16,
+      "hasStructuralAnalysis": true
+    },
+    "test/helpers/.keep": {
+      "filePath": "test/helpers/.keep",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "test/helpers/image_helper_test.rb": {
+      "filePath": "test/helpers/image_helper_test.rb",
+      "contentHash": "66bca4e41e61f2f3a898e7aa0ca551e4948b82e7f885be853d260885c8f979b8",
+      "functions": [
+        {
+          "name": "dimensions_for",
+          "params": [
+            "width",
+            "height",
+            "**limits"
+          ],
+          "exported": false,
+          "lineCount": 4
+        }
+      ],
+      "classes": [
+        {
+          "name": "ImageHelperTest",
+          "methods": [
+            "dimensions_for"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 35
+        }
+      ],
+      "imports": [
+        {
+          "source": "test_helper",
+          "specifiers": [
+            "test_helper"
+          ]
+        }
+      ],
+      "exports": [
+        "ImageHelperTest"
+      ],
+      "totalLines": 38,
+      "hasStructuralAnalysis": true
+    },
+    "test/integration/.keep": {
+      "filePath": "test/integration/.keep",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "test/mailers/.keep": {
+      "filePath": "test/mailers/.keep",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "test/models/.keep": {
+      "filePath": "test/models/.keep",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "test/models/post_test.rb": {
+      "filePath": "test/models/post_test.rb",
+      "contentHash": "099c4d50f559933c0c3b8d79e850f607fc0ba5bafc415ec094a18532d4c1b8e1",
+      "functions": [],
+      "classes": [
+        {
+          "name": "PostTest",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 277
+        }
+      ],
+      "imports": [
+        {
+          "source": "test_helper",
+          "specifiers": [
+            "test_helper"
+          ]
+        }
+      ],
+      "exports": [
+        "PostTest"
+      ],
+      "totalLines": 280,
+      "hasStructuralAnalysis": true
+    },
+    "test/models/tag_test.rb": {
+      "filePath": "test/models/tag_test.rb",
+      "contentHash": "e5ff5ed45a054bdd3ecdfe325355f346852a2bd8ee7a06d995052816a2e313ea",
+      "functions": [],
+      "classes": [
+        {
+          "name": "TagTest",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 49
+        }
+      ],
+      "imports": [
+        {
+          "source": "test_helper",
+          "specifiers": [
+            "test_helper"
+          ]
+        }
+      ],
+      "exports": [
+        "TagTest"
+      ],
+      "totalLines": 52,
+      "hasStructuralAnalysis": true
+    },
+    "test/system/.keep": {
+      "filePath": "test/system/.keep",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "test/test_helper.rb": {
+      "filePath": "test/test_helper.rb",
+      "contentHash": "8325f6b85a8a825536b3febad8ccd3517c63248160b6f30a20d5cb4ae27ce0e3",
+      "functions": [],
+      "classes": [
+        {
+          "name": "ActiveSupport",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 36
+        }
+      ],
+      "imports": [
+        {
+          "source": "simplecov",
+          "specifiers": [
+            "simplecov"
+          ]
+        },
+        {
+          "source": "../config/environment",
+          "specifiers": [
+            "../config/environment"
+          ]
+        },
+        {
+          "source": "rails/test_help",
+          "specifiers": [
+            "rails/test_help"
+          ]
+        }
+      ],
+      "exports": [
+        "ActiveSupport"
+      ],
+      "totalLines": 59,
+      "hasStructuralAnalysis": true
+    }
+  }
+}

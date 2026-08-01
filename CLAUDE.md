@@ -1,0 +1,104 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+Rails 8.1 blog application (Ruby 3.4.5). Hotwire (Turbo + Stimulus) with importmap — no Node/bundler; custom CSS (no Tailwind). Action Text + TinyMCE for authoring, Active Storage + libvips for images, Kaminari for pagination. Deployed with Kamal/Docker behind Cloudflare; production DB is Supabase PostgreSQL.
+
+## Commands
+
+```bash
+bin/setup                # install deps, prepare DB
+bin/dev                  # dev server via foreman (http://localhost:3000)
+bin/rails db:seed        # admin account + sample posts
+
+# Tests (minitest, parallel workers, SimpleCov branch coverage → coverage/)
+bin/rails test                                    # unit + integration
+bin/rails test:system                             # Capybara/Selenium — needs Chrome
+bin/rails test test/models/post_test.rb           # single file
+bin/rails test test/models/post_test.rb:42        # single test by line
+
+# Quality gates
+bin/check-code           # pre-push gate: Brakeman → RuboCop → all tests
+bin/ci                   # full local CI (adds bundler-audit, importmap audit, seed replant)
+bin/rubocop -a           # style (rubocop-rails-omakase) with autocorrect
+bin/brakeman --no-pager  # security static analysis (suppressions: config/brakeman.ignore)
+```
+
+Environment notes:
+
+- Host is Windows; `bin/*` are POSIX shell scripts — run them from Git Bash. `.gitattributes` forces LF on `bin/*` (CRLF breaks shebangs in Docker builds).
+- Booting the app requires the libvips system library (ruby-vips loads it via FFI). CI and the Dockerfile install it explicitly.
+- `.env` (dotenv-rails) supplies dev env vars like `TINYMCE_API_KEY`. Production requires `ADMIN_EMAIL`/`ADMIN_PASSWORD` — `db/seeds.rb` raises without them to prevent a default-credential admin.
+
+## Architecture
+
+### Database topology
+
+- development/test: SQLite (`storage/*.sqlite3`). Production primary: Supabase PostgreSQL via transaction pooler (`prepared_statements: false` is required for pooler compatibility).
+- Solid Cache/Queue/Cable always use separate local SQLite databases, even in production (`SOLID_QUEUE_IN_PUMA=true` runs jobs inside Puma).
+
+### Admin auth (no Devise)
+
+Single `Admin` model (`has_secure_password`); session-based login in `SessionsController` with `reset_session` on login. `ApplicationController#admin_signed_in?` enforces a 12-hour session timeout. There is no admin namespace — admin capability is `authenticate_admin!` on write actions of `PostsController` and `UploadsController`.
+
+Login throttling counts **failed** attempts per IP in `Rails.cache` (Solid Cache in production) and clears the counter on success. Two things to preserve if you touch it: the count must not live in the session, because a client that discards cookies would reset it; and Rails 8's `rate_limit` is deliberately unused, because it counts every request including successes and offers no reset hook, which locks the sole owner out of their own site. `remote_ip` is the real client IP thanks to the Cloudflare trusted-proxy ranges in `config/initializers/cloudflare.rb`.
+
+### Post visibility and caching
+
+`PostsController#post_scope` is the pivot: admins see `Post.all`, the public sees `Post.published` (`published_at <= now`, so future dates are scheduled posts). Always go through this scope (and `Post.find_by_slug_or_id!`, which preserves the current scope) — bypassing it leaks unpublished posts. HTTP caching splits on the same check: public responses use `fresh_when`/`stale?` ETags, admin responses get no-store headers.
+
+Two caching details are load-bearing and easy to undo by accident:
+
+- `ApplicationController::CONDITIONAL_GET_CACHE_CONTROL` spells out `max-age=0, private, must-revalidate` by hand. Rails only fills those in from `handle_conditional_get!` when `Cache-Control` is still unset at commit, and the `after_action` that appends `no-transform` runs earlier — so touching the header at all (raw or via `cache_control[:extras]`) suppresses the default and drops public HTML into RFC 9111 heuristic freshness.
+- `#index` builds its ETag from `@posts.cache_version` plus the params that select the response, **not** from the relation. `Relation#cache_key` digests `to_sql`, and `Post.published` is a string condition, so `Time.current` is inlined down to the microsecond and the ETag would change on every request.
+
+Changing only a post's tags does not dirty the record, so `Post#tag_list=` touches it — otherwise the ETag never moves and readers keep the old badges.
+
+Posts are addressed by slug or numeric id (`to_param`): English titles auto-generate a slug via `parameterize`; Korean titles produce an empty slug and fall back to id.
+
+### Code-block Base64 pipeline (most non-obvious subsystem)
+
+Action Text's sanitizer (Nokogiri) corrupts HTML entities inside `<pre><code>`. The workaround spans four files and both directions must stay in sync:
+
+1. **Save**: `PostsController#encode_code_blocks` Base64-encodes code-block innards (`BASE64:...`) before Action Text sees them.
+2. **Render**: `Post#rendered_content` decodes and returns `html_safe` HTML; views must use `rendered_content`, not `content`, for display.
+3. **Edit**: `app/javascript/init.js` decodes for TinyMCE reload (and re-encodes legacy raw HTML).
+4. Legacy `⟦ERB_*⟧` placeholder posts are still decoded as a fallback.
+
+`config/initializers/action_text.rb` extends the sanitizer allow-list (tables, svg, `data-turbo`). The decode regex is looser than the encode one, so a block that was never encoded can still match it; a failed `strict_decode64` leaves the block untouched instead of raising, which used to 500 the post for every visitor.
+
+### Image serving (two paths)
+
+1. **Cover images**: Active Storage `cover_image` with named WebP variants (`:thumbnail`…`:hero`) defined on `Post`; rendered through `ImageHelper` (`optimized_image_tag`, `responsive_image_tag`). Only the LCP image should get `fetchpriority: high`/`lazy: false`.
+2. **In-post images**: TinyMCE uploads to `UploadsController` (type/size validation), which returns a JSON `srcset` of Active Storage variant URLs.
+
+`config.active_storage.resolve_model_to_route = :rails_storage_proxy` in `config/application.rb` is what makes either path CDN-cacheable — the default redirect mode emits `max-age=300, private` behind a 302, which Cloudflare cannot cache. Build URLs with `url_for`/`polymorphic_path` so they follow that setting; `rails_blob_url` and `rails_blob_representation_url` are pinned to the redirect routes and silently ignore it.
+
+`ImageHelper#intrinsic_dimensions` derives `width`/`height` from the blob's analyzed size rather than hardcoding them. Those attributes drive an `aspect-ratio` that keeps governing the box after load, so a wrong pair stretches the image wherever no `object-fit` hides it. When the analysis job has not run yet the attributes are omitted rather than guessed.
+
+A third path used to exist — `ThumbnailsController` resizing `app/assets/images/thumbnail/` on demand — and was removed: no view ever linked to it, and an unvalidated `width` let anyone evict the whole cache.
+
+### Frontend
+
+Importmap ESM only. Stimulus controllers live in `app/javascript/controllers/`; `app/javascript/init.js` is a separate non-Stimulus module handling TinyMCE, PrismJS, and MathJax initialization with Turbo lifecycle events — third-party widget integration usually belongs there. Trix and Action Text's JS are deliberately not pinned: the editor is a TinyMCE-backed `text_area`, so they were dead weight that importmap still preloaded.
+
+Prism, Mermaid and MathJax are loaded per page, not globally. A view declares what it needs via `ApplicationHelper#require_content_libraries` — `posts#show` derives it from the body with `content_libraries_for`, the editor form declares `:prism` because TinyMCE's codesample plugin reads the global `Prism` — and the layout gates each script block on `content_library?`. Because the gated scripts only exist on pages that need them, a Turbo Drive visit would arrive before they execute; every post link therefore carries `data: { turbo: false }`.
+
+Fonts are subset to the Latin ranges the site uses. `script/subset_fonts.py` reproduces it and enforces the safety property that makes it reviewable: every codepoint appearing in views, CSS, JS, locales or the posts table that the original font supported must survive.
+
+### Security configuration
+
+- CSP in `config/initializers/content_security_policy.rb` is **report-only** (`unsafe_inline`/`unsafe_eval` currently required by TinyMCE/GA/MathJax).
+- Production-only headers in `config/initializers/security_headers.rb`; Cloudflare IP ranges as trusted proxies in `config/initializers/cloudflare.rb` (real client IP for the brute-force logic).
+- Suppression files: `config/brakeman.ignore` (currently empty), `config/bundler-audit.yml` — check these before "fixing" a scanner finding.
+
+### Other conventions
+
+- Error pages are dynamic: `config.exceptions_app = routes` → `ErrorsController` (`/404`, `/422`, `/500`).
+- `posts#index` conditionally renders the `show_all` template (when `page` or `category` params are present); `search`/`tag`/`archive` also render `show_all`. Listing pages must use `listing_scope` (eager-loads tags and cover image) to avoid N+1.
+- `Post#read_time` reads the denormalized `posts.word_count`, filled by a `before_save`. It must not touch `content` — parsing the Action Text body per card is exactly the cost the column removes, and it is why `listing_scope` no longer eager-loads rich text. Action Text bodies are not a `posts` column, so the record is not dirty when only the body changes; `before_save` still runs, which is what keeps the count in sync.
+- Test fixtures include an admin (`admins(:one)`, password `"password"`); use the `sign_in_as_admin` helper in `test_helper.rb` for admin-only actions.
+- Test env uses `:memory_store`, not `:null_store`, so login throttling is testable at all — and `test_helper.rb` clears the cache before each test, since every request comes from 127.0.0.1 and would otherwise inherit the previous test's attempts.
+- Deployment: `kamal deploy` with `config/deploy.yml`; secrets flow from `.kamal/secrets` (`RAILS_MASTER_KEY`, `ADMIN_*`, `SUPABASE_DB_PASSWORD`).
