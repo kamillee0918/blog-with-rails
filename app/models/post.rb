@@ -100,9 +100,17 @@ class Post < ApplicationRecord
   end
 
   def tag_list=(names)
-    self.tags = names.split(",").map(&:strip).reject(&:blank?).uniq.map do |name|
+    assigned = names.to_s.split(",").map(&:strip).reject(&:blank?).uniq.map do |name|
       Tag.find_or_create_by_name(name)
     end
+    return if assigned.map(&:id).sort == tags.map(&:id).sort
+
+    self.tags = assigned
+
+    # HABTM 할당은 posts_tags 만 바꾸고 posts.updated_at 은 건드리지 않는다.
+    # 태그만 수정하면 update 가 dirty 속성을 못 찾아 UPDATE 자체를 건너뛰므로,
+    # ETag 와 cache_version 이 그대로라 독자에게 옛 태그가 계속 보인다.
+    touch if persisted?
   end
 
   def read_time

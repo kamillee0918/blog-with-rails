@@ -16,7 +16,10 @@ class PostsController < ApplicationController
     if admin_signed_in?
       set_no_cache_headers
     else
-      fresh_when etag: @posts, last_modified: @posts.maximum(:updated_at)
+      # last_modified 를 따로 계산하지 않는다. @posts 는 페이지네이션된 relation 이라
+      # maximum(:updated_at) 에 LIMIT/OFFSET 이 그대로 붙어 2페이지부터는 결과가 없어
+      # nil 을 돌려주고, 헤더가 아예 빠진다. relation ETag 만으로 충분하다.
+      fresh_when etag: @posts
     end
 
     # 페이지 파라미터가 있거나(1페이지 포함) 카테고리가 있으면 show_all 레이아웃으로 표시

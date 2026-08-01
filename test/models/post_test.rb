@@ -138,6 +138,32 @@ class PostTest < ActiveSupport::TestCase
     assert_equal %w[ruby rails], post.tags.pluck(:name).sort_by { |n| %w[ruby rails].index(n) }
   end
 
+  # HABTM 할당은 posts_tags 만 바꾸므로 태그만 수정하면 posts.updated_at 이 그대로다.
+  # 그러면 ETag/cache_version 이 바뀌지 않아 독자가 옛 태그를 계속 보게 된다.
+  test "changing the tag list touches the post so caches revalidate" do
+    post = Post.create!(title: "Retagged", published_at: Time.current, category: "Test")
+    post.update!(tag_list: "ruby, rails")
+    before = post.reload.updated_at
+
+    travel 1.second do
+      post.update!(tag_list: "ruby, rails, hotwire")
+    end
+
+    assert_operator post.reload.updated_at, :>, before
+  end
+
+  test "reassigning the same tags leaves updated_at alone" do
+    post = Post.create!(title: "Same tags", published_at: Time.current, category: "Test")
+    post.update!(tag_list: "ruby, rails")
+    before = post.reload.updated_at
+
+    travel 1.second do
+      post.update!(tag_list: "rails, ruby")
+    end
+
+    assert_equal before, post.reload.updated_at
+  end
+
   test "read_time returns minimum 1 min for empty content" do
     post = Post.create!(title: "Empty", published_at: Time.current, category: "Test")
     assert_equal "1 min read", post.read_time

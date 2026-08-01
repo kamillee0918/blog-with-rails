@@ -32,6 +32,35 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  # after_action 이 Cache-Control 을 직접 쓰면 Rails 가 커밋 시점에 넣는 기본값이
+  # 적용되지 않는다. no-transform 만 남으면 캐시가 휴리스틱 신선도로 떨어져
+  # 오래된 글일수록 재검증 없이 오래 캐시된다.
+  test "public HTML keeps the conditional GET directives next to no-transform" do
+    delete logout_url
+    get post_url(@post)
+
+    cache_control = response.headers["Cache-Control"]
+    assert_includes cache_control, "no-transform"
+    assert_includes cache_control, "must-revalidate"
+    assert_includes cache_control, "private"
+    assert_not_includes cache_control, "no-store"
+  end
+
+  test "admin HTML stays uncacheable" do
+    get post_url(@post)
+    assert_includes response.headers["Cache-Control"], "no-store"
+  end
+
+  # 페이지네이션된 relation 에 maximum(:updated_at) 을 쓰면 LIMIT/OFFSET 이 붙어
+  # 2페이지부터 nil 이 되어 헤더가 사라졌다.
+  test "paginated index is cacheable beyond the first page" do
+    delete logout_url
+    get posts_path(page: 2)
+
+    assert_response :success
+    assert_not_nil response.headers["ETag"]
+  end
+
   test "show renders a link to the post's category" do
     get post_url(@post)
     assert_select "a.ts-category-link[href=?]", category_posts_path(category: @post.category),
