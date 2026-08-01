@@ -31,6 +31,13 @@ module BlogWithRails
     # libvips 사용 (기본값, ImageMagick보다 빠름)
     config.active_storage.variant_processor = :vips
 
+    # 이미지를 앱이 직접 내려준다(proxy). 기본값인 redirect 는 302 로 5분 만료
+    # 서명 URL 을 가리키고 Cache-Control 에 private 이 붙어 앞단의 Cloudflare 가
+    # 전혀 캐시하지 못한다. proxy 컨트롤러는 http_cache_forever public: true 를 쓰므로
+    # CDN 이 캐시할 수 있고, 왕복도 2회에서 1회로 준다.
+    # (service 가 Disk 라 redirect 의 두 번째 요청도 어차피 앱으로 들어온다)
+    config.active_storage.resolve_model_to_route = :rails_storage_proxy
+
     # 동적 오류 페이지 사용 (public/*.html 대신 컨트롤러/뷰 사용)
     config.exceptions_app = self.routes
   end
