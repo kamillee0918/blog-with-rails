@@ -54,7 +54,7 @@
                               </div>
                               <div class="tts-entry__content-inner">
                                 <h2 class="tts-entry__title ">
-                                  <%= link_to featured_post.title, post_path(featured_post) %>
+                                  <%= link_to featured_post.title, post_path(featured_post), data: { turbo: false } %>
                                 </h2>
                                 <!--p class="ts-hero-paragraph"><%= truncate(featured_post.summary, length: 150) %></p-->
                                 <div class="c-article__author__meta">
@@ -119,7 +119,7 @@
                         </div>
                       <% end %>
                       <h2 class="ts-entry__title">
-                        <%= link_to post.title, post %>
+                        <%= link_to post.title, post, data: { turbo: false } %>
                       </h2>
                       <span class="ts-mention">@<%= post.author %></span>
                     </div>

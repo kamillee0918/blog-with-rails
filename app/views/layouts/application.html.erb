@@ -400,6 +400,10 @@
                       window.mermaid = mermaid;
 
                       const renderMermaid = () => mermaid.run({ querySelector: 'pre.mermaid' });
+                      // 조건부 로딩이라 이 모듈이 turbo:load 이후에 실행될 수 있다.
+                      // 그 경우 아래 리스너는 이미 지난 이벤트를 기다리게 되므로 즉시 한 번 그린다.
+                      // (mermaid.run 은 처리된 노드를 건너뛰므로 중복 호출은 안전하다)
+                      renderMermaid();
                       document.addEventListener('turbo:load', renderMermaid);
                       document.addEventListener('DOMContentLoaded', renderMermaid);
                     </script>

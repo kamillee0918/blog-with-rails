@@ -25,8 +25,10 @@ module ApplicationHelper
   # MathJax 설정이 구분자로 $…$ 와 $$…$$ 만 등록하므로 그 두 가지만 찾는다.
   # <pre>/<code> 내부는 MathJax의 skipHtmlTags 기본값이 건너뛰는 영역이라
   # 검사 전에 제거해 셸 예제($HOME 등)로 인한 오탐을 줄인다.
+  # 구분자 안에 공백이 있어도($ x $) MathJax는 수식으로 처리하므로 여는 $ 뒤 공백을
+  # 배제하지 않는다. 통화 표기를 몇 건 더 잡더라도 수식을 놓치는 쪽보다 낫다.
   def math_delimiters?(html)
     text = html.gsub(%r{<(pre|code)\b.*?</\1>}mi, " ")
-    text.include?("$$") || text.match?(/\$[^$\s][^$\n]*\$/)
+    text.include?("$$") || text.match?(/\$[^$\n]*[^$\s][^$\n]*\$/)
   end
 end
