@@ -66,10 +66,16 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   # 박혀 매 요청 ETag 가 달라지고, 이 테스트가 실패한다.
   test "index answers 304 when nothing changed" do
     delete logout_url
+    get posts_url # 로그아웃 flash 를 소비시켜 두 번째부터 본문이 같아지도록 한다
+
     get posts_url
     assert_response :success
     etag = response.headers["ETag"]
-    assert_not_nil etag
+    assert_not_nil etag, "ETag 헤더가 없다"
+
+    get posts_url
+    assert_equal etag, response.headers["ETag"],
+                 "내용이 같은데 ETag 가 달라졌다 (validator 가 불안정)"
 
     get posts_url, headers: { "If-None-Match" => etag }
     assert_response :not_modified
