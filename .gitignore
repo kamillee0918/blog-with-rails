@@ -46,3 +46,11 @@
 
 # 외부 AI 스킬 카탈로그 (로컬 참고용)
 /skills/
+
+# Understand-Anything 지식 그래프
+# knowledge-graph.json 등 본체는 커밋한다 — 한 번 올려두면 다른 환경에서
+# 분석 파이프라인을 다시 돌리지 않아도 된다.
+# 아래는 실행할 때마다 새로 생기는 로컬 산출물이라 제외한다.
+/.ua/intermediate/
+/.ua/diff-overlay.json
+/.ua/.trash-*/
