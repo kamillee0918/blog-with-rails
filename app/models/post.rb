@@ -132,12 +132,26 @@ class Post < ApplicationRecord
     html = content.body.to_s
 
     # Base64 인코딩된 코드 블록 디코딩
+    #
+    # 디코딩 정규식이 인코딩 쪽(PostsController#encode_code_blocks)보다 넓게 잡힌다.
+    # 인코딩은 <pre> 바로 뒤에 <code> 가 와야 하지만, 그 사이에 다른 태그가 있으면
+    # 인코딩을 건너뛴 채 저장되고 Action Text sanitizer 가 렌더 시점에 그 태그를
+    # 제거해 여기서는 매칭된다. 그러면 BASE64: 뒤가 유효한 Base64 가 아니라
+    # strict_decode64 가 ArgumentError 를 던지고, 해당 게시글은 글을 다시 저장할
+    # 때까지 모든 방문자에게 500 이 된다. \w 가 _ 를 포함하는 것도 같은 경로다.
+    # 디코딩에 실패하면 원문을 그대로 두는 편이 페이지를 못 여는 것보다 낫다.
     html = html.gsub(%r{(<pre[^>]*>\s*<code[^>]*>)\s*BASE64:([\w+/=]+)\s*(</code>\s*</pre>)}mi) do
       open_tags = $1
       encoded = $2
       close_tags = $3
-      decoded = Base64.strict_decode64(encoded).force_encoding("UTF-8")
-      "#{open_tags}#{decoded}#{close_tags}"
+      original = Regexp.last_match(0)
+      begin
+        decoded = Base64.strict_decode64(encoded).force_encoding("UTF-8")
+        "#{open_tags}#{decoded}#{close_tags}"
+      rescue ArgumentError
+        Rails.logger.warn("Post##{id}: 코드 블록 Base64 디코딩 실패, 원문을 그대로 표시한다")
+        original
+      end
     end
 
     # 기존 ⟦ERB_*⟧ placeholder 폴백 (하위 호환)

@@ -25,9 +25,6 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
-  # Dynamic thumbnail generation
-  get "thumbnails/:filename", to: "thumbnails#show", as: :thumbnail, constraints: { filename: /.+/ }
-
   # TinyMCE Editor image upload (Active Storage)
   post "uploads/image", to: "uploads#image"
   delete "uploads/image", to: "uploads#destroy_image"

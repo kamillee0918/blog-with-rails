@@ -1,10 +1,7 @@
 {
   "ignored_warnings": [
-    {
-      "fingerprint": "b4211ab27d9965ed255167f09331c6626fade3e0aad2776e516d5ed9f9e62994",
-      "note": "File access is safe: params sanitized with File.basename and path validated to stay within allowed directory (test/controllers/thumbnails_controller_test.rb 에서 검증)"
-    }
+
   ],
-  "updated": "2026-07-31",
+  "updated": "2026-08-01",
   "brakeman_version": "8.0.5"
 }

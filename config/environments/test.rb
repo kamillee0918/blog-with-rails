@@ -20,7 +20,10 @@ Rails.application.configure do
 
   # Show full error reports.
   config.consider_all_requests_local = true
-  config.cache_store = :null_store
+  # rate_limit 은 캐시에 시도 횟수를 센다. null_store 는 아무것도 저장하지 않아
+  # 로그인 스로틀링이 테스트에서 영영 발동하지 않으므로 실제로 세는 스토어를 쓴다.
+  # 캐시가 테스트 간에 새지 않도록 test_helper 가 매 테스트마다 비운다.
+  config.cache_store = :memory_store
 
   # Render exception templates for rescuable exceptions and raise for other exceptions.
   config.action_dispatch.show_exceptions = :rescuable
