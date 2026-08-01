@@ -89,23 +89,6 @@ module ImageHelper
       default_options.merge!(intrinsic_dimensions(source, max_width: 1024))
       image_tag(default_variant, **default_options.merge(options))
 
-    elsif source.is_a?(String) && source.start_with?("thumbnail/")
-      # Static images in app/assets/images/thumbnail/
-      filename = source.sub("thumbnail/", "")
-
-      # Reference sizes + existing project sizes
-      srcset_sizes = [ 380, 640, 768, 800, 1024, 1160, 1280, 1536, 1920, 2048 ]
-
-      srcset = srcset_sizes.map do |width|
-        "#{thumbnail_path(filename: filename, width: width)} #{width}w"
-      end.join(", ")
-
-      # Add original/large size as well if needed, or just rely on the srcset
-      # Default src can be the 1024w version or the original
-      default_src = thumbnail_path(filename: filename, width: 1024)
-
-      default_options[:srcset] = srcset
-      image_tag(default_src, **default_options.merge(options))
     else
       # Fallback for other static images
       image_tag(source, **default_options.merge(options))

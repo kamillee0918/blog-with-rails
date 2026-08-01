@@ -164,6 +164,26 @@ class PostTest < ActiveSupport::TestCase
     assert_equal before, post.reload.updated_at
   end
 
+  # 인코딩 정규식보다 디코딩 정규식이 넓어, 저장 시 인코딩되지 않은 코드 블록이
+  # 렌더 시점에는 매칭되는 경우가 있다. 예전에는 strict_decode64 가 ArgumentError 를
+  # 던져 해당 게시글이 모든 방문자에게 500 이 됐다.
+  test "rendered_content survives a code block that is not valid Base64" do
+    post = Post.create!(title: "Broken block", published_at: Time.current, category: "Test",
+                        content: "<pre><code>BASE64:abc</code></pre>")
+
+    rendered = nil
+    assert_nothing_raised { rendered = post.rendered_content }
+    assert_includes rendered.to_s, "BASE64:abc"
+  end
+
+  test "rendered_content still decodes a well-formed code block" do
+    encoded = Base64.strict_encode64("puts &lt;%= 1 %&gt;")
+    post = Post.create!(title: "Good block", published_at: Time.current, category: "Test",
+                        content: "<pre><code>BASE64:#{encoded}</code></pre>")
+
+    assert_includes post.rendered_content.to_s, "puts &lt;%= 1 %&gt;"
+  end
+
   test "read_time returns minimum 1 min for empty content" do
     post = Post.create!(title: "Empty", published_at: Time.current, category: "Test")
     assert_equal "1 min read", post.read_time

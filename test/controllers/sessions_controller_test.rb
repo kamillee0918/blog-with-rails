@@ -3,6 +3,9 @@ require "test_helper"
 class SessionsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @admin = admins(:one)
+    # rate_limit 카운터는 캐시에 IP 별로 쌓인다. 테스트 요청이 모두 127.0.0.1
+    # 에서 오므로 비워 두지 않으면 앞선 테스트의 실패 시도가 다음 테스트를 429 로 만든다.
+    Rails.cache.clear
   end
 
   test "should get login page" do
@@ -54,6 +57,29 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     # Next attempt should be locked out
     post login_url, params: { email: @admin.email, password: "wrong" }
     assert_response :too_many_requests
+  end
+
+  # 예전 잠금은 시도 횟수를 세션(=쿠키)에 뒀기 때문에 공격자가 쿠키를 버리면
+  # 매번 새 세션이 되어 무제한으로 시도할 수 있었다. 이 테스트가 그 회귀를 막는다.
+  test "throttling survives a client that throws its cookies away" do
+    SessionsController::MAX_LOGIN_ATTEMPTS.times do
+      post login_url, params: { email: @admin.email, password: "wrong" }
+      reset! # 쿠키를 포함한 세션을 통째로 버리고 새 클라이언트로 시작한다
+    end
+
+    post login_url, params: { email: @admin.email, password: "wrong" }
+    assert_response :too_many_requests
+  end
+
+  # 스로틀에 걸린 뒤에도 올바른 비밀번호면 통과해 버리면 의미가 없다.
+  test "throttling blocks even a valid password once the limit is hit" do
+    SessionsController::MAX_LOGIN_ATTEMPTS.times do
+      post login_url, params: { email: @admin.email, password: "wrong" }
+    end
+
+    post login_url, params: { email: @admin.email, password: "password" }
+    assert_response :too_many_requests
+    assert_nil session[:admin_id]
   end
 
   test "should show remaining attempts on failed login" do
