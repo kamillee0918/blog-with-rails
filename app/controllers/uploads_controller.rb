@@ -42,8 +42,10 @@ class UploadsController < ApplicationController
     original_width = metadata["width"] || 1020
     original_height = metadata["height"] || 680
 
-    # 원본 이미지 URL
-    image_url = Rails.application.routes.url_helpers.rails_blob_url(blob, only_path: true)
+    # polymorphic_path 는 resolve_model_to_route 설정을 따르므로 커버 이미지와 같은
+    # 경로 방식(proxy)으로 생성된다. rails_blob_url 은 redirect 라우트로 고정돼 있어
+    # 설정과 무관하게 CDN 이 캐시할 수 없는 URL 을 만들었다.
+    image_url = polymorphic_path(blob)
 
     # srcset 생성 (원본보다 작은 크기만 포함)
     srcset_entries = []
@@ -55,12 +57,7 @@ class UploadsController < ApplicationController
       height = (original_height.to_f * width / original_width).round
 
       # ActiveStorage variant URL 생성
-      variant_url = Rails.application.routes.url_helpers.rails_blob_representation_url(
-        blob.signed_id,
-        blob.representation(resize_to_limit: [ width, height ]).variation.key,
-        blob.filename,
-        only_path: true
-      )
+      variant_url = polymorphic_path(blob.representation(resize_to_limit: [ width, height ]))
       srcset_entries << "#{variant_url} #{width}w"
     end
 

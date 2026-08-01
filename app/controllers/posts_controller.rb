@@ -16,7 +16,15 @@ class PostsController < ApplicationController
     if admin_signed_in?
       set_no_cache_headers
     else
-      fresh_when etag: @posts, last_modified: @posts.maximum(:updated_at)
+      # relation 을 그대로 etag 로 넘기면 안 된다. Relation#cache_key 는 to_sql 의
+      # 다이제스트를 포함하는데, published 스코프가 문자열 조건이라 Time.current 가
+      # SQL 에 마이크로초까지 리터럴로 박힌다. 그러면 내용이 그대로여도 요청마다
+      # ETag 가 달라져 304 가 영영 나오지 않는다.
+      # cache_version(레코드 수 + 최신 updated_at)과 응답을 가르는 파라미터만 쓴다.
+      # last_modified 는 함께 보내지 않는다. 두 검증자를 모두 주면 둘 다 일치해야
+      # 304 가 되는데, 페이지네이션된 relation 의 maximum(:updated_at)은 LIMIT/OFFSET
+      # 때문에 2페이지부터 nil 이라 헤더가 빠진다.
+      fresh_when etag: [ @posts.cache_version, params[:category], params[:page] ]
     end
 
     # 페이지 파라미터가 있거나(1페이지 포함) 카테고리가 있으면 show_all 레이아웃으로 표시
@@ -54,7 +62,7 @@ class PostsController < ApplicationController
       return unless stale?(@post)
     end
 
-    @recent_posts = post_scope.includes(:rich_text_content).recent.limit(5)
+    @recent_posts = post_scope.recent.limit(5)
     @archives = post_scope.yearly_archive_counts
     @caption = @post.cover_image_caption
 
@@ -114,11 +122,13 @@ class PostsController < ApplicationController
     end
 
     # 목록 카드가 쓰는 연관을 한 번에 로드해 N+1을 제거한다.
-    # - tags:              태그 배지
-    # - rich_text_content: read_time (본문 → plain text 변환)
-    # - cover_image:       썸네일 variant URL 생성
+    # - tags:        태그 배지
+    # - cover_image: 썸네일 variant URL 생성
+    # 본문(rich_text_content)은 더 이상 적재하지 않는다. 카드가 본문에서 쓰던 값은
+    # read_time 뿐이었는데 이제 posts.word_count 로 대체돼, 목록 한 페이지마다
+    # 본문 수백 KB를 끌어오던 비용이 사라졌다.
     def listing_scope
-      post_scope.includes(:tags, :rich_text_content).with_attached_cover_image
+      post_scope.includes(:tags).with_attached_cover_image
     end
 
     def set_no_cache_headers

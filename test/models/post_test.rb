@@ -138,9 +138,63 @@ class PostTest < ActiveSupport::TestCase
     assert_equal %w[ruby rails], post.tags.pluck(:name).sort_by { |n| %w[ruby rails].index(n) }
   end
 
+  # HABTM 할당은 posts_tags 만 바꾸므로 태그만 수정하면 posts.updated_at 이 그대로다.
+  # 그러면 ETag/cache_version 이 바뀌지 않아 독자가 옛 태그를 계속 보게 된다.
+  test "changing the tag list touches the post so caches revalidate" do
+    post = Post.create!(title: "Retagged", published_at: Time.current, category: "Test")
+    post.update!(tag_list: "ruby, rails")
+    before = post.reload.updated_at
+
+    travel 1.second do
+      post.update!(tag_list: "ruby, rails, hotwire")
+    end
+
+    assert_operator post.reload.updated_at, :>, before
+  end
+
+  test "reassigning the same tags leaves updated_at alone" do
+    post = Post.create!(title: "Same tags", published_at: Time.current, category: "Test")
+    post.update!(tag_list: "ruby, rails")
+    before = post.reload.updated_at
+
+    travel 1.second do
+      post.update!(tag_list: "rails, ruby")
+    end
+
+    assert_equal before, post.reload.updated_at
+  end
+
   test "read_time returns minimum 1 min for empty content" do
     post = Post.create!(title: "Empty", published_at: Time.current, category: "Test")
     assert_equal "1 min read", post.read_time
+  end
+
+  test "word_count is stored on save so read_time never parses the body" do
+    post = Post.create!(title: "Counted", published_at: Time.current, category: "Test",
+                        content: "<div>#{Array.new(360) { 'word' }.join(' ')}</div>")
+
+    assert_equal 360, post.reload.word_count
+    assert_equal "2 min read", post.read_time
+  end
+
+  test "word_count follows edits to the body" do
+    post = Post.create!(title: "Recount", published_at: Time.current, category: "Test",
+                        content: "<div>one two three</div>")
+    assert_equal 3, post.reload.word_count
+
+    post.update!(content: "<div>#{Array.new(200) { 'word' }.join(' ')}</div>")
+    assert_equal 200, post.reload.word_count
+  end
+
+  # 목록 카드가 본문을 건드리지 않아야 listing_scope 에서 rich text 를 뺀 의미가 있다.
+  test "read_time does not load the rich text association" do
+    Post.create!(title: "No body load", published_at: Time.current, category: "Test",
+                 content: "<div>one two three</div>")
+    post = Post.where(title: "No body load").first
+
+    post.read_time
+
+    assert_not post.association(:rich_text_content).loaded?
   end
 
   test "published scope excludes future posts" do

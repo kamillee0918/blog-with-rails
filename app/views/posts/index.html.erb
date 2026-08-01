@@ -1,17 +1,21 @@
 <% content_for :title, "Kamil Lee의 개발 일기" %>
 
 <div class="ts-site-content ts-sidebar-enabled ts-singular-thumbnail-enabled">
+  <%# 아래에서 여러 번 훑으므로 relation 을 한 번만 적재한다. 적재 전 relation 에
+      first 를 부르면 별도 LIMIT 1 쿼리에 프리로드까지 딸려 붙고, 이어지는 drop 이
+      relation 을 다시 통째로 적재한다. (paginate 는 relation 이 필요하므로 @posts 유지) %>
+  <% posts = @posts.to_a %>
   <!-- 최근에 작성한 게시글 -->
-  <% featured_post = @posts.first %>
+  <% featured_post = posts.first %>
   <!-- featured_post 다음 3개의 게시글 -->
-  <% secondary_posts = @posts.drop(1).take(3) %>
+  <% secondary_posts = posts.drop(1).take(3) %>
   <!--
     secondary_posts 다음 게시글
     (게시글가 10개 넘어가면 페이지네이션 적용)
   -->
-  <% more_posts = @posts.drop(4) %>
+  <% more_posts = posts.drop(4) %>
 
-  <% if @posts.present? %>
+  <% if posts.any? %>
     <!-- 메인 페이지 게시글 시작 -->
     <div class="ts-front-page">
       <!-- featured_post 시작 -->

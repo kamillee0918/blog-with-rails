@@ -32,6 +32,71 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  # after_action 이 Cache-Control 을 직접 쓰면 Rails 가 커밋 시점에 넣는 기본값이
+  # 적용되지 않는다. no-transform 만 남으면 캐시가 휴리스틱 신선도로 떨어져
+  # 오래된 글일수록 재검증 없이 오래 캐시된다.
+  test "public HTML keeps the conditional GET directives next to no-transform" do
+    delete logout_url
+    get post_url(@post)
+
+    cache_control = response.headers["Cache-Control"]
+    assert_includes cache_control, "no-transform"
+    assert_includes cache_control, "must-revalidate"
+    assert_includes cache_control, "private"
+    assert_not_includes cache_control, "no-store"
+  end
+
+  test "admin HTML stays uncacheable" do
+    get post_url(@post)
+    assert_includes response.headers["Cache-Control"], "no-store"
+  end
+
+  # 페이지네이션된 relation 에 maximum(:updated_at) 을 쓰면 LIMIT/OFFSET 이 붙어
+  # 2페이지부터 nil 이 되어 헤더가 사라졌다.
+  test "paginated index is cacheable beyond the first page" do
+    delete logout_url
+    get posts_path(page: 2)
+
+    assert_response :success
+    assert_not_nil response.headers["ETag"]
+  end
+
+  # 조건부 GET 이 실제로 동작한다는 증거는 두 번째 요청이 304 를 받는 것뿐이다.
+  # relation 을 그대로 etag 로 넘기면 published 스코프의 Time.current 가 to_sql 에
+  # 박혀 매 요청 ETag 가 달라지고, 이 테스트가 실패한다.
+  test "index answers 304 when nothing changed" do
+    delete logout_url
+    # ActionController::EtagWithFlash 가 flash 를 ETag 에 섞는다. 로그아웃 직후
+    # 응답에는 "Logged out." 이 실려 있어 ETag 가 다를 수밖에 없으므로,
+    # 여기서 한 번 소비시켜 flash 없는 상태에서 비교한다.
+    get posts_url
+
+    get posts_url
+    assert_response :success
+    etag = response.headers["ETag"]
+    assert_not_nil etag, "ETag 헤더가 없다"
+
+    get posts_url
+    assert_equal etag, response.headers["ETag"],
+                 "내용이 같은데 ETag 가 달라졌다 (validator 가 불안정)"
+
+    get posts_url, headers: { "If-None-Match" => etag }
+    assert_response :not_modified
+  end
+
+  test "index ETag changes once a post is edited" do
+    delete logout_url
+    get posts_url
+    etag = response.headers["ETag"]
+
+    travel 1.second do
+      posts(:one).update!(title: "Edited after the first render")
+    end
+
+    get posts_url, headers: { "If-None-Match" => etag }
+    assert_response :success
+  end
+
   test "show renders a link to the post's category" do
     get post_url(@post)
     assert_select "a.ts-category-link[href=?]", category_posts_path(category: @post.category),
