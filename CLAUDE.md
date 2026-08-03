@@ -22,6 +22,7 @@ bin/rails test test/models/post_test.rb:42        # single test by line
 # Quality gates
 bin/check-code           # pre-push gate: Brakeman → RuboCop → all tests
 bin/ci                   # full local CI (adds bundler-audit, importmap audit, seed replant)
+bin/rails content:check  # content audit (see below) — SEVERITY=error to skip warnings
 bin/rubocop -a           # style (rubocop-rails-omakase) with autocorrect
 bin/brakeman --no-pager  # security static analysis (suppressions: config/brakeman.ignore)
 ```
@@ -87,6 +88,15 @@ Importmap ESM only. Stimulus controllers live in `app/javascript/controllers/`; 
 Prism, Mermaid and MathJax are loaded per page, not globally. A view declares what it needs via `ApplicationHelper#require_content_libraries` — `posts#show` derives it from the body with `content_libraries_for`, the editor form declares `:prism` because TinyMCE's codesample plugin reads the global `Prism` — and the layout gates each script block on `content_library?`. Because the gated scripts only exist on pages that need them, a Turbo Drive visit would arrive before they execute; every post link therefore carries `data: { turbo: false }`.
 
 Fonts are subset to the Latin ranges the site uses. `script/subset_fonts.py` reproduces it and enforces the safety property that makes it reviewable: every codepoint appearing in views, CSS, JS, locales or the posts table that the original font supported must survive.
+
+### Content auditing
+
+`ContentAudit` (`app/models/content_audit.rb`, exposed as `bin/rails content:check`) checks what the code gates cannot: broken internal links, missing/placeholder `alt`, short summaries, untagged posts, unanalysed or oversized covers, and in-post images still on the `redirect` route. It is **data**, not code — running it against the dev database says nothing about the live site, so point it at production (`fly ssh console -C "bin/rails content:check"`). Errors set a non-zero exit; warnings do not, because they are judgement calls.
+
+Two traps it deliberately avoids, both of which produced false positives during the audit that motivated it:
+
+- The malformed-link check strips the query string before looking for whitespace. `+` means space in a query but is a literal character in a path, so decoding the whole URL flags `?q=build+tools` as broken.
+- A `/posts/` path only counts as internal when the link is relative or its host matches `APP_HOST`; other sites have `/posts/` too.
 
 ### Security configuration
 
