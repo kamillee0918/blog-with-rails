@@ -5,8 +5,13 @@ class UploadsControllerTest < ActionDispatch::IntegrationTest
     @admin = admins(:one)
   end
 
+  # 세 번째 인자(binary)를 켜지 않으면 Rack::Test 가 파일을 텍스트 모드로 읽는다.
+  # Windows 에서는 그 탓에 CRLF 가 LF 로 바뀌고 0x1A(DOS EOF)에서 스트림이 끊겨
+  # 2,683바이트 PNG 가 5바이트로 잘린다. 그러면 vips 가 분석에 실패하고
+  # UploadsController 의 `metadata["width"] || 1020` 폴백이 대신 응답한다.
+  # Linux 에서는 두 모드가 같아 CI 에서는 드러나지 않는다.
   def png_upload
-    fixture_file_upload("test_image.png", "image/png")
+    fixture_file_upload("test_image.png", "image/png", :binary)
   end
 
   test "rejects anonymous uploads" do
@@ -59,7 +64,7 @@ class UploadsControllerTest < ActionDispatch::IntegrationTest
   test "builds a srcset of proxy variant URLs for a wide image" do
     sign_in_as_admin
     post uploads_image_url,
-         params: { file: fixture_file_upload("wide_image.png", "image/png") }
+         params: { file: fixture_file_upload("wide_image.png", "image/png", :binary) }
 
     body = response.parsed_body
     assert_equal 1200, body["width"]
