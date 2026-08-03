@@ -4,11 +4,19 @@
 # Production: Supabase PostgreSQL (managed cloud DB)
 # Solid Cache/Queue/Cable: Local SQLite in all environments
 #
-# 프로덕션 환경변수:
-#   SUPABASE_DB_HOST     — aws-1-ap-southeast-2.pooler.supabase.com (session pooler, IPv4)
+# 프로덕션 환경변수 (실제 값은 fly.toml 의 [env] 와 `fly secrets` 에 있다):
+#   SUPABASE_DB_HOST     — aws-1-ap-northeast-2.pooler.supabase.com
 #   SUPABASE_DB_USER     — postgres.[project-ref]
-#   SUPABASE_DB_PASSWORD — Supabase 프로젝트 DB 비밀번호
+#   SUPABASE_DB_PASSWORD — Supabase 프로젝트 DB 비밀번호 (secrets)
 #   SUPABASE_DB_PORT     — 6543 (transaction pooler)
+#
+# HOST/USER 에 기본값을 두지 않는다. 예전에는 폐기된 프로젝트를 가리키는 폴백이
+# 있었고, 환경변수가 하나라도 비면 존재하지 않는 곳으로 조용히 접속을 시도했다.
+# 지금은 누락된 키 이름을 대며 부팅이 실패한다.
+#
+# 다만 필수로 취급하는 건 production 일 때뿐이다. rake 의 load_database_yaml 은
+# 현재 환경과 무관하게 이 파일 전체를 ERB 로 평가하므로, 무조건 fetch 하면
+# SQLite 만 쓰는 개발·테스트에서도 db:test:prepare 가 KeyError 로 죽는다.
 
 # === SQLite (Development / Test / Solid adapters) ===
 sqlite: &sqlite
@@ -31,10 +39,10 @@ production:
     adapter: postgresql
     encoding: unicode
     pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-    host: <%= ENV.fetch("SUPABASE_DB_HOST", "aws-1-ap-southeast-2.pooler.supabase.com") %>
+    host: <%= Rails.env.production? ? ENV.fetch("SUPABASE_DB_HOST") : ENV["SUPABASE_DB_HOST"] %>
     port: <%= ENV.fetch("SUPABASE_DB_PORT", 6543) %>
     database: postgres
-    username: <%= ENV.fetch("SUPABASE_DB_USER", "postgres.tqcmbdphezkdyqvjpkvy") %>
+    username: <%= Rails.env.production? ? ENV.fetch("SUPABASE_DB_USER") : ENV["SUPABASE_DB_USER"] %>
     password: <%= ENV["SUPABASE_DB_PASSWORD"] %>
     prepared_statements: false
     sslmode: require

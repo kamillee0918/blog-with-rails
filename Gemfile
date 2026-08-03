@@ -35,16 +35,14 @@ gem "solid_cable"
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 
-# Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
-gem "kamal", require: false
-
 # Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
+# Fly.io 에서도 그대로 쓴다. 컨테이너가 비root 로 돌아 HTTP_PORT=8080 으로 올린다.
 gem "thruster", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 2.0"
 # image_processing 2.0부터 이미지 백엔드가 선택적 의존성으로 분리되어 직접 명시해야 함
-# (config.active_storage.variant_processor = :vips 및 ThumbnailsController에서 사용)
+# (config.active_storage.variant_processor = :vips)
 gem "ruby-vips", "~> 2.0"
 
 # A Scope & Engine based, clean, powerful, customizable and sophisticated paginator for modern web app frameworks and ORMs

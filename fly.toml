@@ -1,0 +1,60 @@
+# Fly.io 배포 설정
+#
+# 사전 준비:
+#   fly auth login
+#   fly apps create kamillee0918-blog
+#   fly volumes create blog_storage --size 3 --region nrt
+#   fly secrets set RAILS_MASTER_KEY=... SUPABASE_DB_PASSWORD=... TINYMCE_API_KEY=...
+#
+# 배포:
+#   fly deploy
+
+app = "kamillee0918-blog"
+primary_region = "nrt"          # 도쿄. `fly platform regions` 로 현재 목록 확인 가능
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  RAILS_ENV = "production"
+  SOLID_QUEUE_IN_PUMA = "true"
+
+  # Thruster 기본 포트는 80이지만, 컨테이너가 비root(UID 1000)로 실행되므로
+  # 특권 포트 바인딩을 피하기 위해 8080으로 올린다. internal_port 와 반드시 일치시킬 것.
+  HTTP_PORT = "8080"
+
+  ALLOWED_HOSTS = "www.kamillee0918.blog,kamillee0918.blog,kamillee0918-blog.fly.dev"
+  APP_HOST = "kamillee0918.blog"
+
+  # Supabase (비밀번호는 secrets 로 별도 주입)
+  SUPABASE_DB_HOST = "aws-1-ap-northeast-2.pooler.supabase.com"
+  SUPABASE_DB_PORT = "6543"
+  SUPABASE_DB_USER = "postgres.hiiniwcepnzdyvdaqawv"
+
+# Active Storage blob + Solid Cache/Queue/Cable SQLite 가 모두 여기 들어간다.
+# 현재 사용량 144MB. 이 볼륨이 이 앱의 유일한 영속 상태다.
+[[mounts]]
+  source = "blog_storage"
+  destination = "/rails/storage"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_start_machines = true
+
+  # 아카이브 가용성이 목표이므로 항상 1대를 켜 둔다.
+  # 비용을 더 줄이려면 auto_stop_machines = "suspend" + min_machines_running = 0
+  # 으로 바꿀 수 있으나, 첫 요청에서 콜드 스타트가 발생한다.
+  auto_stop_machines = false
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    grace_period = "30s"
+    interval = "15s"
+    method = "GET"
+    timeout = "5s"
+    path = "/up"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "1gb"              # libvips 이미지 변환이 있어 512MB 는 빠듯하다
