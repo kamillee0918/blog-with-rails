@@ -47,6 +47,13 @@
 # 외부 AI 스킬 카탈로그 (로컬 참고용)
 /skills/
 
+# Fly.io 볼륨 복원용 아카이브. 80MB 짜리 Active Storage 덤프라 저장소에 들어가면 안 된다.
+# 만드는 방법은 FLY_MIGRATION.md §4 에 있다.
+/storage_restore.tar.gz
+
+# 콘텐츠 검토 보고서 — 문서 자체가 "용도: 로컬 참고용" 으로 못박고 있다.
+/BLOG_CONTENT_REVIEW.md
+
 # Understand-Anything 지식 그래프
 # knowledge-graph.json 등 본체는 커밋한다 — 한 번 올려두면 다른 환경에서
 # 분석 파이프라인을 다시 돌리지 않아도 된다.

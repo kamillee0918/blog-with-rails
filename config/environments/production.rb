@@ -95,7 +95,6 @@ Rails.application.configure do
   # 예: ALLOWED_HOSTS="blog.example.com,www.example.com"
   if ENV["ALLOWED_HOSTS"].present?
     config.hosts = ENV["ALLOWED_HOSTS"].split(",").map(&:strip)
-    config.hosts << /.*\.cfargotunnel\.com/  # Cloudflare Tunnel 내부 도메인 허용
   end
 
   # Health check 엔드포인트는 Host 검증에서 제외

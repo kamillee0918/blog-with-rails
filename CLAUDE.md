@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Rails 8.1 blog application (Ruby 3.4.5). Hotwire (Turbo + Stimulus) with importmap — no Node/bundler; custom CSS (no Tailwind). Action Text + TinyMCE for authoring, Active Storage + libvips for images, Kaminari for pagination. Deployed with Kamal/Docker behind Cloudflare; production DB is Supabase PostgreSQL.
+Rails 8.1 blog application (Ruby 3.4.5). Hotwire (Turbo + Stimulus) with importmap — no Node/bundler; custom CSS (no Tailwind). Action Text + TinyMCE for authoring, Active Storage + libvips for images, Kaminari for pagination. Deployed to Fly.io as a Docker container behind Cloudflare; production DB is Supabase PostgreSQL.
 
 ## Commands
 
@@ -43,7 +43,7 @@ Environment notes:
 
 Single `Admin` model (`has_secure_password`); session-based login in `SessionsController` with `reset_session` on login. `ApplicationController#admin_signed_in?` enforces a 12-hour session timeout. There is no admin namespace — admin capability is `authenticate_admin!` on write actions of `PostsController` and `UploadsController`.
 
-Login throttling counts **failed** attempts per IP in `Rails.cache` (Solid Cache in production) and clears the counter on success. Two things to preserve if you touch it: the count must not live in the session, because a client that discards cookies would reset it; and Rails 8's `rate_limit` is deliberately unused, because it counts every request including successes and offers no reset hook, which locks the sole owner out of their own site. `remote_ip` is the real client IP thanks to the Cloudflare trusted-proxy ranges in `config/initializers/cloudflare.rb`.
+Login throttling counts **failed** attempts per IP in `Rails.cache` (Solid Cache in production) and clears the counter on success. Two things to preserve if you touch it: the count must not live in the session, because a client that discards cookies would reset it; and Rails 8's `rate_limit` is deliberately unused, because it counts every request including successes and offers no reset hook, which locks the sole owner out of their own site. `remote_ip` is the real client IP thanks to the trusted-proxy ranges in `config/initializers/cloudflare.rb` — which must list **every** hop, Cloudflare *and* Fly, since `ActionDispatch::RemoteIp` takes the last address it does not recognise as a proxy. Miss one and every request looks like it came from that hop, collapsing the per-IP counter into a single global one that a stranger's failures can use to lock the owner out.
 
 ### Post visibility and caching
 
@@ -91,7 +91,7 @@ Fonts are subset to the Latin ranges the site uses. `script/subset_fonts.py` rep
 ### Security configuration
 
 - CSP in `config/initializers/content_security_policy.rb` is **report-only** (`unsafe_inline`/`unsafe_eval` currently required by TinyMCE/GA/MathJax).
-- Production-only headers in `config/initializers/security_headers.rb`; Cloudflare IP ranges as trusted proxies in `config/initializers/cloudflare.rb` (real client IP for the brute-force logic).
+- Production-only headers in `config/initializers/security_headers.rb`; Cloudflare **and** Fly ingress addresses as trusted proxies in `config/initializers/cloudflare.rb` (real client IP for the brute-force logic). Fly's shared IPv4 can be reassigned — override with `FLY_INGRESS_IPS` rather than editing the file when `fly ips list` changes.
 - Suppression files: `config/brakeman.ignore` (currently empty), `config/bundler-audit.yml` — check these before "fixing" a scanner finding.
 
 ### Other conventions
@@ -101,4 +101,6 @@ Fonts are subset to the Latin ranges the site uses. `script/subset_fonts.py` rep
 - `Post#read_time` reads the denormalized `posts.word_count`, filled by a `before_save`. It must not touch `content` — parsing the Action Text body per card is exactly the cost the column removes, and it is why `listing_scope` no longer eager-loads rich text. Action Text bodies are not a `posts` column, so the record is not dirty when only the body changes; `before_save` still runs, which is what keeps the count in sync.
 - Test fixtures include an admin (`admins(:one)`, password `"password"`); use the `sign_in_as_admin` helper in `test_helper.rb` for admin-only actions.
 - Test env uses `:memory_store`, not `:null_store`, so login throttling is testable at all — and `test_helper.rb` clears the cache before each test, since every request comes from 127.0.0.1 and would otherwise inherit the previous test's attempts.
-- Deployment: `kamal deploy` with `config/deploy.yml`; secrets flow from `.kamal/secrets` (`RAILS_MASTER_KEY`, `ADMIN_*`, `SUPABASE_DB_PASSWORD`).
+- Deployment: `fly deploy` with `fly.toml` (app `kamillee0918-blog`, region `nrt`). Non-secret config lives in `[env]`; `RAILS_MASTER_KEY`/`ADMIN_*`/`SUPABASE_DB_PASSWORD`/`TINYMCE_API_KEY` come from `fly secrets`. The `blog_storage` volume mounted at `/rails/storage` holds Active Storage blobs *and* the Solid Cache/Queue/Cable SQLite files — it is the app's only persistent state. `FLY_MIGRATION.md` is the runbook; Kamal was removed when the home server was retired.
+- `bin/docker-entrypoint` runs `db:prepare` on boot, so a deploy applies pending migrations to Supabase automatically. `set -e` means a failed migration stops the container from booting at all.
+- Host is Windows and `bin/*` are POSIX scripts: run tests as `PARALLEL_WORKERS=1 bin/rails test`. Windows has no `fork()`, so `parallelize` in `test_helper.rb` raises without that variable. CI runs on Linux and stays parallel.
