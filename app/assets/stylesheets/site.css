@@ -3307,9 +3307,23 @@ body {
   margin: 10px 0
 }
 
+/* 썸네일 박스는 못 박고, 원본 비율은 object-fit 이 흡수한다.
+   responsive_image_tag 가 붙이는 width/height 속성은 원본 비율 그대로라
+   브라우저에서 aspect-ratio 로 남는다. 예전처럼 너비만 제한하면 그 비율이
+   높이를 결정해서, 16:9 배너는 납작하고 세로로 긴 그림은 카드 높이(170px)를
+   넘겨 잘렸다. 분석 전이라 width/height 가 아예 없는 표지도 있어 편차가 더 컸다. */
+.ts-post-unfurl-img {
+  flex: 0 0 auto;
+  align-self: center;
+  padding-right: 12px
+}
+
 .ts-post-unfurl-img img {
-  max-width: 150px;
-  contain-intrinsic-size: revert
+  display: block;
+  width: 130px;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 8px
 }
 
 .ts-post-unfurl-date {
