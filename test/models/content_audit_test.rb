@@ -10,6 +10,17 @@ class ContentAuditTest < ActiveSupport::TestCase
     audit(post).map(&:check)
   end
 
+  # 치수 검사를 보려면 분석된 blob 이 필요한데, 픽스처는 48x25 라 실제 분석으로는
+  # 원하는 폭을 만들 수 없다. 분석 결과만 원하는 값으로 바꿔 끼운다.
+  def attach_cover(post, width:, height:, byte_size: nil)
+    post.cover_image.attach(io: file_fixture("test_image.png").open,
+                            filename: "test_image.png", content_type: "image/png")
+    blob = post.cover_image.blob
+    blob.update!(metadata: blob.metadata.merge("width" => width, "height" => height, "analyzed" => true))
+    blob.update!(byte_size: byte_size) if byte_size
+    post.reload
+  end
+
   def create_post(**attrs)
     Post.create!({ title: "Some Post", category: "Test", published_at: 1.day.ago,
                    summary: "이 글은 요약 길이 검사를 통과할 만큼 충분히 긴 설명을 담고 있으며, " \
@@ -158,6 +169,41 @@ class ContentAuditTest < ActiveSupport::TestCase
     post.cover_image.blob.analyze
 
     assert_not_includes checks_for(post), :cover_unanalyzed
+  end
+
+  # 표지 원본은 어떤 뷰에서도 그대로 나가지 않는다 — 전부 WebP variant 를 거친다.
+  # 그래서 원본에서 볼 것은 파일 크기가 아니라 variant 들이 쓸 수 있는 폭이다.
+
+  test "가장 큰 srcset 폭보다 넓은 표지를 잡는다" do
+    post = create_post(title: "Oversized Cover")
+    attach_cover(post, width: ContentAudit::COVER_MAX_WIDTH + 1, height: 1000)
+
+    assert_includes checks_for(post), :cover_oversized
+  end
+
+  test "히어로 표시 폭보다 좁은 표지를 잡는다" do
+    post = create_post(title: "Undersized Cover")
+    attach_cover(post, width: ContentAudit::COVER_MIN_WIDTH - 1, height: 800)
+
+    assert_includes checks_for(post), :cover_undersized
+  end
+
+  test "표시 폭과 최대 srcset 폭 사이의 표지는 통과한다" do
+    post = create_post(title: "Right Sized Cover")
+    attach_cover(post, width: 1440, height: 960)
+
+    found = checks_for(post)
+    assert_not_includes found, :cover_oversized
+    assert_not_includes found, :cover_undersized
+  end
+
+  # 용량은 더 이상 보지 않는다. 원본이 서빙되지 않으므로 독자에게 닿는 비용이
+  # 아니고, 임계값을 500KB 로 두었을 때 표지 28장이 전부 걸려 신호가 되지 못했다.
+  test "폭이 적당하면 원본이 커도 지적하지 않는다" do
+    post = create_post(title: "Heavy But Right Sized")
+    attach_cover(post, width: 1600, height: 1067, byte_size: 12.megabytes)
+
+    assert_empty checks_for(post).select { |c| c.to_s.start_with?("cover_") }
   end
 
   test "심각도가 error 와 warning 으로 나뉜다" do
