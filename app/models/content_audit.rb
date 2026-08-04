@@ -14,8 +14,16 @@ class ContentAudit
   SUMMARY_MIN_LENGTH = 50
   # 시리즈 접두사가 길어지면 실제 주제가 목록에서 잘려 나간다.
   TITLE_MAX_LENGTH = 40
-  # 표지는 변환 전 원본이 이 이상이면 variant 생성 비용이 커진다.
-  COVER_MAX_BYTES = 500.kilobytes
+  # 표지 원본은 어떤 뷰에서도 그대로 나가지 않는다. 모든 렌더 경로가
+  # ImageHelper 를 거쳐 WebP variant 를 만들어 쓰므로, 원본에서 볼 것은
+  # 바이트 수가 아니라 그 variant 들을 감당할 수 있는 폭인지다.
+  #
+  # 위: responsive_image_tag 가 만드는 가장 큰 srcset 폭. 이보다 넓은 부분은
+  # 어떤 variant 로도 쓰이지 않으면서 variant 를 만들 때마다 디코딩 비용만 더한다.
+  COVER_MAX_WIDTH = 1920
+  # 아래: 상세 페이지 히어로의 표시 폭(sizes 속성 기준). resize_to_limit 은
+  # 확대하지 않으므로, 원본이 이보다 좁으면 LCP 이미지가 그대로 흐리게 나간다.
+  COVER_MIN_WIDTH = 1024
   # 스크린리더가 그대로 읽어 버려 빈 alt 보다 오히려 나쁜 값들.
   PLACEHOLDER_ALT = /\A(uploaded image|image|img|untitled)\z/i
 
@@ -79,12 +87,22 @@ class ContentAudit
     blob = post.cover_image.blob
     # 분석 전이면 ImageHelper 가 width/height 를 생략하고, 그러면 aspect-ratio 가
     # 잡히지 않아 카드와 히어로에서 레이아웃 시프트가 난다.
-    add(post, :cover_unanalyzed, :error, "표지 미분석 (#{blob.filename})") unless blob.analyzed?
+    unless blob.analyzed?
+      add(post, :cover_unanalyzed, :error, "표지 미분석 (#{blob.filename})")
+      # 분석 전에는 폭을 알 수 없다. 짐작하지 않고 치수 검사를 건너뛴다.
+      return
+    end
 
-    return unless blob.byte_size > COVER_MAX_BYTES
+    width = blob.metadata["width"].to_i
+    return unless width.positive?
 
-    add(post, :cover_too_large, :warning,
-        "표지 #{(blob.byte_size / 1024.0).round}KB (권장 #{COVER_MAX_BYTES / 1024}KB 이하) — #{blob.filename}")
+    if width > COVER_MAX_WIDTH
+      add(post, :cover_oversized, :warning,
+          "표지 폭 #{width}px — #{COVER_MAX_WIDTH}px 초과분은 variant 로 쓰이지 않는다 (#{blob.filename})")
+    elsif width < COVER_MIN_WIDTH
+      add(post, :cover_undersized, :warning,
+          "표지 폭 #{width}px — 히어로 표시 폭 #{COVER_MIN_WIDTH}px 보다 좁아 확대 없이 흐리게 나간다 (#{blob.filename})")
+    end
   end
 
   def check_images(post, body)

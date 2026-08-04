@@ -91,12 +91,13 @@ Fonts are subset to the Latin ranges the site uses. `script/subset_fonts.py` rep
 
 ### Content auditing
 
-`ContentAudit` (`app/models/content_audit.rb`, exposed as `bin/rails content:check`) checks what the code gates cannot: broken internal links, missing/placeholder `alt`, short summaries, untagged posts, unanalysed or oversized covers, and in-post images still on the `redirect` route. It is **data**, not code — running it against the dev database says nothing about the live site, so point it at production (`fly ssh console -C "bin/rails content:check"`). Errors set a non-zero exit; warnings do not, because they are judgement calls.
+`ContentAudit` (`app/models/content_audit.rb`, exposed as `bin/rails content:check`) checks what the code gates cannot: broken internal links, missing/placeholder `alt`, short summaries, untagged posts, unanalysed or badly sized covers, and in-post images still on the `redirect` route. It is **data**, not code — running it against the dev database says nothing about the live site, so point it at production (`fly ssh console -C "bin/rails content:check"`). Errors set a non-zero exit; warnings do not, because they are judgement calls.
 
-Two traps it deliberately avoids, both of which produced false positives during the audit that motivated it:
+Three traps it deliberately avoids, all of which produced false positives or noise during the audits that motivated it:
 
 - The malformed-link check strips the query string before looking for whitespace. `+` means space in a query but is a literal character in a path, so decoding the whole URL flags `?q=build+tools` as broken.
 - A `/posts/` path only counts as internal when the link is relative or its host matches `APP_HOST`; other sites have `/posts/` too.
+- The cover check measures **width, not bytes** (`COVER_MIN_WIDTH`/`COVER_MAX_WIDTH`). Every view renders covers through `ImageHelper`, so the original is never served and its file size costs the reader nothing — a 500KB byte rule flagged all 28 covers and taught the reader to ignore the check. What does matter is the two ends of the srcset: wider than the largest entry (1920) is decoded and thrown away on every variant build, and narrower than the hero's display width (1024) renders soft, because `resize_to_limit` will not upscale. Dimensions are only known once the blob is analysed, so an unanalysed cover skips the size check rather than guessing.
 
 ### Security configuration
 
