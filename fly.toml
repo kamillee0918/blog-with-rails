@@ -23,6 +23,18 @@ primary_region = "nrt"          # 도쿄. `fly platform regions` 로 현재 목�
   # 특권 포트 바인딩을 피하기 위해 8080으로 올린다. internal_port 와 반드시 일치시킬 것.
   HTTP_PORT = "8080"
 
+  # config/puma.rb 의 기본값은 4다. 이 머신은 vCPU 1개 / 메모리 1GB / 스왑 0 이고,
+  # Active Storage 는 variant 가 없는 이미지를 요청받으면 그 웹 요청 안에서 libvips 를
+  # 돌린다. 즉 워커 수가 곧 libvips 동시 실행 수이자 메모리 피크가 된다.
+  # 2026-08-09, 새 표지를 올린 직후 워커 4개가 동시에 variant 를 만들다 여유 메모리
+  # (333MB)를 소진해 셋이 60초 하트비트를 놓쳤고, Puma 가 이들을 죽이면서 사이트가
+  # 503 이 되었다. 한 요청은 큐에서 470초를 기다린 뒤 502 로 끝났다.
+  WEB_CONCURRENCY = "2"
+
+  # libvips 는 기본적으로 코어 수만큼 스레드를 띄운다. vCPU 가 1개이므로 이득은 없고
+  # 메모리만 더 쓴다.
+  VIPS_CONCURRENCY = "1"
+
   ALLOWED_HOSTS = "www.kamillee0918.blog,kamillee0918.blog,kamillee0918-blog.fly.dev"
   APP_HOST = "kamillee0918.blog"
 
@@ -57,4 +69,9 @@ primary_region = "nrt"          # 도쿄. `fly platform regions` 로 현재 목�
 
 [[vm]]
   size = "shared-cpu-1x"
-  memory = "1gb"              # libvips 이미지 변환이 있어 512MB 는 빠듯하다
+  # 512MB → 1GB → 2GB. libvips 이미지 변환 때문에 계속 올렸다.
+  # 1GB 로도 부족했던 이유는 Active Storage 가 variant 를 웹 요청 안에서 만들기 때문이다.
+  # 표지 한 장을 바꾸면 아직 없는 variant 를 방문자가 요청하는 대로 그 자리에서 생성하는데,
+  # 유휴 상태에서 이미 605MB 를 쓰고 있어 여유가 333MB 뿐이었고 스왑은 0 이라 완충이 없었다.
+  # 2026-08-09 에 이것이 워커 정지 → Puma 60초 타임아웃 → 503 으로 이어졌다(WEB_CONCURRENCY 주석 참고).
+  memory = "2gb"
