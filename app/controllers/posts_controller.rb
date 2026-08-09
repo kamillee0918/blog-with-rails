@@ -24,7 +24,12 @@ class PostsController < ApplicationController
       # last_modified 는 함께 보내지 않는다. 두 검증자를 모두 주면 둘 다 일치해야
       # 304 가 되는데, 페이지네이션된 relation 의 maximum(:updated_at)은 LIMIT/OFFSET
       # 때문에 2페이지부터 nil 이라 헤더가 빠진다.
-      fresh_when etag: [ @posts.cache_version, params[:category], params[:page] ]
+      #
+      # fresh_when 이 아니라 stale? 을 쓰는 이유는 아래 render 때문이다. 둘 다 신선하면
+      # 304 를 렌더하지만 액션을 중단하지는 않는다. category/page 가 붙은 요청은 그
+      # 뒤에서 show_all 을 한 번 더 렌더하게 되어 DoubleRenderError 로 500 이 났다.
+      # 파라미터 없는 /posts 는 두 번째 렌더가 없어 멀쩡했고, 그래서 오래 눈에 띄지 않았다.
+      return unless stale?(etag: [ @posts.cache_version, params[:category], params[:page] ])
     end
 
     # 페이지 파라미터가 있거나(1페이지 포함) 카테고리가 있으면 show_all 레이아웃으로 표시

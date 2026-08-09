@@ -39,7 +39,6 @@
 
 # Personal Files
 /personal/*
-/docs/*
 
 # SimpleCov 커버리지 산출물
 /coverage/
@@ -53,6 +52,12 @@
 
 # 콘텐츠 검토 보고서 — 문서 자체가 "용도: 로컬 참고용" 으로 못박고 있다.
 /BLOG_CONTENT_REVIEW.md
+
+# 야네우라오 뉴스레터 (로컬 참고용). 58편 중 전체 공개는 2026/0715.md 한 편뿐이고
+# 나머지 57편은 "いつもやねうら王をサポートしてくださっている皆さん" 으로 시작하는
+# 지원자 배포 자료다. 이 저장소는 public 이라, 커밋하면 회원 한정 자료를 재배포하게 된다.
+# 글을 쓸 때 인용할 것은 이 파일들이 아니라 여기서 찾아낸 공개 블로그 글(yaneuraou.yaneu.com)이다.
+/docs/yaneuraou/
 
 # Understand-Anything 지식 그래프
 # knowledge-graph.json 등 본체는 커밋한다 — 한 번 올려두면 다른 환경에서

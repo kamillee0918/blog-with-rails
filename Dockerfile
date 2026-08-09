@@ -1,9 +1,10 @@
 # syntax=docker/dockerfile:1
 # check=error=true
 
-# This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
+# This Dockerfile is designed for production, not development. Deployed with `fly deploy`,
+# or build'n'run by hand:
 # docker build -t blog_with_rails .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name blog_with_rails blog_with_rails
+# docker run -d -p 8080:8080 -e RAILS_MASTER_KEY=<value from config/master.key> --name blog_with_rails blog_with_rails
 
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 
@@ -73,6 +74,11 @@ RUN chmod +x /rails/bin/thrust
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
+# Thruster defaults to port 80, which this image cannot bind: it runs as UID 1000 and 80 is
+# privileged. Pin the default here so the image is runnable on its own; fly.toml sets the same
+# value in [env] and must keep matching internal_port.
+ENV HTTP_PORT="8080"
+
 # Start server via Thruster by default, this can be overwritten at runtime
-EXPOSE 80
+EXPOSE 8080
 CMD ["./bin/thrust", "./bin/rails", "server"]
