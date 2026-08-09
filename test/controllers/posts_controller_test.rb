@@ -84,6 +84,48 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_modified
   end
 
+  # 위 테스트는 파라미터 없는 /posts 만 본다. 그 경로는 show_all 을 렌더하지 않아
+  # 두 번째 렌더가 일어나지 않고, 그래서 아래 버그를 놓쳤다.
+  # fresh_when 은 304 를 렌더하지만 액션을 중단하지 않는다. category/page 가 붙으면
+  # 그 뒤의 render :show_all 이 두 번째 렌더가 되어 DoubleRenderError → 500 이 된다.
+  # 즉 카테고리 페이지와 페이지네이션은 재방문자에게 전부 500 이었다.
+  test "category listing answers 304 instead of raising DoubleRenderError" do
+    delete logout_url
+    get posts_url(category: posts(:one).category)
+
+    get posts_url(category: posts(:one).category)
+    assert_response :success
+    etag = response.headers["ETag"]
+    assert_not_nil etag, "ETag 헤더가 없다"
+
+    get posts_url(category: posts(:one).category), headers: { "If-None-Match" => etag }
+    assert_response :not_modified
+  end
+
+  test "paginated listing answers 304 instead of raising DoubleRenderError" do
+    delete logout_url
+    get posts_url(page: 1)
+
+    get posts_url(page: 1)
+    assert_response :success
+    etag = response.headers["ETag"]
+    assert_not_nil etag, "ETag 헤더가 없다"
+
+    get posts_url(page: 1), headers: { "If-None-Match" => etag }
+    assert_response :not_modified
+  end
+
+  # 304 로 끊더라도 신선하지 않은 요청은 계속 목록을 렌더해야 한다.
+  # assert_template 은 rails-controller-testing 젬이 있어야 쓸 수 있는데 이 앱에는 없다.
+  # 대신 본문에 해당 카테고리 글이 실려 나오는지로 확인한다.
+  test "category listing still renders the listing when the ETag does not match" do
+    delete logout_url
+    get posts_url(category: posts(:one).category), headers: { "If-None-Match" => "W/\"stale\"" }
+
+    assert_response :success
+    assert_match posts(:one).title, response.body
+  end
+
   test "index ETag changes once a post is edited" do
     delete logout_url
     get posts_url
