@@ -13,6 +13,10 @@ class PostsController < ApplicationController
 
     @posts = @posts.page(params[:page]).per(10)
 
+    # 카테고리를 걸었는데 0건이면 없는 카테고리다. 필터가 없는 목록은 비어 있어도
+    # 정상이므로 걸러야 할 때만 본다.
+    ensure_listing_exists! if @category.present?
+
     if admin_signed_in?
       set_no_cache_headers
     else
@@ -45,10 +49,21 @@ class PostsController < ApplicationController
     render :show_all
   end
 
+  # GET /search?keyword=...
+  # 폼이 만들 수 있는 유일한 형태를 정식 경로형으로 넘긴다. 렌더가 아니라 리다이렉트인
+  # 이유는 같은 결과에 URL 이 두 개 생기지 않게 하기 위해서다.
+  def search_redirect
+    keyword = params[:keyword].to_s.strip
+    return redirect_to(posts_path) if keyword.blank?
+
+    redirect_to search_path(keyword: keyword)
+  end
+
   # GET /posts/archive/:year
   def archive
     @year = params[:year].to_i
     @posts = listing_scope.by_year(@year).recent.page(params[:page]).per(8)
+    ensure_listing_exists!
     render :show_all
   end
 
@@ -56,6 +71,7 @@ class PostsController < ApplicationController
   def tag
     @tag = params[:tag]
     @posts = listing_scope.by_tag(@tag).recent.page(params[:page]).per(8)
+    ensure_listing_exists!
     render :show_all
   end
 
@@ -124,6 +140,20 @@ class PostsController < ApplicationController
     # 미공개(예약) 게시글은 관리자에게만 보인다.
     def post_scope
       admin_signed_in? ? Post.all : Post.published
+    end
+
+    # 카테고리·태그·연도는 열거 가능한 값이고 링크로만 도달한다. 매칭이 0건이라는 것은
+    # 그런 분류가 없다는 뜻이므로, 빈 목록을 200 으로 내놓는 대신 404 로 답한다.
+    # 검색은 반대다 — 사용자가 자유롭게 입력하는 값이라 "찾을 수 없습니다" 안내를 렌더한다.
+    #
+    # 판정에 total_count 를 쓰는 이유는 페이지네이션 이전의 전체 건수이기 때문이다.
+    # @posts.empty? 로 보면 태그는 있는데 page=99 인 경우까지 404 가 되어, "분류가 없다"와
+    # "그 페이지가 없다"를 구분하지 못한다. Kaminari 가 어차피 세는 값이라 질의도 늘지 않는다.
+    #
+    # post_scope 를 통과한 뒤 세므로 방문자와 관리자의 답이 다르다. 미공개 글만 있는
+    # 카테고리는 방문자에게 없는 것과 같고, 관리자에게는 보인다.
+    def ensure_listing_exists!
+      raise ActiveRecord::RecordNotFound if @posts.total_count.zero?
     end
 
     # 목록 카드가 쓰는 연관을 한 번에 로드해 N+1을 제거한다.

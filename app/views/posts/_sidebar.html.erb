@@ -5,7 +5,7 @@
     <!-- 검색 -->
     <div class="widget widget_search">
       <p class="ts-section-heading">Search</p>
-      <%= form_tag search_path(keyword: ''), method: :get, role: "search", class: "ts-search__form" do %>
+      <%= form_tag search_query_path, method: :get, role: "search", class: "ts-search__form" do %>
         <div class="ts-search__container">
           <input required class="ts-search__input" type="search" name="keyword" placeholder="" aria-label="검색어 입력">
           <button class="ts-search__submit" aria-label="검색">

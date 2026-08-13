@@ -15,7 +15,7 @@
           <p>We're not quite sure what went wrong. The page you were looking for could not be found. It might have been removed, renamed, or did not exist in the first place. Perhaps searching can help.</p>
 
           <!-- Search -->
-          <%= form_tag search_path(keyword: ''), method: :get, role: "search", class: "ts-search__form" do %>
+          <%= form_tag search_query_path, method: :get, role: "search", class: "ts-search__form" do %>
             <div class="ts-search__container">
               <input required="" class="ts-search__input" type="search" value="" name="keyword" placeholder="Search posts..." aria-label="검색어 입력">
               <button class="ts-search__submit" aria-label="검색">

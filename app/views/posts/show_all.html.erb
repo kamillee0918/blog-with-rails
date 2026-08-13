@@ -46,7 +46,7 @@
                                 <div class="ts-content-not-found">
                                   <p>It seems we cannot find what you are looking for. Perhaps searching can help.</p>
                                   <!-- Search -->
-                                  <%= form_tag search_path(keyword: '' ), method: :get, role: "search" ,
+                                  <%= form_tag search_query_path, method: :get, role: "search" ,
                                     class: "ts-search__form" do %>
                                     <div class="ts-search__container">
                                       <input required="" class="ts-search__input" type="search" value="<%= @query %>"
@@ -63,7 +63,10 @@
                                     </div>
                                     <% end %>
                                       <!-- Tags -->
-                                        <% all_tags=Tag.joins(:posts).group(:name).order('COUNT(*) DESC').limit(10).count %>
+                                        <%# 직접 order('COUNT(*) DESC') 를 쓰면 Rails 가 raw SQL 로 보고 거부한다.
+                                            Tag.popular_with_counts 는 Arel.sql 로 감싼 같은 질의이고,
+                                            404 페이지도 이미 그것을 쓴다. %>
+                                        <% all_tags = Tag.popular_with_counts(10) %>
                                         <% if all_tags.any? %>
                                           <section>
                                             <br>

@@ -102,6 +102,22 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_modified
   end
 
+  # 카테고리는 경로형(/posts/category/PAST)과 쿼리형(?category=PAST) 두 입구가 같은
+  # index 액션을 타고 둘 다 params[:category] 로 읽힌다. 위 테스트는 쿼리형만 보므로
+  # 링크가 실제로 쓰는 경로형도 함께 확인한다.
+  test "path-form category listing answers 304 instead of raising DoubleRenderError" do
+    delete logout_url
+    get category_posts_path(category: posts(:one).category)
+
+    get category_posts_path(category: posts(:one).category)
+    assert_response :success
+    etag = response.headers["ETag"]
+    assert_not_nil etag, "ETag 헤더가 없다"
+
+    get category_posts_path(category: posts(:one).category), headers: { "If-None-Match" => etag }
+    assert_response :not_modified
+  end
+
   test "paginated listing answers 304 instead of raising DoubleRenderError" do
     delete logout_url
     get posts_url(page: 1)
@@ -124,6 +140,143 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match posts(:one).title, response.body
+  end
+
+  # === 존재하지 않는 카테고리 · 태그 · 연도 ===
+  #
+  # 이 셋은 열거 가능한 값이고 링크로만 도달한다. 매칭이 0건이라는 것은 잘못된 URL 을
+  # 받았다는 뜻이므로 빈 목록 대신 404 를 낸다. 검색은 반대다 — 사용자가 자유롭게
+  # 입력하는 값이라 "찾을 수 없습니다" 안내를 렌더한다(아래 검색 테스트 참고).
+
+  test "존재하지 않는 카테고리는 404 다" do
+    delete logout_url
+    get category_posts_path(category: "NoSuchCategory")
+
+    assert_response :not_found
+  end
+
+  test "존재하지 않는 카테고리는 쿼리형으로 와도 404 다" do
+    delete logout_url
+    get posts_path(category: "NoSuchCategory")
+
+    assert_response :not_found
+  end
+
+  test "존재하지 않는 태그는 404 다" do
+    delete logout_url
+    get tag_posts_path(tag: "no-such-tag")
+
+    assert_response :not_found
+  end
+
+  test "게시글이 없는 연도의 아카이브는 404 다" do
+    delete logout_url
+    get archive_posts_path(year: 2022)
+
+    assert_response :not_found
+  end
+
+  test "글이 있는 카테고리 · 태그 · 연도는 그대로 200 이다" do
+    delete logout_url
+    post = posts(:one)
+    post.tag_list = "archive-probe"
+
+    get category_posts_path(category: post.category)
+    assert_response :success
+
+    get tag_posts_path(tag: "archive-probe")
+    assert_response :success
+
+    get archive_posts_path(year: post.published_at.year)
+    assert_response :success
+  end
+
+  test "필터가 없는 목록은 404 로 바뀌지 않는다" do
+    delete logout_url
+    get posts_path
+
+    assert_response :success
+  end
+
+  # post_scope 가 관리자 여부로 갈리므로, 미공개 글만 있는 카테고리는 방문자에게는
+  # 없는 것과 같고 관리자에게는 보여야 한다.
+  test "미공개 글만 있는 카테고리는 방문자에게 404, 관리자에게는 200 이다" do
+    Post.create!(title: "Draft Only", published_at: 1.day.from_now, category: "DraftOnly")
+
+    delete logout_url
+    get category_posts_path(category: "DraftOnly")
+    assert_response :not_found
+
+    sign_in_as_admin
+    get category_posts_path(category: "DraftOnly")
+    assert_response :success
+  end
+
+  # === 검색 ===
+
+  # 정식 검색 URL 은 경로형(/search/키워드)이다. 그런데 HTML 의 GET 폼은 입력을 항상
+  # 쿼리스트링으로만 직렬화하므로 /search/?keyword=x 밖에 만들 수 없고, 그 형태에
+  # 라우트가 없어 404 가 났다. 사이드바·검색결과·404 페이지의 검색창이 전부 그랬다.
+  test "search accepts the query form a plain GET form produces" do
+    get "/search", params: { keyword: "past" }
+
+    assert_redirected_to search_path(keyword: "past")
+  end
+
+  test "search redirect encodes keywords that need it" do
+    get "/search", params: { keyword: "build tools" }
+
+    assert_redirected_to search_path(keyword: "build tools")
+    assert_match "build%20tools", response.headers["Location"]
+  end
+
+  test "search redirect sends an empty keyword back to the listing" do
+    get "/search", params: { keyword: "  " }
+
+    assert_redirected_to posts_path
+  end
+
+  test "search redirect survives a missing keyword" do
+    get "/search"
+
+    assert_redirected_to posts_path
+  end
+
+  # 경로형은 그대로 동작해야 한다 — 기존 링크와 북마크가 여기에 걸려 있다.
+  test "canonical search path still renders results" do
+    get search_path(keyword: posts(:one).title.split.first)
+
+    assert_response :success
+  end
+
+  # 결과가 0건일 때만 타는 분기에 order('COUNT(*) DESC') 가 있어, "찾을 수 없습니다"
+  # 안내를 보여 주려던 자리가 정작 500 을 냈다. 결과가 있는 검색은 이 분기를 타지
+  # 않으므로 오래 눈에 띄지 않았다.
+  test "search with no results renders the empty state instead of raising" do
+    get search_path(keyword: "zzzznomatchzzzz")
+
+    assert_response :success
+    assert_match "cannot find", response.body
+  end
+
+  # 라우트만 고치면 폼이 엉뚱한 곳을 가리켜도 통과한다. 검색창이 실제로 살아 있는
+  # 페이지들에서 폼의 action 이 그 라우트를 가리키는지까지 확인한다.
+  test "every rendered search form posts to a route that exists" do
+    delete logout_url
+
+    { "상세 페이지(사이드바)" => post_url(posts(:one)),
+      "검색 결과" => search_path(keyword: "past"),
+      "목록" => posts_url }.each do |label, url|
+      get url
+      assert_response :success, label
+
+      actions = response.body.scan(/<form[^>]*action="([^"]*search[^"]*)"/i).flatten.uniq
+      assert_not_empty actions, "#{label}: 검색 폼이 없다"
+      actions.each do |action|
+        assert_equal search_query_path, action,
+                     "#{label}: 폼이 #{action} 로 제출한다 — GET 폼은 쿼리스트링만 만들 수 있다"
+      end
+    end
   end
 
   test "index ETag changes once a post is edited" do
