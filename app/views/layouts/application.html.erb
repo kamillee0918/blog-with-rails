@@ -520,13 +520,13 @@ end %>
                 </div>
               </div>
               <div class="ts-search__wrapper">
-                <form class="ts-search__nav-form" onsubmit="return handleSearchSubmit(event)">
+                <%= form_tag search_query_path, method: :get, role: "search", class: "ts-search__nav-form" do %>
                   <div class="ts-search__group">
-                    <input id="search-input" class="ts-search__input" type="search" required
+                    <input id="search-input" class="ts-search__input" type="search" required name="keyword"
                       value="<%= params[:keyword] %>" placeholder="What are you looking for?" aria-label="검색어 입력">
                     <button class="ts-search__submit" type="submit">Search</button>
                   </div>
-                </form>
+                <% end %>
               </div>
             </div>
           </div>

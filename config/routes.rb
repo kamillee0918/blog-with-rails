@@ -8,6 +8,10 @@ Rails.application.routes.draw do
       get "archive/:year", action: :archive, as: :archive, constraints: { year: /\d{4}/ }
     end
   end
+  # 정식 검색 URL 은 경로형이다. 다만 HTML 의 GET 폼은 입력을 항상 쿼리스트링으로만
+  # 직렬화하므로 /search/?keyword=x 밖에 만들지 못한다. 쿼리형을 받아 경로형으로
+  # 넘겨주지 않으면 폼 검색이 전부 404 가 된다 (JS 로 경로를 조립하던 헤더만 예외였다).
+  get "search", to: "posts#search_redirect", as: :search_query
   get "search/:keyword", to: "posts#search", as: :search
 
   # === Admin Session ===

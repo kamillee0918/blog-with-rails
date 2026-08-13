@@ -308,16 +308,10 @@ function initTinyMCE() {
 // Helper Function
 // ========================================
 
-// 검색 핸들러
-function handleSearchSubmit(event) {
-  event.preventDefault();
-  const input = document.getElementById("search-input");
-  const keyword = input.value.trim();
-  if (keyword) {
-    window.location.href = "/search/" + encodeURIComponent(keyword);
-  }
-  return false;
-}
+// 검색은 평범한 GET 폼이 처리한다. 예전에는 이 자리에 handleSearchSubmit 이 있어서
+// /search/키워드 경로를 직접 조립했는데, getElementById 로 요소 하나만 보는 방식이라
+// 헤더 검색창에서만 동작했다. 나머지 세 곳(사이드바·검색결과·404)은 폼이 만드는
+// /search/?keyword=x 그대로 나가 404 가 됐다. 이제 라우트가 쿼리형을 받는다.
 
 // Copy Link 핸들러
 function handleCopyLink(event) {
@@ -418,5 +412,4 @@ if (!window._initJsLoaded) {
 
 // 전역으로 노출 (inline에서 호출 가능하도록)
 window.initTinyMCE = initTinyMCE;
-window.handleSearchSubmit = handleSearchSubmit;
 window.handleCopyLink = handleCopyLink;
