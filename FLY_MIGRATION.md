@@ -61,7 +61,7 @@ fly secrets set \
   RAILS_MASTER_KEY="$(cat rev/storage/master.key)" \
   SUPABASE_DB_PASSWORD="<Supabase DB 비밀번호>" \
   TINYMCE_API_KEY="<TinyMCE 키>" \
-  ADMIN_EMAIL="parousia0918@gmail.com" \
+  ADMIN_EMAIL="<관리자 이메일>" \
   ADMIN_PASSWORD="<관리자 비밀번호>"
 ```
 
@@ -185,11 +185,11 @@ curl -o /dev/null -w "%{http_code}\n" https://kamillee0918.blog/up
 
 ### ⚠️ 확인된 문제: `remote_ip`가 Fly 프록시 IP로 잡힘
 
-배포 로그에서 실제로 관측된 내용입니다.
+배포 로그에서 실제로 관측된 내용입니다. **클라이언트 IP 는 문서화용 대역(RFC 5737)으로 치환했습니다** — 이 저장소는 공개이고, 원래 값은 접속 회선의 공인 IP 였습니다.
 
 ```
 Started GET "/" for 66.241.124.114        ← Rails 가 인식한 클라이언트 IP (Fly 공유 IPv4)
-"remote_addr":"39.124.186.141, 66.241.124.114"   ← 실제 XFF 체인 (앞이 진짜 클라이언트)
+"remote_addr":"203.0.113.7, 66.241.124.114"   ← 실제 XFF 체인 (앞이 진짜 클라이언트)
 ```
 
 `config/initializers/cloudflare.rb`는 Cloudflare 대역만 신뢰 프록시로 등록합니다. Fly의 프록시 IP는 그 목록에 없어 필터링되지 않고, `ActionDispatch::RemoteIp`가 이를 클라이언트 IP로 판정합니다.
