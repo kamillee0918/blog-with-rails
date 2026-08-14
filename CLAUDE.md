@@ -33,6 +33,30 @@ Environment notes:
 - Booting the app requires the libvips system library (ruby-vips loads it via FFI). CI and the Dockerfile install it explicitly.
 - `.env` (dotenv-rails) supplies dev env vars like `TINYMCE_API_KEY`. Production requires `ADMIN_EMAIL`/`ADMIN_PASSWORD` — `db/seeds.rb` raises without them to prevent a default-credential admin.
 
+## Issue and PR conventions
+
+**`ISSUE_GUIDE.md` and `PR_GUIDE.md` are mandatory templates, not suggestions.** Follow them for every issue and pull request. They were skipped for #135–#150 and those had to be rewritten afterwards.
+
+Titles carry a type and **no number suffix** — the `- #13` in the guides' examples cites where the example came from, it is not part of the format. Verified: zero of 26 issues and zero of 34 PRs carry such a suffix.
+
+| PR title | Issue title | Label |
+|---|---|---|
+| `feat:` | `[Feature]:` | ✨ Feature |
+| `fix:` | `[Fix]:` | 🐞 BugFix (add 🚨 HotFix when urgent) |
+| `refactor:` | `[Refactor]:` | 🔨 Refactor |
+| `chore:` | `[Chore]:` | 🔧 Chore |
+| `lighthouse:` | `[Lighthouse]:` | 🔦 Lighthouse |
+| `perf:` | `[Enhancement]:` | 🔆 Enhancement |
+
+The title prefix names the single dominant type; labels are the multi-axis dimension and several apply at once (issue #83 carries 🎨 Html&css + 🔆 Enhancement + 🔦 Lighthouse). `dependencies` / `ruby` / `github_actions` belong to dependabot — never attach them by hand, and leave dependabot's own PRs alone: it regenerates their bodies, so edits are lost.
+
+`## 📚 관련 Issue` is never left blank. When an issue came first, `Resolves #NN`. When something was found in production and fixed on the spot, say so — do **not** backfill an issue afterwards, because its timestamp would land after the PR and misrepresent the work as planned:
+
+```markdown
+## 📚 관련 Issue
+해당 없음 — 운영 중 발견해 즉시 수정
+```
+
 ## Architecture
 
 ### Database topology
