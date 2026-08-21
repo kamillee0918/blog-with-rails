@@ -105,6 +105,10 @@ Action Text's sanitizer (Nokogiri) corrupts HTML entities inside `<pre><code>`. 
 
 A third path used to exist — `ThumbnailsController` resizing `app/assets/images/thumbnail/` on demand — and was removed: no view ever linked to it, and an unvalidated `width` let anyone evict the whole cache.
 
+Reusing one cover across posts is a supported operation, not a hack: `bin/rails cover:reuse SRC=<slug|id> DST=<slug|id>` (`CoverBlobs`, `FORCE=1` to replace an existing cover) attaches the source post's blob to another post, so the file, its analysis and the already-built WebP variants are all reused and nothing new lands on the volume — re-uploading the same image costs the original *and* a fresh set of variants. It goes through `find_by_slug_or_id` rather than `published`, because the target is usually a post that has not gone out yet. Sharing is safe because of the foreign key on `active_storage_attachments`: `ActiveStorage::Blob#purge` rescues `InvalidForeignKey`, so a blob another post still references survives both a `purge` and a cover replacement. `test/models/cover_blobs_test.rb` pins that invariant — drop the FK and that test fails before the covers do.
+
+`ActiveStorage::Blob.unattached` is **not** a garbage signal here. `UploadsController#image` creates in-post image blobs with `create_and_upload!` and never attaches them — only their URL goes into the body — so every live in-post image (27 of them at the time of writing) looks unattached. A cleanup task must first resolve the signed ids in `post.content.body_before_type_cast` and spare those; one written against `unattached` alone deletes the blog's illustrations.
+
 ### Frontend
 
 Importmap ESM only. Stimulus controllers live in `app/javascript/controllers/`; `app/javascript/init.js` is a separate non-Stimulus module handling TinyMCE, PrismJS, and MathJax initialization with Turbo lifecycle events — third-party widget integration usually belongs there. Trix and Action Text's JS are deliberately not pinned: the editor is a TinyMCE-backed `text_area`, so they were dead weight that importmap still preloaded.
