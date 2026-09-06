@@ -14,9 +14,9 @@ primary_region = "nrt"          # 도쿄. `fly platform regions` 로 현재 목�
 
 # 스왑은 요금이 붙지 않는 완충 장치다. shared-cpu-1x 가 기본 제공하는 메모리는 256MB 뿐이고
 # 그 위는 전부 "Machines Shared 1x: Additional RAM" 으로 과금된다(2GB 일 때 nrt 기준 월 $10).
-# variant 생성 스파이크를 디스크로 흘려보내는 대신 RAM 을 2GB → 1.5GB 로 낮췄다.
+# RAM 을 2GB → 1GB 로 내리는 대신 같은 크기의 스왑을 깔아 완충을 남겼다.
 # 스왑은 RAM 보다 느리므로, 상시 사용량이 여기까지 닿기 시작하면 memory 를 다시 올릴 것.
-swap_size_mb = 512
+swap_size_mb = 1024
 
 [build]
   dockerfile = "Dockerfile"
@@ -29,12 +29,16 @@ swap_size_mb = 512
   # 특권 포트 바인딩을 피하기 위해 8080으로 올린다. internal_port 와 반드시 일치시킬 것.
   HTTP_PORT = "8080"
 
-  # config/puma.rb 의 기본값은 4다. 이 머신은 vCPU 1개 / 메모리 1GB / 스왑 0 이고,
-  # Active Storage 는 variant 가 없는 이미지를 요청받으면 그 웹 요청 안에서 libvips 를
-  # 돌린다. 즉 워커 수가 곧 libvips 동시 실행 수이자 메모리 피크가 된다.
+  # config/puma.rb 의 기본값은 4다. vCPU 가 1개인 데다, 예전에는 Active Storage 가
+  # variant 없는 이미지를 요청받으면 그 웹 요청 안에서 libvips 를 돌렸다. 즉 워커 수가
+  # 곧 libvips 동시 실행 수이자 메모리 피크였다.
   # 2026-08-09, 새 표지를 올린 직후 워커 4개가 동시에 variant 를 만들다 여유 메모리
-  # (333MB)를 소진해 셋이 60초 하트비트를 놓쳤고, Puma 가 이들을 죽이면서 사이트가
-  # 503 이 되었다. 한 요청은 큐에서 470초를 기다린 뒤 502 로 끝났다.
+  # (당시 메모리 1GB / 스왑 0 에서 333MB)를 소진해 셋이 60초 하트비트를 놓쳤고,
+  # Puma 가 이들을 죽이면서 사이트가 503 이 되었다. 한 요청은 큐에서 470초를 기다린 뒤
+  # 502 로 끝났다.
+  # 지금은 표지 variant 를 첨부 시점에 미리 굽기 때문에(Post 의 preprocessed 참고)
+  # 요청 경로에 libvips 가 없다. 그래도 4로 되돌리지 않는 것은 워커 하나가 곧 Ruby
+  # 힙 하나이고, 이 머신의 상시 사용량 대부분이 그 힙이기 때문이다.
   WEB_CONCURRENCY = "2"
 
   # libvips 는 기본적으로 코어 수만큼 스레드를 띄운다. vCPU 가 1개이므로 이득은 없고
@@ -75,17 +79,21 @@ swap_size_mb = 512
 
 [[vm]]
   size = "shared-cpu-1x"
-  # 512MB → 1GB → 2GB → 1.5GB. libvips 이미지 변환 때문에 계속 올렸다가,
-  # 스왑(swap_size_mb)으로 완충을 만든 뒤 비용 때문에 한 단계 내렸다.
-  # 1GB 로도 부족했던 이유는 Active Storage 가 variant 를 웹 요청 안에서 만들기 때문이다.
-  # 표지 한 장을 바꾸면 아직 없는 variant 를 방문자가 요청하는 대로 그 자리에서 생성하는데,
-  # 유휴 상태에서 이미 605MB 를 쓰고 있어 여유가 333MB 뿐이었고 스왑은 0 이라 완충이 없었다.
-  # 2026-08-09 에 이것이 워커 정지 → Puma 60초 타임아웃 → 503 으로 이어졌다(WEB_CONCURRENCY 주석 참고).
-  # 2026-09-06 실측 유휴 사용량은 880MB 다. 1.5GB 면 여유 620MB 에 스왑 512MB 가 더 받쳐준다.
+  # 512MB → 1GB → 2GB → 1GB. libvips 이미지 변환 때문에 계속 올렸다가, 그 변환을
+  # 요청 경로에서 걷어낸 뒤 되돌렸다.
   #
-  # 다음 단계는 1024mb 다(추가 RAM 과금이 1.25GB → 0.75GB 로 줄어 월 $3 가량 절감).
-  # 다만 이 값을 먼저 내리면 안 된다 — preprocessed 는 첨부 시점에만 도는 잡이라
-  # 이미 붙어 있는 표지의 variant 는 배포만으로 채워지지 않고, 남은 것은 방문자
-  # 요청 안에서 libvips 를 돌린다. 배포 후 `fly ssh console -C "bin/rails cover:warm"`
-  # 이 새로 만든 것 0개를 보고할 때 내릴 것.
-  memory = "1536mb"
+  # 1GB 로 처음 갔을 때 부족했던 이유는 Active Storage 가 variant 를 웹 요청 안에서
+  # 만들었기 때문이다. 표지 한 장을 바꾸면 아직 없는 variant 를 방문자가 요청하는 대로
+  # 그 자리에서 생성하는데, 유휴 상태에서 이미 605MB 를 쓰고 있어 여유가 333MB 뿐이었고
+  # 스왑은 0 이라 완충이 없었다. 2026-08-09 에 이것이 워커 정지 → Puma 60초 타임아웃 →
+  # 503 으로 이어졌다(WEB_CONCURRENCY 주석 참고).
+  #
+  # 그래서 같은 1GB 라도 조건이 다르다. 표지 variant 는 첨부 시점에 미리 굽고, 잡 워커는
+  # 스레드 1개이며(config/queue.yml), 스왑 1GB 가 깔려 있다. 2026-09-06 전환 시점의
+  # 실측은 유휴 400MB / 여유 560MB 였고, `bin/rails cover:warm` 이 미생성 variant 0개를
+  # 보고한 뒤에 내렸다.
+  #
+  # 되돌려야 하는 신호는 스왑이다. SwapFree 가 눈에 띄게 줄어 있으면 상시 사용량이
+  # RAM 을 넘긴 것이므로 memory 를 올릴 것 — 1GB 당 nrt 기준 월 $5.7 쯤 든다.
+  #   fly ssh console -a kamillee0918-blog -C "cat /proc/meminfo"
+  memory = "1024mb"
