@@ -12,6 +12,12 @@
 app = "kamillee0918-blog"
 primary_region = "nrt"          # 도쿄. `fly platform regions` 로 현재 목록 확인 가능
 
+# 스왑은 요금이 붙지 않는 완충 장치다. shared-cpu-1x 가 기본 제공하는 메모리는 256MB 뿐이고
+# 그 위는 전부 "Machines Shared 1x: Additional RAM" 으로 과금된다(2GB 일 때 nrt 기준 월 $10).
+# variant 생성 스파이크를 디스크로 흘려보내는 대신 RAM 을 2GB → 1.5GB 로 낮췄다.
+# 스왑은 RAM 보다 느리므로, 상시 사용량이 여기까지 닿기 시작하면 memory 를 다시 올릴 것.
+swap_size_mb = 512
+
 [build]
   dockerfile = "Dockerfile"
 
@@ -69,9 +75,17 @@ primary_region = "nrt"          # 도쿄. `fly platform regions` 로 현재 목�
 
 [[vm]]
   size = "shared-cpu-1x"
-  # 512MB → 1GB → 2GB. libvips 이미지 변환 때문에 계속 올렸다.
+  # 512MB → 1GB → 2GB → 1.5GB. libvips 이미지 변환 때문에 계속 올렸다가,
+  # 스왑(swap_size_mb)으로 완충을 만든 뒤 비용 때문에 한 단계 내렸다.
   # 1GB 로도 부족했던 이유는 Active Storage 가 variant 를 웹 요청 안에서 만들기 때문이다.
   # 표지 한 장을 바꾸면 아직 없는 variant 를 방문자가 요청하는 대로 그 자리에서 생성하는데,
   # 유휴 상태에서 이미 605MB 를 쓰고 있어 여유가 333MB 뿐이었고 스왑은 0 이라 완충이 없었다.
   # 2026-08-09 에 이것이 워커 정지 → Puma 60초 타임아웃 → 503 으로 이어졌다(WEB_CONCURRENCY 주석 참고).
-  memory = "2gb"
+  # 2026-09-06 실측 유휴 사용량은 880MB 다. 1.5GB 면 여유 620MB 에 스왑 512MB 가 더 받쳐준다.
+  #
+  # 다음 단계는 1024mb 다(추가 RAM 과금이 1.25GB → 0.75GB 로 줄어 월 $3 가량 절감).
+  # 다만 이 값을 먼저 내리면 안 된다 — preprocessed 는 첨부 시점에만 도는 잡이라
+  # 이미 붙어 있는 표지의 variant 는 배포만으로 채워지지 않고, 남은 것은 방문자
+  # 요청 안에서 libvips 를 돌린다. 배포 후 `fly ssh console -C "bin/rails cover:warm"`
+  # 이 새로 만든 것 0개를 보고할 때 내릴 것.
+  memory = "1536mb"
