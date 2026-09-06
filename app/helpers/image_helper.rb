@@ -1,14 +1,11 @@
 # frozen_string_literal: true
 
 module ImageHelper
-  # 이미지 사이즈 프리셋 정의
-  IMAGE_SIZES = {
-    thumbnail: { width: 160, height: 160 },
-    small: { width: 380, height: 250 },
-    medium: { width: 640, height: 430 },
-    large: { width: 1024, height: 688 },
-    hero: { width: 1920, height: 1080 }
-  }.freeze
+  # 크기 표와 variant 이름은 Post 가 named variant 로 선언한 것을 그대로 쓴다.
+  #
+  # 여기서 인라인 해시로 variant 를 만들면 Post 가 미리 구워 둔 것과 키가 어긋나,
+  # preprocessed 를 붙여 놓고도 방문자 요청 안에서 libvips 가 다시 돈다. 실제로
+  # 예전에는 그 상태였다 — 프리셋 이름은 선언만 되어 있고 뷰는 해시를 넘겼다.
 
   # 최적화된 이미지 태그 생성
   # @param attachment [ActiveStorage::Attached] ActiveStorage 첨부 이미지
@@ -17,21 +14,17 @@ module ImageHelper
   def optimized_image_tag(attachment, size: :medium, lazy: true, **options)
     return nil unless attachment.attached?
 
-    dimensions = IMAGE_SIZES[size] || IMAGE_SIZES[:medium]
+    name = Post::COVER_SIZES.key?(size) ? size : :medium
+    width, height = Post::COVER_SIZES.fetch(name)
 
-    # WebP 변환 및 리사이즈 variant 생성
-    variant = attachment.variant(
-      resize_to_limit: [ dimensions[:width], dimensions[:height] ],
-      format: :webp,
-      saver: { quality: 80 }
-    )
+    variant = attachment.variant(name)
 
     # 기본 옵션 설정
     default_options = {
       alt: options.delete(:alt) || "",
       class: options.delete(:class) || "",
       decoding: "async"
-    }.merge(intrinsic_dimensions(attachment, max_width: dimensions[:width], max_height: dimensions[:height]))
+    }.merge(intrinsic_dimensions(attachment, max_width: width, max_height: height))
 
     # Lazy loading 설정 (Hero 이미지는 제외)
     if lazy
@@ -68,25 +61,14 @@ module ImageHelper
     if source.is_a?(ActiveStorage::Attached)
       return nil unless source.attached?
 
-      srcset_sizes = [ 380, 640, 800, 1024, 1280, 1920 ]
-
-      srcset = srcset_sizes.map do |width|
-        variant = source.variant(
-          resize_to_limit: [ width, nil ],
-          format: :webp,
-          saver: { quality: 80 }
-        )
-        "#{url_for(variant)} #{width}w"
+      srcset = Post::COVER_SRCSET_VARIANTS.map do |width, name|
+        "#{url_for(source.variant(name))} #{width}w"
       end.join(", ")
 
-      default_variant = source.variant(
-        resize_to_limit: [ 1024, nil ],
-        format: :webp,
-        saver: { quality: 80 }
-      )
+      default_variant = source.variant(Post::COVER_SRCSET_VARIANTS.fetch(Post::COVER_DEFAULT_WIDTH))
 
       default_options[:srcset] = srcset
-      default_options.merge!(intrinsic_dimensions(source, max_width: 1024))
+      default_options.merge!(intrinsic_dimensions(source, max_width: Post::COVER_DEFAULT_WIDTH))
       image_tag(default_variant, **default_options.merge(options))
 
     else
@@ -102,18 +84,16 @@ module ImageHelper
   def picture_tag(attachment, size: :medium, lazy: true, **options)
     return nil unless attachment.attached?
 
-    dimensions = IMAGE_SIZES[size] || IMAGE_SIZES[:medium]
+    name = Post::COVER_SIZES.key?(size) ? size : :medium
+    width, height = Post::COVER_SIZES.fetch(name)
 
     # WebP variant
-    webp_variant = attachment.variant(
-      resize_to_limit: [ dimensions[:width], dimensions[:height] ],
-      format: :webp,
-      saver: { quality: 80 }
-    )
+    webp_variant = attachment.variant(name)
 
-    # 원본 포맷 variant (폴백용)
+    # 원본 포맷 variant (폴백용). 미리 굽는 대상이 아니므로 요청 시 생성된다 —
+    # 현재 이 메서드를 쓰는 뷰는 없다.
     fallback_variant = attachment.variant(
-      resize_to_limit: [ dimensions[:width], dimensions[:height] ]
+      resize_to_limit: [ width, height ]
     )
 
     loading_attr = lazy ? 'loading="lazy"' : 'fetchpriority="high"'

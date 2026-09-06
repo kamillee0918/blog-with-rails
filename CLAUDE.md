@@ -96,8 +96,17 @@ Action Text's sanitizer (Nokogiri) corrupts HTML entities inside `<pre><code>`. 
 
 ### Image serving (two paths)
 
-1. **Cover images**: Active Storage `cover_image` with named WebP variants (`:thumbnail`…`:hero`) defined on `Post`; rendered through `ImageHelper` (`optimized_image_tag`, `responsive_image_tag`). Only the LCP image should get `fetchpriority: high`/`lazy: false`.
+1. **Cover images**: Active Storage `cover_image` with named WebP variants defined on `Post`; rendered through `ImageHelper` (`optimized_image_tag`, `responsive_image_tag`). Only the LCP image should get `fetchpriority: high`/`lazy: false`.
+
 2. **In-post images**: TinyMCE uploads to `UploadsController` (type/size validation), which returns a JSON `srcset` of Active Storage variant URLs.
+
+`Post` and `ImageHelper` are one contract, and splitting them is what made the cover path expensive. The named variants used to be `:thumbnail`…`:hero` while the helpers passed **inline transformation hashes** — the srcset asked for six `resize_to_limit: [w, nil]` widths that no name covered, and `:hero` disagreed on quality (85 vs 80). Nothing ever resolved a variant by name, so the declarations were dead and every variant was built inside the visitor request that first asked for it. That is the memory peak behind the 2026-08-09 outage. Now `Post::COVER_SRCSET_VARIANTS` / `Post::COVER_SIZES` name exactly what the views request, the helpers reference those names, and `Post::PREPROCESSED_COVER_VARIANTS` (the six srcset widths plus `:small`) carries `preprocessed: true` so `ActiveStorage::TransformJob` bakes them at attach time. Presets no view renders are declared but deliberately not preprocessed — baking a variant nobody requests only spends volume and CPU.
+
+Three things hold this together:
+
+- **The variant key must not move.** It is a signature over the transformation hash, so changing a width, format or quality orphans every WebP already on the volume and rebuilds all of them in request. `test/models/cover_variants_test.rb` pins the named variants against the inline hashes they replaced. Compare through `attachment#variant`, not `ActiveStorage::Variation.wrap` — Active Storage hoists `format` to the front before signing, so a raw hash never matches and the test fails for a reason that has nothing to do with the variants.
+- **`preprocessed` only fires on attach**, so posts that already have covers need `bin/rails cover:warm` (`CoverBlobs.warm`) once. It skips variants that exist, counts what it built from `ActiveStorage::VariantRecord`, and is safe to re-run. Run it before lowering machine memory — an unbuilt variant still means libvips inside a web request.
+- **`config/queue.yml` runs one worker thread.** `SOLID_QUEUE_IN_PUMA=true` puts jobs in the Puma process, so thread count is libvips concurrency. Attaching a cover queues seven transforms at once; three threads would rebuild the peak that was just moved off the request path.
 
 `config.active_storage.resolve_model_to_route = :rails_storage_proxy` in `config/application.rb` is what makes either path CDN-cacheable — the default redirect mode emits `max-age=300, private` behind a 302, which Cloudflare cannot cache. Build URLs with `url_for`/`polymorphic_path` so they follow that setting; `rails_blob_url` and `rails_blob_representation_url` are pinned to the redirect routes and silently ignore it.
 

@@ -16,7 +16,41 @@ module CoverBlobs
 
   Result = Struct.new(:status, :source, :target, :blob, keyword_init: true)
 
+  WarmResult = Struct.new(:covers, :requested, :built, :errors, keyword_init: true)
+
   class << self
+    # 미리 구워 두기로 한 표지 variant 중 아직 없는 것을 만든다.
+    #
+    # Post 의 preprocessed 선언은 attachment 가 새로 생길 때만 잡을 걸므로, 이미
+    # 붙어 있는 글의 표지는 이 태스크로 한 번 채워야 한다. 남아 있는 미생성
+    # variant 는 방문자의 첫 요청 안에서 libvips 를 돌리므로, 머신 메모리를
+    # 줄이기 전에 반드시 돌릴 것. `rake cover:warm` 참고.
+    #
+    # 이미 있는 variant 는 track_variants 가 남긴 VariantRecord 를 보고 건너뛰므로
+    # 반복 실행해도 파일이 늘지 않는다. built 는 그 레코드 증가분으로 센다.
+    def warm(posts: Post.with_attached_cover_image)
+      covers = 0
+      requested = 0
+      errors = []
+      before = ActiveStorage::VariantRecord.count
+
+      posts.find_each do |post|
+        next unless post.cover_image.attached?
+
+        covers += 1
+        Post::PREPROCESSED_COVER_VARIANTS.each do |name|
+          post.cover_image.variant(name).processed
+          requested += 1
+        rescue StandardError => e
+          # 한 장이 깨졌다고 나머지를 굽지 못하면 요청 경로에 libvips 가 남는다.
+          errors << "#{post.to_param} / #{name}: #{e.class} #{e.message}"
+        end
+      end
+
+      WarmResult.new(covers: covers, requested: requested, errors: errors,
+                     built: ActiveStorage::VariantRecord.count - before)
+    end
+
     # source 글의 표지 blob 을 target 글에 붙인다. 이미 다른 표지가 있으면
     # 실수로 덮어쓰지 않도록 force 를 요구한다.
     def reuse(source:, target:, force: false)
