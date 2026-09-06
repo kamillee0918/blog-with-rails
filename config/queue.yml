@@ -3,8 +3,13 @@ default: &default
     - polling_interval: 1
       batch_size: 500
   workers:
+    # 스레드 1개. SOLID_QUEUE_IN_PUMA=true 라 잡은 Puma 와 같은 프로세스에서 돌고,
+    # 이 앱의 백그라운드 잡은 사실상 Active Storage 의 분석/변환뿐이다. 둘 다
+    # libvips 를 쓰므로 스레드 수가 곧 libvips 동시 실행 수이자 메모리 피크가 된다.
+    # 표지 한 장을 붙이면 미리 구울 variant 7개가 한꺼번에 큐에 들어가는데,
+    # 3개씩 동시에 구우면 요청 경로에서 없앤 피크가 잡 쪽에 그대로 되살아난다.
     - queues: "*"
-      threads: 3
+      threads: 1
       processes: <%= ENV.fetch("JOB_CONCURRENCY", 1) %>
       polling_interval: 0.1
 

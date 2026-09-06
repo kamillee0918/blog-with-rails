@@ -1,13 +1,57 @@
 class Post < ApplicationRecord
   has_and_belongs_to_many :tags
   has_rich_text :content
+
+  # === 표지 variant ===
+  #
+  # 뷰가 실제로 요청하는 변환에만 이름을 붙인다. ImageHelper 는 인라인 해시 대신
+  # 이 이름들을 참조하므로, 여기 없는 조합은 애초에 만들어지지 않는다. 예전에는
+  # 헬퍼가 해시를 직접 넘겼고 여기 이름들은 아무도 부르지 않는 죽은 정의였다.
+  #
+  # 폭·포맷·품질은 variant 키의 재료다(ActiveStorage::Variation#key). 하나라도
+  # 바꾸면 볼륨에 이미 구워 둔 WebP 가 통째로 무효화되어 방문자 요청 안에서
+  # 전부 다시 만들어지므로, 값을 옮길 때는 그 비용을 감수한다는 뜻인지 확인할 것.
+  # 키가 그대로임은 test/models/cover_variants_test.rb 가 못 박아 둔다.
+  COVER_QUALITY = 80
+
+  # responsive_image_tag 의 srcset. 폭만 제한하고 높이는 원본 비율을 따른다.
+  COVER_SRCSET_VARIANTS = [ 380, 640, 800, 1024, 1280, 1920 ]
+    .index_with { |width| :"srcset_#{width}" }.freeze
+
+  # srcset 의 기본 이미지(=img src)로 쓰는 폭. sizes 속성의 기준과 같다.
+  COVER_DEFAULT_WIDTH = 1024
+
+  # optimized_image_tag 의 프리셋. 폭과 높이를 모두 제한한다.
+  COVER_SIZES = {
+    thumbnail: [ 160, 160 ],
+    small: [ 380, 250 ],
+    medium: [ 640, 430 ],
+    large: [ 1024, 688 ],
+    hero: [ 1920, 1080 ]
+  }.freeze
+
+  # 첨부 직후 ActiveStorage::TransformJob 이 미리 구워 두는 것들.
+  #
+  # 이것이 없으면 방문자의 첫 요청 안에서 libvips 가 돌고, 그 메모리 피크가
+  # 2026-08-09 의 503 을 만들었다(fly.toml 의 WEB_CONCURRENCY 주석 참고).
+  #
+  # 지금 뷰가 그리는 것은 srcset 전부와 :small 뿐이라 그 둘만 굽는다. 나머지
+  # 프리셋은 정의만 두고 굽지 않는다 — 아무도 요청하지 않는 variant 를 굽는 것은
+  # 볼륨과 CPU 만 쓴다. 뷰에서 새 프리셋을 쓰기 시작하면 여기에 더할 것.
+  PREPROCESSED_COVER_VARIANTS = (COVER_SRCSET_VARIANTS.values + [ :small ]).freeze
+
   has_one_attached :cover_image do |attachable|
-    # 미리 생성할 variant 정의 (on-demand로 생성됨)
-    attachable.variant :thumbnail, resize_to_limit: [ 160, 160 ], format: :webp, saver: { quality: 80 }
-    attachable.variant :small, resize_to_limit: [ 380, 250 ], format: :webp, saver: { quality: 80 }
-    attachable.variant :medium, resize_to_limit: [ 640, 430 ], format: :webp, saver: { quality: 80 }
-    attachable.variant :large, resize_to_limit: [ 1024, 688 ], format: :webp, saver: { quality: 80 }
-    attachable.variant :hero, resize_to_limit: [ 1920, 1080 ], format: :webp, saver: { quality: 85 }
+    COVER_SRCSET_VARIANTS.each do |width, name|
+      attachable.variant name, resize_to_limit: [ width, nil ], format: :webp,
+                               saver: { quality: COVER_QUALITY },
+                               preprocessed: PREPROCESSED_COVER_VARIANTS.include?(name)
+    end
+
+    COVER_SIZES.each do |name, (width, height)|
+      attachable.variant name, resize_to_limit: [ width, height ], format: :webp,
+                               saver: { quality: COVER_QUALITY },
+                               preprocessed: PREPROCESSED_COVER_VARIANTS.include?(name)
+    end
   end
 
   # === Validations ===

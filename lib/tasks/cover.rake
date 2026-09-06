@@ -29,4 +29,15 @@ namespace :cover do
   rescue CoverBlobs::Error, ActiveRecord::RecordNotFound => e
     abort(e.message)
   end
+
+  desc "표지 variant 를 미리 굽는다 (방문자 요청 안에서 libvips 가 도는 것을 막는다)"
+  task warm: :environment do
+    result = CoverBlobs.warm
+
+    puts "표지 #{result.covers}건 / variant #{result.requested}개 확인"
+    puts "  새로 만든 것: #{result.built}개"
+
+    result.errors.each { |message| warn "  실패 — #{message}" }
+    abort("일부 variant 를 만들지 못했습니다. 머신 메모리를 줄이기 전에 해결하세요.") if result.errors.any?
+  end
 end
