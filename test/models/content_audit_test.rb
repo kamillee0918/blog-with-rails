@@ -219,4 +219,29 @@ class ContentAuditTest < ActiveSupport::TestCase
 
     assert_includes ContentAudit.run.map(&:check), :image_alt_missing
   end
+
+  # === 코드 블록 이스케이프 ===
+
+  test "코드 블록에 덧붙은 이스케이프를 오류로 잡는다" do
+    post = create_post(title: "Over Escaped",
+                       content: '<pre class="language-java"><code>if (a &amp;amp;lt; b) {}</code></pre>')
+
+    findings = audit(post).select { |f| f.check == :code_block_over_escaped }
+    assert_equal 1, findings.size
+    assert_equal :error, findings.first.severity
+  end
+
+  test "정상적으로 이스케이프된 코드 블록은 통과한다" do
+    post = create_post(title: "Well Escaped",
+                       content: '<pre class="language-java"><code>if (a &lt; b &amp;&amp; c) {}</code></pre>')
+
+    assert_not_includes checks_for(post), :code_block_over_escaped
+  end
+
+  test "산문의 인라인 code 스팬은 코드 블록 검사 대상이 아니다" do
+    post = create_post(title: "Prose Only",
+                       content: "<p>표기법은 <code>&amp;amp;</code> 처럼 쓴다</p>")
+
+    assert_not_includes checks_for(post), :code_block_over_escaped
+  end
 end
