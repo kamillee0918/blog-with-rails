@@ -255,29 +255,48 @@ function initTinyMCE() {
         });
       };
 
-      // 코드 블록 복원 (에디터 로드 시)
-      // Base64 인코딩된 코드 블록 → 디코딩 → 이중 인코딩으로 TinyMCE 파서 우회
-      // 기존 ⟦ERB_*⟧ placeholder도 폴백으로 지원
+      // 코드 블록 복원 (에디터가 콘텐츠를 받을 때마다)
+      //
+      // 여기 도착하는 e.content 는 두 곳에서 온다.
+      //
+      //   1. DB → textarea → 최초 로드. 코드 블록이 BASE64: 로 감싸여 있으므로
+      //      풀어 준다. 풀린 값은 이미 엔티티 형태(`&lt;`)이고, 그것이 파서가
+      //      기대하는 형태다.
+      //   2. TinyMCE 자신. 소스 코드 대화상자·붙여넣기·되돌리기는 에디터가 방금
+      //      직렬화한 HTML 을 그대로 되먹인다. 코드 블록은 이미 엔티티 형태다.
+      //
+      // 어느 쪽이든 파서에 그대로 넘기면 된다. 여기서 한 번 더 인코딩하면
+      // 파서는 한 겹만 벗기므로 저장할 때마다 한 겹씩 쌓인다. 예전에는 2번을
+      // 「raw HTML」로 보고 encodeRawHtmlForTinyMCE 를 태웠는데, 그래서
+      // `&lt;` → `&amp;lt;` → `&amp;amp;lt;` … 로 자라 독자에게 부등호가
+      // 글자로 보였다. 발행글 7건에서 197곳이 그렇게 망가져 있었다.
+      //
+      // 실제로 raw HTML 이 든 코드 블록은 하나도 없다 — 그런 것은 Action Text
+      // sanitizer 를 통과하지 못하고, 그 때문에 애초에 Base64 우회가 생겼다.
+      // 남은 raw 경로는 ⟦ERB_*⟧ 레거시뿐이라 거기서만 인코딩한다.
       editor.on("BeforeSetContent", function (e) {
         if (!e.content) return;
 
         e.content = e.content.replace(
           /(<pre[^>]*>\s*<code[^>]*>)([\s\S]*?)(<\/code>\s*<\/pre>)/gi,
           function (match, openTags, codeContent, closeTags) {
-            let processed = codeContent.trim();
+            const processed = codeContent.trim();
 
             if (processed.startsWith("BASE64:")) {
-              // Base64 인코딩된 코드 블록 디코딩
-              processed = decodeBase64CodeBlock(processed.substring(7));
-            } else if (processed.includes("⟦ERB_")) {
-              // 기존 ⟦ERB_*⟧ placeholder 폴백 (하위 호환)
-              processed = decodeLegacyErbPlaceholders(processed);
-            } else {
-              // placeholder 없는 일반 코드 블록: raw HTML을 엔티티로 변환 + 이중 인코딩
-              processed = encodeRawHtmlForTinyMCE(codeContent);
+              return (
+                openTags +
+                decodeBase64CodeBlock(processed.substring(7)) +
+                closeTags
+              );
             }
 
-            return openTags + processed + closeTags;
+            if (processed.includes("⟦ERB_")) {
+              // 레거시 콘텐츠만 raw HTML 이다 (하위 호환)
+              return openTags + decodeLegacyErbPlaceholders(processed) + closeTags;
+            }
+
+            // 이미 엔티티 형태다. 손대지 않는다.
+            return match;
           },
         );
       });
