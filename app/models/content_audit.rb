@@ -47,6 +47,7 @@ class ContentAudit
       check_cover(post)
       check_images(post, body)
       check_internal_links(post, body)
+      check_code_blocks(post, body)
     end
 
     @findings
@@ -142,6 +143,17 @@ class ContentAudit
 
       add(post, :broken_internal_link, :error, path.truncate(80))
     end
+  end
+
+  # 코드 블록에 이스케이프가 덧붙었는지 본다. 판단의 여지가 없는 손상이라 경고가
+  # 아니라 오류다 — 독자에게 `<` 대신 `&amp;lt;` 라는 글자가 그대로 보인다.
+  # 되돌리는 것은 `rake content:fix_escaping`.
+  def check_code_blocks(post, body)
+    count = CodeBlockEscaping.over_escapes(body)
+    return if count.zero?
+
+    add(post, :code_block_over_escaped, :error,
+        "코드 블록에 덧붙은 이스케이프 #{count}곳 — 부등호가 글자로 보인다")
   end
 
   # 남의 사이트에도 /posts/ 는 있다. 상대 경로이거나 우리 호스트일 때만 본다.
