@@ -77,7 +77,7 @@ fly deploy
 
 이 단계에서 일어나는 일:
 
-1. `Dockerfile`로 이미지 빌드 (Ruby 3.4.5, libvips 포함)
+1. `Dockerfile`로 이미지 빌드 (Ruby 3.4.11, libvips 포함)
 2. 볼륨이 `/rails/storage`에 마운트됨
 3. `bin/docker-entrypoint`가 `bin/rails db:prepare` 실행 → **미배포 마이그레이션 2건이 Supabase에 자동 적용됨**
    - `20260731120000_add_published_at_index_to_posts`

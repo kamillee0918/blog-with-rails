@@ -34,7 +34,7 @@ Rails 8 기반의 모던 블로그 애플리케이션입니다.
 
 ### 사전 요구사항
 
-[![Ruby Version Badge](https://img.shields.io/badge/Ruby_INSTALLATION-3.4.5-CC342D?style=for-the-badge&labelColor=black&logo=ruby&logoColor=CC342D)](https://www.ruby-lang.org/ko/documentation/installation/)
+[![Ruby Version Badge](https://img.shields.io/badge/Ruby_INSTALLATION-3.4.11-CC342D?style=for-the-badge&labelColor=black&logo=ruby&logoColor=CC342D)](https://www.ruby-lang.org/ko/documentation/installation/)
 
 [![Rails Version Badge](https://img.shields.io/badge/Rails_INSTALLATION-8.1.3-D30001?style=for-the-badge&labelColor=black&logo=rubyonrails&logoColor=D30001)](https://rails.insomenia.com/install_ruby_on_rails)
 
@@ -162,8 +162,8 @@ kamal deploy
 
 ### 레퍼런스
 
-[![Ruby Reference Badge](https://img.shields.io/badge/Ruby_REFERENCE-3.4.5-CC342D?style=for-the-badge&labelColor=black&logo=rubyonrails&logoColor=CC342D)](https://www.ruby-lang.org/ko/documentation/)
-[![Ruby API Badge](https://img.shields.io/badge/Ruby_API-3.4.5-CC342D?style=for-the-badge&labelColor=black&logo=rubyonrails&logoColor=CC342D)](https://docs.ruby-lang.org/en/3.4/)
+[![Ruby Reference Badge](https://img.shields.io/badge/Ruby_REFERENCE-3.4.11-CC342D?style=for-the-badge&labelColor=black&logo=rubyonrails&logoColor=CC342D)](https://www.ruby-lang.org/ko/documentation/)
+[![Ruby API Badge](https://img.shields.io/badge/Ruby_API-3.4.11-CC342D?style=for-the-badge&labelColor=black&logo=rubyonrails&logoColor=CC342D)](https://docs.ruby-lang.org/en/3.4/)
 
 [![Rails Reference Badge](https://img.shields.io/badge/Rails_REFERENCE-8.1.3-D30001?style=for-the-badge&labelColor=black&logo=rubyonrails&logoColor=D30001)](https://rails.insomenia.com/)
 [![Rails API Badge](https://img.shields.io/badge/Rails_API-8.1.3-D30001?style=for-the-badge&labelColor=black&logo=rubyonrails&logoColor=D30001)](https://api.rubyonrails.org/)
