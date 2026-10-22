@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Rails 8.1 blog application (Ruby 3.4.5). Hotwire (Turbo + Stimulus) with importmap — no Node/bundler; custom CSS (no Tailwind). Action Text + TinyMCE for authoring, Active Storage + libvips for images, Kaminari for pagination. Deployed to Fly.io as a Docker container behind Cloudflare; production DB is Supabase PostgreSQL.
+Rails 8.1 blog application (Ruby 3.4.11). Hotwire (Turbo + Stimulus) with importmap — no Node/bundler; custom CSS (no Tailwind). Action Text + TinyMCE for authoring, Active Storage + libvips for images, Kaminari for pagination. Deployed to Fly.io as a Docker container behind Cloudflare; production DB is Supabase PostgreSQL.
 
 ## Commands
 
