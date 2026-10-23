@@ -101,8 +101,10 @@ tar czf storage_restore.tar.gz -C tmp/storage_restored .
 fly ssh sftp shell
   put storage_restore.tar.gz /rails/storage/restore.tar.gz
   exit
-fly ssh console -C "sh -c 'cd /rails/storage && tar xzf restore.tar.gz && rm restore.tar.gz'"
+fly ssh console -u rails -C "sh -c 'cd /rails/storage && tar xzf restore.tar.gz && rm restore.tar.gz'"
 ```
+
+> **볼륨에 쓰는 명령은 모두 `-u rails` 로 실행하십시오.** `fly ssh console` 의 기본 사용자는 root 인데, 앱은 rails(uid 1000)로 돕니다. 이 절의 전개를 root 로 했더니 디렉터리가 root 소유로 남아 앱이 그 안의 파일을 지우지 못했고(PurgeJob 실패), 새 업로드도 막힐 수 있었습니다. 2026-10-23 에 `chown -R rails:rails /rails/storage` 로 바로잡았고, 이후로는 `config/initializers/active_storage_owner_guard.rb` 가 production 에서 root 의 Active Storage 쓰기를 막습니다.
 
 ### 4-1. 깨진 variant 레코드 정리 (필수)
 
@@ -115,13 +117,13 @@ Rails는 `ActiveStorage::VariantRecord` 행이 DB에 있으면 그 variant를 "�
 **반드시 한 줄로 실행하십시오.** `-C` 값에 큰따옴표나 줄바꿈이 들어가면 flyctl이 문자열을 도중에 끊고 뒤쪽 단어를 호스트명으로 해석합니다 (`host was not found in DNS`).
 
 ```bash
-fly ssh console -C "bin/rails runner 'n=0; ActiveStorage::VariantRecord.includes(image_attachment: :blob).find_each { |v| b=v.image_blob; next if b && ActiveStorage::Blob.service.exist?(b.key); v.image_attachment&.purge; v.destroy; n+=1 }; puts n'"
+fly ssh console -u rails -C "bin/rails runner 'n=0; ActiveStorage::VariantRecord.includes(image_attachment: :blob).find_each { |v| b=v.image_blob; next if b && ActiveStorage::Blob.service.exist?(b.key); v.image_attachment&.purge; v.destroy; n+=1 }; puts n'"
 ```
 
 인용 문제가 계속 생기면 대화형 콘솔에서 붙여넣는 편이 확실합니다.
 
 ```bash
-fly ssh console --pty -C "bin/rails console"
+fly ssh console -u rails --pty -C "bin/rails console"
 ```
 ```ruby
 n = 0
@@ -144,7 +146,7 @@ n   # => 삭제된 variant 레코드 수 (217 예상)
 **재업로드가 끝난 뒤에 실행하십시오** — 파일이 없는 블롭은 분석에 실패합니다.
 
 ```bash
-fly ssh console -C "bin/rails runner 'ActiveStorage::Blob.find_each { |b| b.analyze_later if !b.analyzed? && ActiveStorage::Blob.service.exist?(b.key) }'"
+fly ssh console -u rails -C "bin/rails runner 'ActiveStorage::Blob.find_each { |b| b.analyze_later if !b.analyzed? && ActiveStorage::Blob.service.exist?(b.key) }'"
 ```
 
 `Blob#analyzed?`가 `metadata[:analyzed]`를 그대로 확인하므로, SQL `LIKE`에 큰따옴표를 섞을 필요가 없습니다. 앞서 실행하신 `where(metadata: nil)` 조건은 `metadata`가 빈 해시인 경우를 놓칩니다.
