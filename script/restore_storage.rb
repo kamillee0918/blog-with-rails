@@ -100,7 +100,7 @@ puts <<~WARN unless variants.empty?
       Rails 는 "이미 생성됨"으로 보고 재생성하지 않고 그 파일을 스트리밍하려다 404 를 낸다.
       따라서 파일 없는 VariantRecord 를 먼저 지워야 재생성이 일어난다:
 
-        fly ssh console -C "bin/rails runner 'ActiveStorage::VariantRecord.includes(image_attachment: :blob).find_each { |v| b = v.image_blob; next if b && ActiveStorage::Blob.service.exist?(b.key); v.image_attachment&.purge; v.destroy }'"
+        fly ssh console -u rails -C "bin/rails runner 'ActiveStorage::VariantRecord.includes(image_attachment: :blob).find_each { |v| b = v.image_blob; next if b && ActiveStorage::Blob.service.exist?(b.key); v.image_attachment&.purge; v.destroy }'"
 WARN
 
 return if originals.empty?
