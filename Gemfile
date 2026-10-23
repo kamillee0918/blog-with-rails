@@ -40,7 +40,7 @@ gem "bootsnap", require: false
 gem "thruster", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-gem "image_processing", "~> 2.0"
+gem "image_processing", "~> 2.2"
 # image_processing 2.0부터 이미지 백엔드가 선택적 의존성으로 분리되어 직접 명시해야 함
 # (config.active_storage.variant_processor = :vips)
 gem "ruby-vips", "~> 2.0"
