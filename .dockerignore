@@ -46,6 +46,18 @@
 # Ignore development files
 /.devcontainer
 
+# Ignore local work products. fly deploy sends the working directory, not the git tree,
+# so anything .gitignore hides still reaches the image unless it is listed here.
+# storage_restore.tar.gz is the 77MB volume backup from the Fly migration — every image
+# carried a full copy of the blog's original images until this was added.
+/storage_restore.tar.gz
+/coverage/
+/docs/
+/.ua/
+/.claude/
+/.vscode/
+/BLOG_CONTENT_REVIEW.md
+
 # Ignore Docker-related files
 /.dockerignore
 /Dockerfile*
