@@ -20,7 +20,8 @@ bin/rails test test/models/post_test.rb           # single file
 bin/rails test test/models/post_test.rb:42        # single test by line
 
 # Quality gates
-bin/check-code           # pre-push gate: Brakeman → RuboCop → all tests
+bin/check-code           # pre-push gate: Brakeman → RuboCop → code-block round-trip (node) → all tests
+node script/check_code_block_roundtrip.mjs  # editor-side code-block round-trip (no deps; CI job check_js)
 bin/ci                   # full local CI (adds bundler-audit, importmap audit, seed replant)
 bin/rails content:check  # content audit (see below) — SEVERITY=error to skip warnings
 bin/rubocop -a           # style (rubocop-rails-omakase) with autocorrect
@@ -93,6 +94,8 @@ Action Text's sanitizer (Nokogiri) corrupts HTML entities inside `<pre><code>`. 
 4. Legacy `⟦ERB_*⟧` placeholder posts are still decoded as a fallback.
 
 `config/initializers/action_text.rb` extends the sanitizer allow-list (tables, svg, `data-turbo`). The decode regex is looser than the encode one, so a block that was never encoded can still match it; a failed `strict_decode64` leaves the block untouched instead of raising, which used to 500 the post for every visitor.
+
+Both directions are guarded, because the 2026-09-07 damage (`&lt;` growing one `&amp;` per save) came from the editor side while the server side looked fine. `script/check_code_block_roundtrip.mjs` checks that `init.js` round-trips idempotently; `test/integration/code_block_roundtrip_test.rb` saves a TinyMCE-shaped body through the real controller, re-saves it twice, and requires the stored body and `rendered_content` to stay byte-identical. There are no system tests: a real TinyMCE test needs a Tiny Cloud API key in CI.
 
 ### Image serving (two paths)
 

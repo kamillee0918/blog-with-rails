@@ -18,7 +18,17 @@ if ! bin/rubocop; then
   exit 1
 fi
 
-echo "3️⃣  Tests..."
+echo "3️⃣  Code block round-trip (editor)..."
+if command -v node >/dev/null 2>&1; then
+  if ! node script/check_code_block_roundtrip.mjs; then
+    echo "❌ Code block round-trip failed. init.js is re-escaping code blocks."
+    exit 1
+  fi
+else
+  echo "⚠️  node not found — skipped here, CI's check_js job still runs it."
+fi
+
+echo "4️⃣  Tests..."
 if ! bin/rails db:test:prepare test test:system; then
   echo "❌ Rails Tests failed. Please fix the failing tests."
   exit 1
