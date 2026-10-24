@@ -77,6 +77,12 @@ class PostsController < ApplicationController
 
   # GET /posts/:id
   def show
+    # 글 하나에 주소가 여럿 생기지 않게 한다. find_by_slug_or_id 는 슬러그가 아니면 id 로도
+    # 찾고, find_by(id:) 가 "1-anything" 을 1 로 형변환하므로 /posts/1-anything 이나
+    # 슬러그 있는 글의 /posts/12 도 같은 글을 200 으로 내놓았다. 대체 조회는 옛 링크를
+    # 살리려고 그대로 두고, 정식 주소(to_param)가 아니면 영구 이동으로 보낸다.
+    return redirect_to(post_path(@post), status: :moved_permanently) if params[:id] != @post.to_param
+
     if admin_signed_in?
       set_no_cache_headers
     else

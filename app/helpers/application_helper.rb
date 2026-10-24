@@ -1,4 +1,11 @@
 module ApplicationHelper
+  # 검색엔진에 알릴 정식 주소. fly.dev 호스트로 들어온 요청도 본 도메인을 가리키도록
+  # APP_HOST 를 쓰고, 설정이 없는 환경(개발·테스트)에서는 요청 호스트로 대신한다.
+  def canonical_url(path)
+    host = ENV["APP_HOST"].presence || request.host
+    "https://#{host}#{path}"
+  end
+
   # 레이아웃이 CDN에서 받아오는 Prism/Mermaid/MathJax는 합쳐 수백 KB에 달하므로
   # 페이지가 실제로 쓰는 것만 로드한다.
   # 뷰에서 require_content_libraries로 표시하고 레이아웃이 content_library?로 읽는다.
