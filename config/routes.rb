@@ -1,10 +1,19 @@
 Rails.application.routes.draw do
   # === Posts ===
   get "posts/page/:page", to: "posts#index", as: :posts_page, constraints: { page: /\d+/ }
+
+  # 자유 입력·분류 값을 받는 세그먼트는 점을 형식(.js, .json …)으로 떼지 않는다.
+  # 기본 라우트는 "node.js" 를 keyword "node" + format "js" 로 읽어, 점이 든 검색어가
+  # 조용히 잘린 채 검색됐고, js 형식이라 레이아웃 없이 본문 조각만 나갔다. 폼 검색도
+  # 이 경로로 리다이렉트되므로 피할 길이 없었다.
+  # format: false 만으로는 모자란다 — format 파라미터가 없으면 Rails 는 경로 확장자로
+  # 다시 형식을 고르고, 브라우저의 Accept(*/* 포함)는 무시한다. defaults 로 html 을 박는다.
+  free_segment = %r{[^/]+}
+
   resources :posts do
     collection do
-      get "category/:category", action: :index, as: :category
-      get "tag/:tag", action: :tag, as: :tag
+      get "category/:category", action: :index, as: :category, constraints: { category: free_segment }, format: false, defaults: { format: "html" }
+      get "tag/:tag", action: :tag, as: :tag, constraints: { tag: free_segment }, format: false, defaults: { format: "html" }
       get "archive/:year", action: :archive, as: :archive, constraints: { year: /\d{4}/ }
     end
   end
@@ -12,7 +21,7 @@ Rails.application.routes.draw do
   # 직렬화하므로 /search/?keyword=x 밖에 만들지 못한다. 쿼리형을 받아 경로형으로
   # 넘겨주지 않으면 폼 검색이 전부 404 가 된다 (JS 로 경로를 조립하던 헤더만 예외였다).
   get "search", to: "posts#search_redirect", as: :search_query
-  get "search/:keyword", to: "posts#search", as: :search
+  get "search/:keyword", to: "posts#search", as: :search, constraints: { keyword: free_segment }, format: false, defaults: { format: "html" }
 
   # === Admin Session ===
   get "login", to: "sessions#new"

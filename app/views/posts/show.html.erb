@@ -1,5 +1,6 @@
 <% content_for :title, @post.title + " | Kamil Lee의 개발 일기" %>
 <% content_for :description, truncate(@post.summary.presence || @post.title, length: 160) %>
+<% content_for :head do %><link rel="canonical" href="<%= canonical_url(post_path(@post)) %>"><% end %>
 <%# 본문 디코딩은 비용이 있으므로 한 번만 수행해 라이브러리 판별과 렌더링에 함께 쓴다. %>
 <% post_body = @post.rendered_content %>
 <% require_content_libraries content_libraries_for(post_body) %>

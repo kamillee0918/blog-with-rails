@@ -259,6 +259,33 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_match "cannot find", response.body
   end
 
+  # 기본 라우트는 마지막 점 뒤를 형식으로 떼어 "node.js" 를 "node" 로 검색했다.
+  test "search keeps a keyword that contains a dot" do
+    @post.update!(title: "Node.js streams")
+
+    get search_path(keyword: "node.js")
+
+    assert_equal "/search/node.js", path
+    assert_response :success
+    assert_select "title", /node\.js/
+    assert_match "Node.js streams", response.body
+  end
+
+  test "search redirect keeps the dot in the keyword" do
+    get "/search", params: { keyword: "node.js" }
+
+    assert_redirected_to "/search/node.js"
+  end
+
+  test "tag listing accepts a tag name that contains a dot" do
+    @post.update!(tag_list: "next.js")
+
+    get tag_posts_path(tag: "next.js")
+
+    assert_response :success
+    assert_match @post.title, response.body
+  end
+
   # 라우트만 고치면 폼이 엉뚱한 곳을 가리켜도 통과한다. 검색창이 실제로 살아 있는
   # 페이지들에서 폼의 action 이 그 라우트를 가리키는지까지 확인한다.
   test "every rendered search form posts to a route that exists" do
@@ -296,6 +323,47 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     get post_url(@post)
     assert_select "a.ts-category-link[href=?]", category_posts_path(category: @post.category),
                   text: @post.category
+  end
+
+  # 글 하나에는 주소가 하나여야 한다. 대체 조회(슬러그 → id)는 옛 링크를 살리려고 남기되
+  # 정식 주소로 영구 이동시킨다.
+  test "show moves a slugged post requested by id to its slug" do
+    get "/posts/#{@post.id}"
+
+    assert_response :moved_permanently
+    assert_redirected_to post_path(@post)
+  end
+
+  test "show moves an id with trailing text to the canonical path" do
+    get "/posts/#{@post.id}-anything"
+
+    assert_response :moved_permanently
+    assert_redirected_to post_path(@post)
+  end
+
+  test "show answers a post without a slug on its id" do
+    @post.update_column(:slug, "")
+
+    get "/posts/#{@post.id}"
+
+    assert_response :success
+  end
+
+  test "show declares its canonical url to visitors" do
+    delete logout_url
+    get post_path(@post)
+
+    assert_response :success
+    host = ENV["APP_HOST"].presence || "www.example.com"
+    assert_select "link[rel=canonical][href=?]", "https://#{host}#{post_path(@post)}"
+  end
+
+  test "visitors are moved off a non-canonical url before the conditional GET" do
+    delete logout_url
+    get "/posts/#{@post.id}"
+
+    assert_response :moved_permanently
+    assert_nil response.headers["ETag"]
   end
 
   # 클립보드 스크립트가 이 훅으로 알림을 찾는다. 클래스만 있고 속성이 없으면
